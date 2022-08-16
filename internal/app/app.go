@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/frangar97/mobilecheck-backend/internal/config"
+	"github.com/frangar97/mobilecheck-backend/internal/handler"
 	"github.com/frangar97/mobilecheck-backend/pkg/postgres"
 )
 
@@ -21,8 +22,11 @@ func Run() {
 		log.Fatal(err)
 	}
 
+	handlers := handler.NewHandler()
+
 	srv := &http.Server{
-		Addr: ":" + cfg.Port,
+		Addr:    ":" + cfg.Port,
+		Handler: handlers.Init(),
 	}
 
 	err = srv.ListenAndServe()
