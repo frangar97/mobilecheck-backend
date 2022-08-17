@@ -24,6 +24,8 @@ func Run() {
 		log.Fatal(err)
 	}
 
+	defer db.Close()
+
 	repositories := repository.NewRepositories(db)
 	services := service.NewServices(repositories)
 
