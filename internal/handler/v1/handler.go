@@ -1,11 +1,18 @@
 package v1
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/frangar97/mobilecheck-backend/internal/service"
+	"github.com/gin-gonic/gin"
+)
 
-type Handler struct{}
+type Handler struct {
+	services *service.Service
+}
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(services *service.Service) *Handler {
+	return &Handler{
+		services: services,
+	}
 }
 
 func (h *Handler) Init(group *gin.RouterGroup) {

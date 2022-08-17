@@ -6,6 +6,8 @@ import (
 
 	"github.com/frangar97/mobilecheck-backend/internal/config"
 	"github.com/frangar97/mobilecheck-backend/internal/handler"
+	"github.com/frangar97/mobilecheck-backend/internal/repository"
+	"github.com/frangar97/mobilecheck-backend/internal/service"
 	"github.com/frangar97/mobilecheck-backend/pkg/postgres"
 )
 
@@ -16,13 +18,16 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	_, err = postgres.NewClient(cfg.DatabaseUrl)
+	db, err := postgres.NewClient(cfg.DatabaseUrl)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	handlers := handler.NewHandler()
+	repositories := repository.NewRepositories(db)
+	services := service.NewServices(repositories)
+
+	handlers := handler.NewHandler(services)
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Port,

@@ -2,13 +2,18 @@ package handler
 
 import (
 	v1 "github.com/frangar97/mobilecheck-backend/internal/handler/v1"
+	"github.com/frangar97/mobilecheck-backend/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct{}
+type Handler struct {
+	services *service.Service
+}
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(services *service.Service) *Handler {
+	return &Handler{
+		services: services,
+	}
 }
 
 func (h *Handler) Init() *gin.Engine {
@@ -20,7 +25,7 @@ func (h *Handler) Init() *gin.Engine {
 }
 
 func (h *Handler) initAPI(group *gin.Engine) {
-	handlerV1 := v1.NewHandler()
+	handlerV1 := v1.NewHandler(h.services)
 
 	api := group.Group("/api")
 	{

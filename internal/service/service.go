@@ -1,7 +1,13 @@
 package service
 
-type Service struct{}
+import "github.com/frangar97/mobilecheck-backend/internal/repository"
 
-func NewServices() *Service {
-	return &Service{}
+type Service struct {
+	repositories *repository.Repository
+}
+
+func NewServices(repositories *repository.Repository) *Service {
+	return &Service{
+		repositories: repositories,
+	}
 }
