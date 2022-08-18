@@ -5,6 +5,7 @@ import (
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/frangar97/mobilecheck-backend/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UsuarioService interface {
@@ -28,6 +29,14 @@ func (u *usuarioServiceImpl) ObtenerUsuarios(ctx context.Context) ([]model.Usuar
 
 func (u *usuarioServiceImpl) CrearUsuario(ctx context.Context, usuario model.CreateUsuarioModel) (model.UsuarioModel, error) {
 	var nuevoUsuario model.UsuarioModel
+
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(usuario.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return nuevoUsuario, err
+	}
+
+	usuario.Password = string(hashPassword)
 
 	idGenerado, err := u.usuarioRepository.CrearUsuario(ctx, usuario)
 

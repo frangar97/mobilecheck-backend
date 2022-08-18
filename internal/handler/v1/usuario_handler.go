@@ -11,7 +11,7 @@ func (h *Handler) initUsuarioRoutes(api *gin.RouterGroup) {
 	users := api.Group("/usuario")
 	{
 		users.GET("", h.obtenerUsuarios)
-		users.POST("", h.CrearUsuario)
+		users.POST("", h.crearUsuario)
 	}
 }
 
@@ -26,7 +26,7 @@ func (h *Handler) obtenerUsuarios(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, usuarios)
 }
 
-func (h *Handler) CrearUsuario(ctx *gin.Context) {
+func (h *Handler) crearUsuario(ctx *gin.Context) {
 	var usuarioJSON model.CreateUsuarioModel
 
 	if err := ctx.BindJSON(&usuarioJSON); err != nil {

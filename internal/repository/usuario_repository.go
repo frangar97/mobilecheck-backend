@@ -23,7 +23,7 @@ func newUsuarioRepository(db *sql.DB) *usuarioRepositoryImpl {
 }
 
 func (u *usuarioRepositoryImpl) ObtenerUsuarios(ctx context.Context) ([]model.UsuarioModel, error) {
-	var usuarios []model.UsuarioModel
+	usuarios := []model.UsuarioModel{}
 
 	rows, err := u.db.QueryContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,web,movil FROM Usuario")
 
