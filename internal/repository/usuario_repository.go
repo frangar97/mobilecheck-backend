@@ -8,7 +8,8 @@ import (
 )
 
 type UsuarioRepository interface {
-	ObtenerUsuarios(ctx context.Context) ([]model.UsuarioModel, error)
+	ObtenerUsuarios(context.Context) ([]model.UsuarioModel, error)
+	CrearUsuario(context.Context, model.CreateUsuarioModel) (int64, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -45,4 +46,12 @@ func (u *usuarioRepositoryImpl) ObtenerUsuarios(ctx context.Context) ([]model.Us
 	}
 
 	return usuarios, nil
+}
+
+func (u *usuarioRepositoryImpl) CrearUsuario(ctx context.Context, usuario model.CreateUsuarioModel) (int64, error) {
+	var idGenerado int64
+
+	err := u.db.QueryRowContext(ctx, "INSERT INTO Usuario(nombre,apellido,telefono,email,activo,usuario,password,web,movil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id", usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, true, usuario.Usuario, usuario.Password, usuario.Web, usuario.Movil).Scan(&idGenerado)
+
+	return idGenerado, err
 }
