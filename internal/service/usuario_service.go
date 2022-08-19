@@ -51,8 +51,8 @@ func (u *usuarioServiceImpl) CrearUsuario(ctx context.Context, usuario model.Cre
 	nuevoUsuario.Telefono = usuario.Telefono
 	nuevoUsuario.Email = usuario.Email
 	nuevoUsuario.Usuario = usuario.Usuario
-	nuevoUsuario.Web = usuario.Web
-	nuevoUsuario.Movil = usuario.Movil
+	nuevoUsuario.Web = *usuario.Web
+	nuevoUsuario.Movil = *usuario.Movil
 
 	return nuevoUsuario, nil
 }

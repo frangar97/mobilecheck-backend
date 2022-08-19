@@ -19,6 +19,6 @@ type CreateUsuarioModel struct {
 	Email    string `json:"email"`
 	Usuario  string `json:"usuario" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	Web      bool   `json:"web" binding:"required"`
-	Movil    bool   `json:"movil" binding:"required"`
+	Web      *bool  `json:"web" binding:"required"`
+	Movil    *bool  `json:"movil" binding:"required"`
 }
