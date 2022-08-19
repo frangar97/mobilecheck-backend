@@ -8,6 +8,7 @@ type UsuarioModel struct {
 	Email    string `json:"email"`
 	Activo   bool   `json:"activo"`
 	Usuario  string `json:"usuario"`
+	Password string `json:"-"`
 	Web      bool   `json:"web"`
 	Movil    bool   `json:"movil"`
 }

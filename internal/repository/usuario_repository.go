@@ -10,6 +10,7 @@ import (
 type UsuarioRepository interface {
 	ObtenerUsuarios(context.Context) ([]model.UsuarioModel, error)
 	CrearUsuario(context.Context, model.CreateUsuarioModel) (int64, error)
+	ObtenerPorUsuario(context.Context, string) (model.UsuarioModel, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -54,4 +55,12 @@ func (u *usuarioRepositoryImpl) CrearUsuario(ctx context.Context, usuario model.
 	err := u.db.QueryRowContext(ctx, "INSERT INTO Usuario(nombre,apellido,telefono,email,activo,usuario,password,web,movil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id", usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, true, usuario.Usuario, usuario.Password, usuario.Web, usuario.Movil).Scan(&idGenerado)
 
 	return idGenerado, err
+}
+
+func (u *usuarioRepositoryImpl) ObtenerPorUsuario(ctx context.Context, usuario string) (model.UsuarioModel, error) {
+	var usuarioModel model.UsuarioModel
+
+	err := u.db.QueryRowContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,password,web,movil FROM Usuario WHERE usuario = $1 LIMIT 1", usuario).Scan(&usuarioModel.ID, &usuarioModel.Nombre, &usuarioModel.Apellido, &usuarioModel.Telefono, &usuarioModel.Email, &usuarioModel.Activo, &usuarioModel.Usuario, &usuarioModel.Password, &usuarioModel.Web, &usuarioModel.Movil)
+
+	return usuarioModel, err
 }

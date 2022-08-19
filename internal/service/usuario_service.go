@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/frangar97/mobilecheck-backend/internal/repository"
@@ -29,6 +31,16 @@ func (u *usuarioServiceImpl) ObtenerUsuarios(ctx context.Context) ([]model.Usuar
 
 func (u *usuarioServiceImpl) CrearUsuario(ctx context.Context, usuario model.CreateUsuarioModel) (model.UsuarioModel, error) {
 	var nuevoUsuario model.UsuarioModel
+
+	usuarioBD, err := u.usuarioRepository.ObtenerPorUsuario(ctx, usuario.Usuario)
+
+	if err != nil && err != sql.ErrNoRows {
+		return nuevoUsuario, err
+	}
+
+	if (model.UsuarioModel{}) != usuarioBD {
+		return nuevoUsuario, fmt.Errorf("el usuario %s ya esta en uso", usuarioBD.Usuario)
+	}
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(usuario.Password), bcrypt.DefaultCost)
 

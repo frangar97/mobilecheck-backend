@@ -37,7 +37,7 @@ func (h *Handler) crearUsuario(ctx *gin.Context) {
 	nuevoUsuario, err := h.services.UsuarioService.CrearUsuario(ctx.Request.Context(), usuarioJSON)
 
 	if err != nil {
-		ctx.AbortWithStatus(http.StatusInternalServerError)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
