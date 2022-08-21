@@ -19,6 +19,8 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) Init() *gin.Engine {
 	mux := gin.Default()
 
+	mux.Use(corsMiddleware)
+
 	h.initAPI(mux)
 
 	return mux
