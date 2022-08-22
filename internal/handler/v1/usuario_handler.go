@@ -7,14 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) initUsuarioRoutes(api *gin.RouterGroup) {
-	users := api.Group("/usuario")
-	{
-		users.GET("", h.obtenerUsuarios)
-		users.POST("", h.crearUsuario)
-	}
-}
-
 func (h *Handler) obtenerUsuarios(ctx *gin.Context) {
 	usuarios, err := h.services.UsuarioService.ObtenerUsuarios(ctx.Request.Context())
 

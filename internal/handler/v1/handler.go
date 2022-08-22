@@ -18,6 +18,7 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) Init(group *gin.RouterGroup) {
 	v1 := group.Group("/v1")
 	{
-		h.initUsuarioRoutes(v1)
+		h.initWebRoutes(v1)
+		h.initMovilRoutes(v1)
 	}
 }
