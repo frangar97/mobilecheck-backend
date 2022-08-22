@@ -3,7 +3,7 @@ package v1
 import "github.com/gin-gonic/gin"
 
 func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
-	web := c.Group("/web")
+	web := c.Group("/movil")
 	{
 		usuario := web.Group("/usuario")
 		{
