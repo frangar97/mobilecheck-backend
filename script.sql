@@ -12,3 +12,10 @@ CREATE TABLE Usuario(
     web bool,
     movil bool
 )
+
+CREATE TABLE TipoVisita(
+    id serial primary key,
+    nombre varchar(50),
+    color varchar(50),
+    activo bool
+)

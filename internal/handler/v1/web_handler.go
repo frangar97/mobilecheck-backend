@@ -17,6 +17,12 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			usuario.GET("", h.obtenerUsuarios)
 			usuario.POST("", h.crearUsuario)
 		}
+
+		tipoVisita := web.Group("/tipovisita")
+		{
+			tipoVisita.GET("", h.obtenerTiposVisita)
+			tipoVisita.POST("", h.crearTipoVisita)
+		}
 	}
 }
 

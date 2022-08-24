@@ -19,7 +19,7 @@ type usuarioServiceImpl struct {
 	usuarioRepository repository.UsuarioRepository
 }
 
-func NewUsuarioService(usuarioRepository repository.UsuarioRepository) *usuarioServiceImpl {
+func newUsuarioService(usuarioRepository repository.UsuarioRepository) *usuarioServiceImpl {
 	return &usuarioServiceImpl{
 		usuarioRepository: usuarioRepository,
 	}

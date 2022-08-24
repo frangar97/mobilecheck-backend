@@ -16,15 +16,15 @@ type AuthService interface {
 	LoginMovil(context.Context, model.AuthCredencialModel) (string, error)
 }
 
-type authService struct {
+type authServiceImpl struct {
 	usuarioRepository repository.UsuarioRepository
 }
 
-func NewAuthService(usuarioRepository repository.UsuarioRepository) *authService {
-	return &authService{usuarioRepository: usuarioRepository}
+func newAuthService(usuarioRepository repository.UsuarioRepository) *authServiceImpl {
+	return &authServiceImpl{usuarioRepository: usuarioRepository}
 }
 
-func (a *authService) LoginWeb(ctx context.Context, credenciales model.AuthCredencialModel) (string, error) {
+func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthCredencialModel) (string, error) {
 	usuario, err := a.usuarioRepository.ObtenerPorUsuario(ctx, credenciales.Usuario)
 
 	if err != nil {
@@ -64,7 +64,7 @@ func (a *authService) LoginWeb(ctx context.Context, credenciales model.AuthCrede
 	return tokenString, nil
 }
 
-func (a *authService) LoginMovil(ctx context.Context, credenciales model.AuthCredencialModel) (string, error) {
+func (a *authServiceImpl) LoginMovil(ctx context.Context, credenciales model.AuthCredencialModel) (string, error) {
 	usuario, err := a.usuarioRepository.ObtenerPorUsuario(ctx, credenciales.Usuario)
 
 	if err != nil {

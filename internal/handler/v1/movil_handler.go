@@ -12,10 +12,9 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 	{
 		movil.POST("/login", h.LoginWeb)
 
-		usuario := movil.Group("/usuario")
+		tipoVisita := movil.Group("/tipovisita")
 		{
-			usuario.GET("", h.obtenerUsuarios)
-			usuario.POST("", h.crearUsuario)
+			tipoVisita.GET("", h.obtenerTiposVisita)
 		}
 	}
 }
