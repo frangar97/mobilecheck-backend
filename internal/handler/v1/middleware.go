@@ -40,7 +40,7 @@ func (h *Handler) movilIdentity(c *gin.Context) {
 	c.Set("usuarioId", id)
 }
 
-func (h *Handler) parseAuthHeader(c *gin.Context) (int, bool, bool, error) {
+func (h *Handler) parseAuthHeader(c *gin.Context) (int64, bool, bool, error) {
 	header := c.GetHeader("Authorization")
 
 	if header == "" {
@@ -68,8 +68,12 @@ func (h *Handler) parseAuthHeader(c *gin.Context) (int, bool, bool, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims["usuarioId"].(int), claims["web"].(bool), claims["movil"].(bool), nil
+		usuarioId := claims["usuarioId"]
+		web := claims["web"]
+		movil := claims["movil"]
+
+		return int64(usuarioId.(float64)), web.(bool), movil.(bool), nil
 	}
 
-	return 0, false, false, err
+	return 0, false, false, errors.New("no se pudo obtener la identidad del usuario")
 }
