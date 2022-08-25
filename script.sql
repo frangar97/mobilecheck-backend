@@ -19,3 +19,16 @@ CREATE TABLE TipoVisita(
     color varchar(50),
     activo bool
 )
+
+CREATE TABLE Cliente(
+    id serial primary key,
+    nombre varchar(50),
+    telefono varchar(50),
+    email varchar(50),
+    direccion varchar(100),
+    activo bool,
+    latitud float,
+    longitud float,
+    usuarioId int,
+    foreign key(usuarioId) references Usuario(id)
+)
