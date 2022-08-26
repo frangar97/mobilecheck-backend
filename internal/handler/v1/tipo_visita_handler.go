@@ -22,7 +22,7 @@ func (h *Handler) crearTipoVisita(ctx *gin.Context) {
 	var tipoVisitaJSON model.CreateTipoVisitaModel
 
 	if err := ctx.BindJSON(&tipoVisitaJSON); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 

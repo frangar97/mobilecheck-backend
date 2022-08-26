@@ -11,6 +11,7 @@ type UsuarioRepository interface {
 	ObtenerUsuarios(context.Context) ([]model.UsuarioModel, error)
 	CrearUsuario(context.Context, model.CreateUsuarioModel) (int64, error)
 	ObtenerPorUsuario(context.Context, string) (model.UsuarioModel, error)
+	ObtenerPorId(context.Context, int64) (model.UsuarioModel, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -61,6 +62,14 @@ func (u *usuarioRepositoryImpl) ObtenerPorUsuario(ctx context.Context, usuario s
 	var usuarioModel model.UsuarioModel
 
 	err := u.db.QueryRowContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,password,web,movil FROM Usuario WHERE usuario = $1 LIMIT 1", usuario).Scan(&usuarioModel.ID, &usuarioModel.Nombre, &usuarioModel.Apellido, &usuarioModel.Telefono, &usuarioModel.Email, &usuarioModel.Activo, &usuarioModel.Usuario, &usuarioModel.Password, &usuarioModel.Web, &usuarioModel.Movil)
+
+	return usuarioModel, err
+}
+
+func (u *usuarioRepositoryImpl) ObtenerPorId(ctx context.Context, usuarioId int64) (model.UsuarioModel, error) {
+	var usuarioModel model.UsuarioModel
+
+	err := u.db.QueryRowContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,password,web,movil FROM Usuario WHERE id = $1 LIMIT 1", usuarioId).Scan(&usuarioModel.ID, &usuarioModel.Nombre, &usuarioModel.Apellido, &usuarioModel.Telefono, &usuarioModel.Email, &usuarioModel.Activo, &usuarioModel.Usuario, &usuarioModel.Password, &usuarioModel.Web, &usuarioModel.Movil)
 
 	return usuarioModel, err
 }

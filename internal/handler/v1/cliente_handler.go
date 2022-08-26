@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -47,4 +48,23 @@ func (h *Handler) obtenerClientesMovil(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, clientes)
+}
+
+func (h *Handler) crearCliente(ctx *gin.Context) {
+	var clienteJSON model.CreateClienteModel
+
+	if err := ctx.BindJSON(&clienteJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	usuarioId := ctx.GetInt64("usuarioId")
+	nuevoCliente, err := h.services.ClienteService.CrearCliente(ctx.Request.Context(), clienteJSON, usuarioId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, nuevoCliente)
 }

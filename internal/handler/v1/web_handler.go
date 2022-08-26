@@ -40,7 +40,7 @@ func (h *Handler) LoginWeb(ctx *gin.Context) {
 	var credenciales model.AuthCredencialModel
 
 	if err := ctx.BindJSON(&credenciales); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 

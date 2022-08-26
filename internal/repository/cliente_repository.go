@@ -10,6 +10,7 @@ import (
 type ClienteRepository interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
+	CrearCliente(context.Context, model.CreateClienteModel, int64) (int64, error)
 }
 
 type clienteRepositoryImpl struct {
@@ -33,6 +34,7 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 			C.direccion,
 			C.latitud,
 			C.longitud,
+			C.activo,
 			Concat(U.nombre,' ',U.apellido) Usuario
 	FROM Cliente C
 		  INNER JOIN usuario U ON C.usuarioId = U.id
@@ -47,7 +49,7 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Usuario)
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario)
 
 		if err != nil {
 			return clientes, err
@@ -70,6 +72,7 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuario(ctx context.Context, u
 			C.direccion,
 			C.latitud,
 			C.longitud,
+			C.activo,
 			Concat(U.nombre,' ',U.apellido) Usuario
 	FROM Cliente C
 		  INNER JOIN usuario U ON C.usuarioId = U.id
@@ -85,7 +88,7 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuario(ctx context.Context, u
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Usuario)
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario)
 
 		if err != nil {
 			return clientes, err
@@ -95,4 +98,12 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuario(ctx context.Context, u
 	}
 
 	return clientes, nil
+}
+
+func (c *clienteRepositoryImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel, usuarioId int64) (int64, error) {
+	var idGenerado int64
+
+	err := c.db.QueryRowContext(ctx, "INSERT INTO Cliente(nombre,telefono,email,direccion,latitud,longitud,activo,usuarioId) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING ID", clienteModel.Nombre, clienteModel.Telefono, clienteModel.Email, clienteModel.Direccion, clienteModel.Latitud, clienteModel.Longitud, true, usuarioId).Scan(&idGenerado)
+
+	return idGenerado, err
 }

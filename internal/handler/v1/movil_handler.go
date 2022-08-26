@@ -17,6 +17,7 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 			cliente := authenticated.Group("/cliente")
 			{
 				cliente.GET("", h.obtenerClientesMovil)
+				cliente.POST("", h.crearCliente)
 			}
 
 			tipoVisita := authenticated.Group("/tipovisita")
@@ -31,7 +32,7 @@ func (h *Handler) LoginMovil(ctx *gin.Context) {
 	var credenciales model.AuthCredencialModel
 
 	if err := ctx.BindJSON(&credenciales); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 

@@ -22,7 +22,7 @@ func (h *Handler) crearUsuario(ctx *gin.Context) {
 	var usuarioJSON model.CreateUsuarioModel
 
 	if err := ctx.BindJSON(&usuarioJSON); err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 

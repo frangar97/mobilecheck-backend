@@ -9,6 +9,7 @@ type ClienteModel struct {
 	Latitud   float64 `json:"latitud" `
 	Longitud  float64 `json:"longitud" `
 	Usuario   string  `json:"usuario" `
+	Activo    bool    `json:"activo"`
 }
 
 type CreateClienteModel struct {
@@ -18,5 +19,4 @@ type CreateClienteModel struct {
 	Direccion string  `json:"direccion"`
 	Latitud   float64 `json:"latitud" binding:"required"`
 	Longitud  float64 `json:"longitud" binding:"required"`
-	UsuarioID int64   `json:"usuarioId" binding:"required"`
 }
