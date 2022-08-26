@@ -22,7 +22,7 @@ CREATE TABLE TipoVisita(
 
 CREATE TABLE Cliente(
     id serial primary key,
-    nombre varchar(50),
+    nombre varchar(100),
     telefono varchar(50),
     email varchar(50),
     direccion varchar(100),
