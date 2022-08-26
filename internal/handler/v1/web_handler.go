@@ -14,6 +14,12 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 
 		authenticated := web.Group("/", h.webIdentity)
 		{
+			cliente := authenticated.Group("/cliente")
+			{
+				cliente.GET("", h.obtenerClientes)
+				cliente.GET("/:usuarioId", h.obtenerClientesPorUsuario)
+			}
+
 			usuario := authenticated.Group("/usuario")
 			{
 				usuario.GET("", h.obtenerUsuarios)

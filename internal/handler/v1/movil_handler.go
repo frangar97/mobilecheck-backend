@@ -14,6 +14,11 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 
 		authenticated := movil.Group("/", h.movilIdentity)
 		{
+			cliente := authenticated.Group("/cliente")
+			{
+				cliente.GET("", h.obtenerClientesMovil)
+			}
+
 			tipoVisita := authenticated.Group("/tipovisita")
 			{
 				tipoVisita.GET("", h.obtenerTiposVisita)
