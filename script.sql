@@ -32,3 +32,27 @@ CREATE TABLE Cliente(
     usuarioId int,
     foreign key(usuarioId) references Usuario(id)
 )
+
+CREATE TABLE Visita(
+    id serial primary key,
+    comentario text,
+    latitud float,
+    longitud float,
+    fecha datetime,
+    imagen text,
+    usuarioId int,
+    clienteId int,
+    tipoVisitaId int,
+    foreign key(usuarioId) references Usuario(id),
+    foreign key(clienteId) references Cliente(id),
+    foreign key(tipoVisitaId) references TipoVisita(id),
+)
+
+CREATE TABLE Tarea(
+    id serial primary key,
+    descripcion text,
+    fecha datetime,
+    completada bool,
+    visitaId int,
+    foreign key(visitaId) references Visita(id),
+)
