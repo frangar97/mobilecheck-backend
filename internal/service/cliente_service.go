@@ -12,6 +12,7 @@ import (
 type ClienteService interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
+	ObtenerClientesPorUsuarioMovil(context.Context, int64) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel, int64) (model.ClienteModel, error)
 }
 
@@ -33,6 +34,10 @@ func (c *clienteServiceImpl) ObtenerClientes(ctx context.Context) ([]model.Clien
 
 func (c *clienteServiceImpl) ObtenerClientesPorUsuario(ctx context.Context, usuarioId int64) ([]model.ClienteModel, error) {
 	return c.clienteRepository.ObtenerClientesPorUsuario(ctx, usuarioId)
+}
+
+func (c *clienteServiceImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context, usuarioId int64) ([]model.ClienteModel, error) {
+	return c.clienteRepository.ObtenerClientesPorUsuarioMovil(ctx, usuarioId)
 }
 
 func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel, usuarioId int64) (model.ClienteModel, error) {

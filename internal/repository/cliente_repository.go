@@ -10,6 +10,7 @@ import (
 type ClienteRepository interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
+	ObtenerClientesPorUsuarioMovil(context.Context, int64) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel, int64) (int64, error)
 }
 
@@ -77,6 +78,45 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuario(ctx context.Context, u
 	FROM Cliente C
 		  INNER JOIN usuario U ON C.usuarioId = U.id
 	WHERE C.usuarioId = $1
+	`, usuarioId)
+
+	if err != nil {
+		return clientes, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var cliente model.ClienteModel
+
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario)
+
+		if err != nil {
+			return clientes, err
+		}
+
+		clientes = append(clientes, cliente)
+	}
+
+	return clientes, nil
+}
+
+func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context, usuarioId int64) ([]model.ClienteModel, error) {
+	clientes := []model.ClienteModel{}
+
+	rows, err := c.db.QueryContext(ctx, `
+	SELECT  C.id,
+			C.nombre,
+			C.telefono,
+			C.email,
+			C.direccion,
+			C.latitud,
+			C.longitud,
+			C.activo,
+			Concat(U.nombre,' ',U.apellido) Usuario
+	FROM Cliente C
+		  INNER JOIN usuario U ON C.usuarioId = U.id
+	WHERE C.usuarioId = $1 AND C.activo = true
 	`, usuarioId)
 
 	if err != nil {
