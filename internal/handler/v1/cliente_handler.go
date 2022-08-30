@@ -68,3 +68,34 @@ func (h *Handler) crearCliente(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, nuevoCliente)
 }
+
+func (h *Handler) actualizarCliente(ctx *gin.Context) {
+	clienteIdParam := ctx.Param("clienteId")
+
+	clienteId, err := strconv.ParseInt(clienteIdParam, 10, 64)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	var clienteJSON model.UpdateClienteModel
+
+	if err := ctx.BindJSON(&clienteJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	actualizado, err := h.services.ClienteService.ActualizarCliente(ctx.Request.Context(), clienteId, clienteJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if !actualizado {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "No se pudo actualizar el cliente"})
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}

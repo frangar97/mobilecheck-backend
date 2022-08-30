@@ -12,6 +12,7 @@ type ClienteRepository interface {
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuarioMovil(context.Context, int64) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel, int64) (int64, error)
+	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 }
 
 type clienteRepositoryImpl struct {
@@ -146,4 +147,31 @@ func (c *clienteRepositoryImpl) CrearCliente(ctx context.Context, clienteModel m
 	err := c.db.QueryRowContext(ctx, "INSERT INTO Cliente(nombre,telefono,email,direccion,latitud,longitud,activo,usuarioId) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING ID", clienteModel.Nombre, clienteModel.Telefono, clienteModel.Email, clienteModel.Direccion, clienteModel.Latitud, clienteModel.Longitud, true, usuarioId).Scan(&idGenerado)
 
 	return idGenerado, err
+}
+
+func (c *clienteRepositoryImpl) ActualizarCliente(ctx context.Context, clienteId int64, cliente model.UpdateClienteModel) (bool, error) {
+	res, err := c.db.ExecContext(ctx, `
+		UPDATE Cliente
+		SET	   nombre = $1,
+			   telefono = $2,
+			   email = $3,
+			   direccion = $4,
+			   activo = $5,
+			   latitud = $6,
+			   longitud = $7,
+			   usuarioId = $8
+		WHERE id = $9
+	`, cliente.Nombre, cliente.Telefono, cliente.Email, cliente.Direccion, cliente.Activo, cliente.Latitud, cliente.Longitud, cliente.UsuarioId, clienteId)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }

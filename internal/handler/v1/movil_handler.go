@@ -19,6 +19,7 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 			{
 				cliente.GET("", h.obtenerClientesMovil)
 				cliente.POST("", h.crearCliente)
+				cliente.PUT("/:clienteId", h.actualizarCliente)
 			}
 
 			tipoVisita := authenticated.Group("/tipovisita")

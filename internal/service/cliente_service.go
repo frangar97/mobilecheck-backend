@@ -14,6 +14,7 @@ type ClienteService interface {
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuarioMovil(context.Context, int64) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel, int64) (model.ClienteModel, error)
+	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 }
 
 type clienteServiceImpl struct {
@@ -74,4 +75,8 @@ func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel mode
 	cliente.Usuario = fmt.Sprintf("%s %s", usuario.Nombre, usuario.Apellido)
 
 	return cliente, nil
+}
+
+func (c *clienteServiceImpl) ActualizarCliente(ctx context.Context, clienteId int64, cliente model.UpdateClienteModel) (bool, error) {
+	return c.clienteRepository.ActualizarCliente(ctx, clienteId, cliente)
 }
