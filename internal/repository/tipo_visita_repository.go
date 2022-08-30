@@ -11,6 +11,7 @@ type TipoVisitaRepository interface {
 	ObtenerTiposVisita(context.Context) ([]model.TipoVisitaModel, error)
 	ObtenerTiposVisitaActiva(context.Context) ([]model.TipoVisitaModel, error)
 	CrearTipoVisita(context.Context, model.CreateTipoVisitaModel) (int64, error)
+	ActualizarTipoVisita(context.Context, int64, model.UpdateTipoVisitaModel) (bool, error)
 }
 
 type tipoVisitaRepositoryImpl struct {
@@ -79,4 +80,26 @@ func (t *tipoVisitaRepositoryImpl) CrearTipoVisita(ctx context.Context, tipoVisi
 	err := t.db.QueryRowContext(ctx, "INSERT INTO TipoVisita(nombre,color,activo) VALUES ($1,$2,$3) RETURNING id", tipoVisita.Nombre, tipoVisita.Color, true).Scan(&idGenerado)
 
 	return idGenerado, err
+}
+
+func (t *tipoVisitaRepositoryImpl) ActualizarTipoVisita(ctx context.Context, tipoVisitaId int64, tipo model.UpdateTipoVisitaModel) (bool, error) {
+	res, err := t.db.ExecContext(ctx, `
+		UPDATE TipoVisita
+		SET	   nombre = $1,
+			   color = $2,
+			   activo = $3
+		WHERE id = $4
+	`, tipo.Nombre, tipo.Color, tipo.Activo, tipoVisitaId)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }

@@ -31,6 +31,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			{
 				tipoVisita.GET("", h.obtenerTiposVisita)
 				tipoVisita.POST("", h.crearTipoVisita)
+				tipoVisita.PUT("/:tipoVisitaId", h.actualizarTipoVisita)
 			}
 		}
 

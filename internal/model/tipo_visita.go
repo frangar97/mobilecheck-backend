@@ -13,7 +13,6 @@ type CreateTipoVisitaModel struct {
 }
 
 type UpdateTipoVisitaModel struct {
-	ID     int64  `json:"id" binding:"required"`
 	Nombre string `json:"nombre" binding:"required"`
 	Color  string `json:"color" binding:"required"`
 	Activo *bool  `json:"activo" binding:"required"`
