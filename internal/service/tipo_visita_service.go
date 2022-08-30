@@ -9,6 +9,7 @@ import (
 
 type TipoVisitaService interface {
 	ObtenerTiposVisita(context.Context) ([]model.TipoVisitaModel, error)
+	ObtenerTiposVisitaActiva(context.Context) ([]model.TipoVisitaModel, error)
 	CrearTipoVisita(context.Context, model.CreateTipoVisitaModel) (model.TipoVisitaModel, error)
 }
 
@@ -22,6 +23,10 @@ func newTipoVisitaService(tipoVisitaRepository repository.TipoVisitaRepository) 
 
 func (t *tipoVisitaServiceImpl) ObtenerTiposVisita(ctx context.Context) ([]model.TipoVisitaModel, error) {
 	return t.tipoVisitaRepository.ObtenerTiposVisita(ctx)
+}
+
+func (t *tipoVisitaServiceImpl) ObtenerTiposVisitaActiva(ctx context.Context) ([]model.TipoVisitaModel, error) {
+	return t.tipoVisitaRepository.ObtenerTiposVisitaActiva(ctx)
 }
 
 func (t *tipoVisitaServiceImpl) CrearTipoVisita(ctx context.Context, tipoVisita model.CreateTipoVisitaModel) (model.TipoVisitaModel, error) {

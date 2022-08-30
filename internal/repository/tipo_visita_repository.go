@@ -9,6 +9,7 @@ import (
 
 type TipoVisitaRepository interface {
 	ObtenerTiposVisita(context.Context) ([]model.TipoVisitaModel, error)
+	ObtenerTiposVisitaActiva(context.Context) ([]model.TipoVisitaModel, error)
 	CrearTipoVisita(context.Context, model.CreateTipoVisitaModel) (int64, error)
 }
 
@@ -24,6 +25,32 @@ func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisita(ctx context.Context) ([]mo
 	tiposVisita := []model.TipoVisitaModel{}
 
 	rows, err := t.db.QueryContext(ctx, "SELECT id,nombre,color,activo FROM TipoVisita")
+
+	if err != nil {
+		return tiposVisita, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var tipoVisita model.TipoVisitaModel
+
+		err := rows.Scan(&tipoVisita.ID, &tipoVisita.Nombre, &tipoVisita.Color, &tipoVisita.Activo)
+
+		if err != nil {
+			return tiposVisita, err
+		}
+
+		tiposVisita = append(tiposVisita, tipoVisita)
+	}
+
+	return tiposVisita, nil
+}
+
+func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisitaActiva(ctx context.Context) ([]model.TipoVisitaModel, error) {
+	tiposVisita := []model.TipoVisitaModel{}
+
+	rows, err := t.db.QueryContext(ctx, "SELECT id,nombre,color,activo FROM TipoVisita WHERE activo = true")
 
 	if err != nil {
 		return tiposVisita, err

@@ -18,6 +18,17 @@ func (h *Handler) obtenerTiposVisita(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, tiposVisita)
 }
 
+func (h *Handler) obtenerTiposVisitaActiva(ctx *gin.Context) {
+	tiposVisita, err := h.services.TipoVisitaService.ObtenerTiposVisitaActiva(ctx.Request.Context())
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tiposVisita)
+}
+
 func (h *Handler) crearTipoVisita(ctx *gin.Context) {
 	var tipoVisitaJSON model.CreateTipoVisitaModel
 
