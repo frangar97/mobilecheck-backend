@@ -10,7 +10,8 @@ import (
 func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 	movil := c.Group("/movil")
 	{
-		movil.POST("/login", h.LoginWeb)
+		movil.POST("/login", h.LoginMovil)
+		movil.POST("/register", h.crearUsuario)
 
 		authenticated := movil.Group("/", h.movilIdentity)
 		{

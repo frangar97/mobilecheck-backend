@@ -11,6 +11,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 	web := c.Group("/web")
 	{
 		web.POST("/login", h.LoginWeb)
+		web.POST("/register", h.crearUsuario)
 
 		authenticated := web.Group("/", h.webIdentity)
 		{

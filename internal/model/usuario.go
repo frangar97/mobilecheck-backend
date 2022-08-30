@@ -29,7 +29,7 @@ type UpdateUsuarioModel struct {
 	Nombre   string `json:"nombre" binding:"required"`
 	Apellido string `json:"apellido" binding:"required"`
 	Telefono string `json:"telefono" binding:"required"`
-	Email    string `json:"email" `
+	Email    string `json:"email" binding:"required"`
 	Activo   *bool  `json:"activo" binding:"required"`
 	Usuario  string `json:"usuario" binding:"required"`
 	Password string `json:"-"`
