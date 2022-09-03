@@ -26,6 +26,11 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 			{
 				tipoVisita.GET("", h.obtenerTiposVisitaActiva)
 			}
+
+			visita := authenticated.Group("/visita")
+			{
+				visita.POST("", h.CrearVisita)
+			}
 		}
 	}
 }

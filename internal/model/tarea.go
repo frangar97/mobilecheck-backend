@@ -18,7 +18,7 @@ type TareaModelWeb struct {
 }
 
 type CreateTareaModel struct {
-	Descripcion string    `json:"descripcion" binding:"required"`
-	Fecha       time.Time `json:"fecha" binding:"required"`
-	ClienteId   int64     `json:"clienteId" binding:"required"`
+	Descripcion string `json:"descripcion" binding:"required"`
+	Fecha       string `json:"fecha" binding:"required"`
+	ClienteId   int64  `json:"clienteId" binding:"required"`
 }

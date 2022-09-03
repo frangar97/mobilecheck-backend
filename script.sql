@@ -38,23 +38,23 @@ CREATE TABLE Visita(
     comentario text,
     latitud float,
     longitud float,
-    fecha datetime,
+    fecha timestamp,
     imagen text,
     usuarioId int,
     clienteId int,
     tipoVisitaId int,
     foreign key(usuarioId) references Usuario(id),
     foreign key(clienteId) references Cliente(id),
-    foreign key(tipoVisitaId) references TipoVisita(id),
+    foreign key(tipoVisitaId) references TipoVisita(id)
 )
 
 CREATE TABLE Tarea(
     id serial primary key,
     descripcion text,
-    fecha datetime,
+    fecha timestamp,
     completada bool,
     clienteId int,
     visitaId int,
     foreign key(visitaId) references Visita(id),
-    foreign key(clienteId) references Cliente(id),
+    foreign key(clienteId) references Cliente(id)
 )
