@@ -6,6 +6,8 @@ type Repository struct {
 	ClienteRepository    ClienteRepository
 	UsuarioRepository    UsuarioRepository
 	TipoVisitaRepository TipoVisitaRepository
+	VisitaRepository     VisitaRepository
+	TareaRepository      TareaRepository
 }
 
 func NewRepositories(db *sql.DB) *Repository {
@@ -13,5 +15,7 @@ func NewRepositories(db *sql.DB) *Repository {
 		UsuarioRepository:    newUsuarioRepository(db),
 		TipoVisitaRepository: newTipoVisitaRepository(db),
 		ClienteRepository:    newClienteRepository(db),
+		VisitaRepository:     newVisitaRepository(db),
+		TareaRepository:      newTareaRepository(db),
 	}
 }
