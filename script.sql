@@ -53,6 +53,8 @@ CREATE TABLE Tarea(
     descripcion text,
     fecha datetime,
     completada bool,
+    clienteId int,
     visitaId int,
     foreign key(visitaId) references Visita(id),
+    foreign key(clienteId) references Cliente(id),
 )
