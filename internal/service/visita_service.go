@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/frangar97/mobilecheck-backend/internal/model"
@@ -10,6 +12,7 @@ import (
 
 type VisitaService interface {
 	CrearVisita(*gin.Context, model.CreateVisitaModel, int64) (int64, error)
+	ObtenerVisitasPorUsuario(context.Context, int64) ([]model.VisitaModel, error)
 }
 
 type visitaServiceImpl struct {
@@ -20,6 +23,10 @@ func newVisitaService(visitaRepository repository.VisitaRepository) *visitaServi
 	return &visitaServiceImpl{
 		visitaRepository: visitaRepository,
 	}
+}
+
+func (v *visitaServiceImpl) ObtenerVisitasPorUsuario(ctx context.Context, usuarioId int64) ([]model.VisitaModel, error) {
+	return v.visitaRepository.ObtenerVisitasPorUsuario(ctx, usuarioId)
 }
 
 func (v *visitaServiceImpl) CrearVisita(ctx *gin.Context, visita model.CreateVisitaModel, usuarioId int64) (int64, error) {

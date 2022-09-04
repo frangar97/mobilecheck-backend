@@ -26,3 +26,15 @@ func (h *Handler) CrearVisita(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": idGenerado})
 }
+
+func (h *Handler) obtenerVisitasMovil(ctx *gin.Context) {
+	usuarioId := ctx.GetInt64("usuarioId")
+	visitas, err := h.services.VisitaService.ObtenerVisitasPorUsuario(ctx.Request.Context(), usuarioId)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}

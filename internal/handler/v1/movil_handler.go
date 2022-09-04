@@ -29,6 +29,7 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 
 			visita := authenticated.Group("/visita")
 			{
+				visita.GET("", h.obtenerVisitasMovil)
 				visita.POST("", h.CrearVisita)
 			}
 		}

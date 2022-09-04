@@ -2,7 +2,20 @@ package model
 
 import (
 	"mime/multipart"
+	"time"
 )
+
+type VisitaModel struct {
+	ID         int64     `json:"id"`
+	Comentario string    `json:"comentario"`
+	Latitud    float64   `json:"latitud"`
+	Longitud   float64   `json:"longitud"`
+	Imagen     string    `json:"imagen"`
+	Cliente    string    `json:"cliente"`
+	TipoVisita string    `json:"tipoVisita"`
+	Color      string    `json:"color"`
+	Fecha      time.Time `json:"fecha"`
+}
 
 type CreateVisitaModel struct {
 	Comentario   string                `form:"comentario" binding:"required"`
