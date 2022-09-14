@@ -17,14 +17,14 @@ func (h *Handler) CrearVisita(ctx *gin.Context) {
 
 	usuarioId := ctx.GetInt64("usuarioId")
 
-	idGenerado, err := h.services.VisitaService.CrearVisita(ctx, visitaJSON, usuarioId)
+	visita, err := h.services.VisitaService.CrearVisita(ctx, visitaJSON, usuarioId)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": idGenerado})
+	ctx.JSON(http.StatusCreated, visita)
 }
 
 func (h *Handler) obtenerVisitasMovil(ctx *gin.Context) {

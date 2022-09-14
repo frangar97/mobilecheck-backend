@@ -10,6 +10,7 @@ import (
 type VisitaRepository interface {
 	CrearVisita(context.Context, model.CreateVisitaModel, string, int64) (int64, error)
 	ObtenerVisitasPorUsuario(context.Context, int64) ([]model.VisitaModel, error)
+	ObtenerVisitaPorId(context.Context, int64) (model.VisitaModel, error)
 }
 
 type visitaRepositoryImpl struct {
@@ -66,4 +67,27 @@ func (v *visitaRepositoryImpl) ObtenerVisitasPorUsuario(ctx context.Context, usu
 	}
 
 	return visitasUsuario, nil
+}
+
+func (v *visitaRepositoryImpl) ObtenerVisitaPorId(ctx context.Context, visitaId int64) (model.VisitaModel, error) {
+	var visita model.VisitaModel
+
+	err := v.db.QueryRowContext(ctx, `
+		SELECT	V.id,
+				V.comentario,
+				V.latitud,
+				V.longitud,
+				V.imagen,
+				V.fecha,
+				C.nombre,
+				TV.nombre,
+				TV.color
+		FROM	Visita V
+		INNER JOIN Cliente C ON V.clienteId = C.id
+		INNER JOIN TipoVisita TV ON V.tipoVisitaId = TV.id
+		WHERE V.id = $1
+		LIMIT 1
+	`, visitaId).Scan(&visita.ID, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.Fecha, &visita.Cliente, &visita.TipoVisita, &visita.Color)
+
+	return visita, err
 }
