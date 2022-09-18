@@ -13,7 +13,7 @@ import (
 
 type AuthService interface {
 	LoginWeb(context.Context, model.AuthCredencialModel) (string, error)
-	LoginMovil(context.Context, model.AuthCredencialModel) (string, error)
+	LoginMovil(context.Context, model.AuthCredencialModel) (string, string, error)
 }
 
 type authServiceImpl struct {
@@ -64,29 +64,29 @@ func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthC
 	return tokenString, nil
 }
 
-func (a *authServiceImpl) LoginMovil(ctx context.Context, credenciales model.AuthCredencialModel) (string, error) {
+func (a *authServiceImpl) LoginMovil(ctx context.Context, credenciales model.AuthCredencialModel) (string, string, error) {
 	usuario, err := a.usuarioRepository.ObtenerPorUsuario(ctx, credenciales.Usuario)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", fmt.Errorf("el usuario %s no se encuentra registrado", credenciales.Usuario)
+			return "", "", fmt.Errorf("el usuario %s no se encuentra registrado", credenciales.Usuario)
 		}
 
-		return "", err
+		return "", "", err
 	}
 
 	if !usuario.Activo {
-		return "", fmt.Errorf("el usuario no se encuentra activo")
+		return "", "", fmt.Errorf("el usuario no se encuentra activo")
 	}
 
 	if !usuario.Movil {
-		return "", fmt.Errorf("el usuario no tiene acceso para la aplicación movil")
+		return "", "", fmt.Errorf("el usuario no tiene acceso para la aplicación movil")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(usuario.Password), []byte(credenciales.Password))
 
 	if err != nil {
-		return "", fmt.Errorf("usuario o contraseña incorrecto")
+		return "", "", fmt.Errorf("usuario o contraseña incorrecto")
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -98,8 +98,8 @@ func (a *authServiceImpl) LoginMovil(ctx context.Context, credenciales model.Aut
 	tokenString, err := token.SignedString([]byte("ProbandoTokenSeguridad"))
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return tokenString, nil
+	return tokenString, fmt.Sprintf("%s %s", usuario.Nombre, usuario.Apellido), nil
 }

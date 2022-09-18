@@ -44,12 +44,12 @@ func (h *Handler) LoginMovil(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.services.AuthService.LoginMovil(ctx.Request.Context(), credenciales)
+	token, usuario, err := h.services.AuthService.LoginMovil(ctx.Request.Context(), credenciales)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
+	ctx.JSON(http.StatusOK, gin.H{"token": token, "usuario": usuario})
 }
