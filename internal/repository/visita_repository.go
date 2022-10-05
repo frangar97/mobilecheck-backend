@@ -46,6 +46,7 @@ func (v *visitaRepositoryImpl) ObtenerVisitasPorUsuario(ctx context.Context, usu
 		INNER JOIN Cliente C ON V.clienteId = C.id
 		INNER JOIN TipoVisita TV ON V.tipoVisitaId = TV.id
 		WHERE V.usuarioId = $1
+		ORDER BY V.fecha DESC
 	`, usuarioId)
 
 	if err != nil {

@@ -40,7 +40,7 @@ func (t *tareaRepositoryImpl) CrearTareaMovil(ctx context.Context, tarea model.C
 }
 
 func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.TareaModelMovil, error) {
-	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.id,C.nombre FROM Tarea T INNER JOIN Cliente C ON T.clienteId = C.id WHERE DATE(T.fecha) = $1 AND T.usuarioId = $2", fecha, usuarioId)
+	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.id,C.nombre FROM Tarea T INNER JOIN Cliente C ON T.clienteId = C.id WHERE DATE(T.fecha) = $1 AND T.usuarioId = $2 ORDER BY T.fecha", fecha, usuarioId)
 	if err != nil {
 		return []model.TareaModelMovil{}, err
 	}
