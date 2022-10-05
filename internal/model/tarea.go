@@ -17,8 +17,15 @@ type TareaModelWeb struct {
 	VisitaId    int64     `json:"visitaId"`
 }
 
-type CreateTareaModel struct {
+type CreateTareaModelMovil struct {
 	Descripcion string `json:"descripcion" binding:"required"`
 	Fecha       string `json:"fecha" binding:"required"`
 	ClienteId   int64  `json:"clienteId" binding:"required"`
+}
+
+type CreateTareaModelWeb struct {
+	Descripcion string `json:"descripcion" binding:"required"`
+	Fecha       string `json:"fecha" binding:"required"`
+	ClienteId   int64  `json:"clienteId" binding:"required"`
+	UsuarioId   int64  `json:"usuarioId" binding:"required"`
 }

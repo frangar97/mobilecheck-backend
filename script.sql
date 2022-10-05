@@ -55,6 +55,8 @@ CREATE TABLE Tarea(
     completada bool,
     clienteId int,
     visitaId int,
+    usuarioId int,
+    foreign key(usuarioId) references Usuario(id),
     foreign key(visitaId) references Visita(id),
     foreign key(clienteId) references Cliente(id)
 )

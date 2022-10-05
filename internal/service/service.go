@@ -8,6 +8,7 @@ type Service struct {
 	TipoVisitaService TipoVisitaService
 	UsuarioService    UsuarioService
 	VisitaService     VisitaService
+	TareaService      TareaService
 }
 
 func NewServices(repositories *repository.Repository) *Service {
@@ -17,5 +18,6 @@ func NewServices(repositories *repository.Repository) *Service {
 		TipoVisitaService: newTipoVisitaService(repositories.TipoVisitaRepository),
 		UsuarioService:    newUsuarioService(repositories.UsuarioRepository),
 		VisitaService:     newVisitaService(repositories.VisitaRepository),
+		TareaService:      newTareaService(repositories.TareaRepository),
 	}
 }
