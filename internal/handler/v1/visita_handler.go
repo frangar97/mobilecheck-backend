@@ -29,7 +29,8 @@ func (h *Handler) CrearVisita(ctx *gin.Context) {
 
 func (h *Handler) obtenerVisitasMovil(ctx *gin.Context) {
 	usuarioId := ctx.GetInt64("usuarioId")
-	visitas, err := h.services.VisitaService.ObtenerVisitasPorUsuario(ctx.Request.Context(), usuarioId)
+	fecha := ctx.Query("fecha")
+	visitas, err := h.services.VisitaService.ObtenerVisitasPorUsuarioDelDia(ctx.Request.Context(), fecha, usuarioId)
 
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
