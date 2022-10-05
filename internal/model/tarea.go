@@ -7,6 +7,8 @@ type TareaModelMovil struct {
 	Descripcion string    `json:"descripcion"`
 	Fecha       time.Time `json:"fecha"`
 	Completada  bool      `json:"completada"`
+	ClienteId   int64     `json:"clienteId"`
+	Cliente     string    `json:"cliente"`
 }
 
 type TareaModelWeb struct {

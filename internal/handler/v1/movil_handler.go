@@ -32,6 +32,12 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 				visita.GET("", h.obtenerVisitasMovil)
 				visita.POST("", h.CrearVisita)
 			}
+
+			tarea := authenticated.Group("/tarea")
+			{
+				tarea.GET("", h.obtenerTareasDelDiaMovil)
+				tarea.POST("", h.crearTareaMovil)
+			}
 		}
 	}
 }

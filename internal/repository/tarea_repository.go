@@ -26,7 +26,7 @@ func newTareaRepository(db *sql.DB) *tareaRepositoryImpl {
 func (t *tareaRepositoryImpl) ObtenerTareaPorIdMovil(ctx context.Context, tareaId int64) (model.TareaModelMovil, error) {
 	var tareaModel model.TareaModelMovil
 
-	err := t.db.QueryRowContext(ctx, "SELECT id,descripcion,fecha,completada FROM Tarea WHERE id = $1 LIMIT 1", tareaId).Scan(&tareaModel.ID, &tareaModel.Descripcion, &tareaModel.Fecha, &tareaModel.Completada)
+	err := t.db.QueryRowContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.id,C.nombre FROM Tarea T INNER JOIN Cliente C ON T.clienteId = C.id WHERE T.id = $1 LIMIT 1", tareaId).Scan(&tareaModel.ID, &tareaModel.Descripcion, &tareaModel.Fecha, &tareaModel.Completada, &tareaModel.ClienteId, &tareaModel.Cliente)
 
 	return tareaModel, err
 }
@@ -40,19 +40,19 @@ func (t *tareaRepositoryImpl) CrearTareaMovil(ctx context.Context, tarea model.C
 }
 
 func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.TareaModelMovil, error) {
-	rows, err := t.db.QueryContext(ctx, "SELECT id,descripcion,fecha,completada FROM Tarea WHERE DATE(fecha) = $1 AND usuarioId = $2", fecha, usuarioId)
+	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.id,C.nombre FROM Tarea T INNER JOIN Cliente C ON T.clienteId = C.id WHERE DATE(T.fecha) = $1 AND T.usuarioId = $2", fecha, usuarioId)
 	if err != nil {
-		return nil, err
+		return []model.TareaModelMovil{}, err
 	}
 
 	defer rows.Close()
 
-	var tareas []model.TareaModelMovil
+	tareas := []model.TareaModelMovil{}
 
 	for rows.Next() {
 		var tarea model.TareaModelMovil
 
-		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada)
+		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente)
 		if err != nil {
 			return nil, err
 		}
