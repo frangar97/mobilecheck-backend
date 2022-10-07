@@ -60,3 +60,6 @@ CREATE TABLE Tarea(
     foreign key(visitaId) references Visita(id),
     foreign key(clienteId) references Cliente(id)
 )
+
+alter table Visita alter column fecha type timestamp WITH TIME ZONE USING fecha AT TIME ZONE 'GTM'
+alter table Tarea alter column fecha type timestamp WITH TIME ZONE USING fecha AT TIME ZONE 'GTM'
