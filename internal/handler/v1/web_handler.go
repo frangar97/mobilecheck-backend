@@ -33,6 +33,11 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tipoVisita.POST("", h.crearTipoVisita)
 				tipoVisita.PUT("/:tipoVisitaId", h.actualizarTipoVisita)
 			}
+
+			visita := authenticated.Group("/visita")
+			{
+				visita.GET("", h.obtenerVisitasWebRangoFecha)
+			}
 		}
 
 	}

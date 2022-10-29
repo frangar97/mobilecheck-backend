@@ -39,3 +39,16 @@ func (h *Handler) obtenerVisitasMovil(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, visitas)
 }
+
+func (h *Handler) obtenerVisitasWebRangoFecha(ctx *gin.Context) {
+	fechaInicio := ctx.Query("fechaInicio")
+	fechaFin := ctx.Query("fechaFin")
+	visitas, err := h.services.VisitaService.ObtenerVisitasPorRangoFecha(ctx.Request.Context(), fechaInicio, fechaFin)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}

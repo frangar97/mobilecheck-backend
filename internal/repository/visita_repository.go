@@ -9,7 +9,7 @@ import (
 
 type VisitaRepository interface {
 	CrearVisita(context.Context, model.CreateVisitaModel, string, int64) (int64, error)
-	ObtenerVisitasPorUsuario(context.Context, int64) ([]model.VisitaModel, error)
+	ObtenerVisitasPorRangoFecha(context.Context, string, string) ([]model.VisitaModel, error)
 	ObtenerVisitasPorUsuarioDelDia(context.Context, string, int64) ([]model.VisitaModel, error)
 	ObtenerVisitaPorId(context.Context, int64) (model.VisitaModel, error)
 }
@@ -30,7 +30,7 @@ func (v *visitaRepositoryImpl) CrearVisita(ctx context.Context, visita model.Cre
 	return idGenerado, err
 }
 
-func (v *visitaRepositoryImpl) ObtenerVisitasPorUsuario(ctx context.Context, usuarioId int64) ([]model.VisitaModel, error) {
+func (v *visitaRepositoryImpl) ObtenerVisitasPorRangoFecha(ctx context.Context, fechaInicio string, fechaFin string) ([]model.VisitaModel, error) {
 	visitasUsuario := []model.VisitaModel{}
 
 	rows, err := v.db.QueryContext(ctx, `
@@ -46,9 +46,9 @@ func (v *visitaRepositoryImpl) ObtenerVisitasPorUsuario(ctx context.Context, usu
 		FROM	Visita V
 		INNER JOIN Cliente C ON V.clienteId = C.id
 		INNER JOIN TipoVisita TV ON V.tipoVisitaId = TV.id
-		WHERE V.usuarioId = $1
+		WHERE V.fecha BETWEEN $1 AND $2
 		ORDER BY V.fecha DESC
-	`, usuarioId)
+	`, fechaInicio, fechaFin)
 
 	if err != nil {
 		return visitasUsuario, err

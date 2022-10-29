@@ -12,7 +12,7 @@ import (
 
 type VisitaService interface {
 	CrearVisita(*gin.Context, model.CreateVisitaModel, int64) (model.VisitaModel, error)
-	ObtenerVisitasPorUsuario(context.Context, int64) ([]model.VisitaModel, error)
+	ObtenerVisitasPorRangoFecha(context.Context, string, string) ([]model.VisitaModel, error)
 	ObtenerVisitasPorUsuarioDelDia(context.Context, string, int64) ([]model.VisitaModel, error)
 }
 
@@ -26,8 +26,8 @@ func newVisitaService(visitaRepository repository.VisitaRepository) *visitaServi
 	}
 }
 
-func (v *visitaServiceImpl) ObtenerVisitasPorUsuario(ctx context.Context, usuarioId int64) ([]model.VisitaModel, error) {
-	return v.visitaRepository.ObtenerVisitasPorUsuario(ctx, usuarioId)
+func (v *visitaServiceImpl) ObtenerVisitasPorRangoFecha(ctx context.Context, fechaInicio string, fechaFin string) ([]model.VisitaModel, error) {
+	return v.visitaRepository.ObtenerVisitasPorRangoFecha(ctx, fechaInicio, fechaFin)
 }
 
 func (v *visitaServiceImpl) ObtenerVisitasPorUsuarioDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.VisitaModel, error) {
