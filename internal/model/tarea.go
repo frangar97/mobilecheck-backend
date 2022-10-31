@@ -31,3 +31,10 @@ type CreateTareaModelWeb struct {
 	ClienteId   int64  `json:"clienteId" binding:"required"`
 	UsuarioId   int64  `json:"usuarioId" binding:"required"`
 }
+
+type CantidadTareaPorUsuario struct {
+	Nombre      string `json:"nombre"`
+	Completadas int    `json:"completadas"`
+	Pendientes  int    `json:"pendientes"`
+	Total       int    `json:"total"`
+}

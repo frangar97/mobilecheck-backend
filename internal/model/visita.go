@@ -26,3 +26,14 @@ type CreateVisitaModel struct {
 	ClienteId    int64                 `form:"clienteId" binding:"required"`
 	TipoVisitaId int64                 `form:"tipoVisitaId" binding:"required"`
 }
+
+type CantidadVisitaPorUsuario struct {
+	Nombre   string `json:"nombre"`
+	Cantidad int    `json:"cantidad"`
+}
+
+type CantidadVisitaPorTipo struct {
+	Nombre   string `json:"nombre"`
+	Color    string `json:"color"`
+	Cantidad int    `json:"cantidad"`
+}
