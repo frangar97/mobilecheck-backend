@@ -10,6 +10,7 @@ import (
 type TareaService interface {
 	CrearTareaMovil(context.Context, model.CreateTareaModelMovil, int64) (model.TareaModelMovil, error)
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
+	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 }
 
 type tareaServiceImpl struct {
@@ -33,4 +34,8 @@ func (t *tareaServiceImpl) CrearTareaMovil(ctx context.Context, tareaCreate mode
 
 func (t *tareaServiceImpl) ObtenerTareasDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.TareaModelMovil, error) {
 	return t.tareaRepository.ObtenerTareasDelDia(ctx, fecha, usuarioId)
+}
+
+func (t *tareaServiceImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadTareaPorUsuario, error) {
+	return t.tareaRepository.ObtenerCantidadTareasUsuarioPorFecha(ctx, fechaInicio, fechaFin)
 }

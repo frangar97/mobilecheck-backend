@@ -39,3 +39,16 @@ func (h *Handler) crearTareaMovil(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, nuevaTarea)
 }
+
+func (h *Handler) obtenerTareasWebCantidadPorUsuarioRangoFecha(ctx *gin.Context) {
+	fechaInicio := ctx.Query("fechaInicio")
+	fechaFin := ctx.Query("fechaFin")
+	visitas, err := h.services.TareaService.ObtenerCantidadTareasUsuarioPorFecha(ctx.Request.Context(), fechaInicio, fechaFin)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}

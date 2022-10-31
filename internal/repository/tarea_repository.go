@@ -11,6 +11,7 @@ type TareaRepository interface {
 	ObtenerTareaPorIdMovil(context.Context, int64) (model.TareaModelMovil, error)
 	CrearTareaMovil(context.Context, model.CreateTareaModelMovil, int64) (int64, error)
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
+	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -55,6 +56,40 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente)
 		if err != nil {
 			return nil, err
+		}
+
+		tareas = append(tareas, tarea)
+	}
+
+	return tareas, nil
+}
+
+func (t *tareaRepositoryImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadTareaPorUsuario, error) {
+	tareas := []model.CantidadTareaPorUsuario{}
+
+	rows, err := t.db.QueryContext(ctx, `
+	SELECT  CONCAT(U.nombre,' ',U.apellido) nombre,
+        COUNT(*) filter (where T.completada = true) completadas,
+        COUNT(*) filter (where T.completada = false) pendientes,
+        COUNT(*) total
+	FROM    Tarea T
+			INNER JOIN Usuario U ON T.usuarioId = U.id
+	WHERE   T.FECHA BETWEEN $1 AND $2
+	GROUP BY U.nombre,U.apellido
+	`, fechaInicio, fechaFin)
+
+	if err != nil {
+		return tareas, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var tarea model.CantidadTareaPorUsuario
+
+		err := rows.Scan(&tarea.Nombre, &tarea.Completadas, &tarea.Pendientes, &tarea.Total)
+		if err != nil {
+			return tareas, err
 		}
 
 		tareas = append(tareas, tarea)
