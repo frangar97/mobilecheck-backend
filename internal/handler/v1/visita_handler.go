@@ -52,3 +52,29 @@ func (h *Handler) obtenerVisitasWebRangoFecha(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, visitas)
 }
+
+func (h *Handler) obtenerVisitasWebCantidadPorUsuarioRangoFecha(ctx *gin.Context) {
+	fechaInicio := ctx.Query("fechaInicio")
+	fechaFin := ctx.Query("fechaFin")
+	visitas, err := h.services.VisitaService.ObtenerCantidadVisitaPorUsuario(ctx.Request.Context(), fechaInicio, fechaFin)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}
+
+func (h *Handler) obtenerVisitasWebCantidadPorTipoRangoFecha(ctx *gin.Context) {
+	fechaInicio := ctx.Query("fechaInicio")
+	fechaFin := ctx.Query("fechaFin")
+	visitas, err := h.services.VisitaService.ObtenerCantidadVisitaPorTipo(ctx.Request.Context(), fechaInicio, fechaFin)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}

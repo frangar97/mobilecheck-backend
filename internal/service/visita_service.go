@@ -14,6 +14,8 @@ type VisitaService interface {
 	CrearVisita(*gin.Context, model.CreateVisitaModel, int64) (model.VisitaModel, error)
 	ObtenerVisitasPorRangoFecha(context.Context, string, string) ([]model.VisitaModel, error)
 	ObtenerVisitasPorUsuarioDelDia(context.Context, string, int64) ([]model.VisitaModel, error)
+	ObtenerCantidadVisitaPorUsuario(context.Context, string, string) ([]model.CantidadVisitaPorUsuario, error)
+	ObtenerCantidadVisitaPorTipo(context.Context, string, string) ([]model.CantidadVisitaPorTipo, error)
 }
 
 type visitaServiceImpl struct {
@@ -28,6 +30,14 @@ func newVisitaService(visitaRepository repository.VisitaRepository) *visitaServi
 
 func (v *visitaServiceImpl) ObtenerVisitasPorRangoFecha(ctx context.Context, fechaInicio string, fechaFin string) ([]model.VisitaModel, error) {
 	return v.visitaRepository.ObtenerVisitasPorRangoFecha(ctx, fechaInicio, fechaFin)
+}
+
+func (v *visitaServiceImpl) ObtenerCantidadVisitaPorUsuario(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadVisitaPorUsuario, error) {
+	return v.visitaRepository.ObtenerCantidadVisitaPorUsuario(ctx, fechaInicio, fechaFin)
+}
+
+func (v *visitaServiceImpl) ObtenerCantidadVisitaPorTipo(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadVisitaPorTipo, error) {
+	return v.visitaRepository.ObtenerCantidadVisitaPorTipo(ctx, fechaInicio, fechaFin)
 }
 
 func (v *visitaServiceImpl) ObtenerVisitasPorUsuarioDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.VisitaModel, error) {

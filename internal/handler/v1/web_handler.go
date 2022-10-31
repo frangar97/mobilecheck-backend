@@ -37,6 +37,8 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			visita := authenticated.Group("/visita")
 			{
 				visita.GET("", h.obtenerVisitasWebRangoFecha)
+				visita.GET("cantidadusuario", h.obtenerVisitasWebCantidadPorUsuarioRangoFecha)
+				visita.GET("cantidadtipo", h.obtenerVisitasWebCantidadPorTipoRangoFecha)
 			}
 		}
 

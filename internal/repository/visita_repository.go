@@ -12,6 +12,8 @@ type VisitaRepository interface {
 	ObtenerVisitasPorRangoFecha(context.Context, string, string) ([]model.VisitaModel, error)
 	ObtenerVisitasPorUsuarioDelDia(context.Context, string, int64) ([]model.VisitaModel, error)
 	ObtenerVisitaPorId(context.Context, int64) (model.VisitaModel, error)
+	ObtenerCantidadVisitaPorUsuario(context.Context, string, string) ([]model.CantidadVisitaPorUsuario, error)
+	ObtenerCantidadVisitaPorTipo(context.Context, string, string) ([]model.CantidadVisitaPorTipo, error)
 }
 
 type visitaRepositoryImpl struct {
@@ -134,4 +136,67 @@ func (v *visitaRepositoryImpl) ObtenerVisitaPorId(ctx context.Context, visitaId 
 	`, visitaId).Scan(&visita.ID, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.Fecha, &visita.Cliente, &visita.TipoVisita, &visita.Color)
 
 	return visita, err
+}
+
+func (v *visitaRepositoryImpl) ObtenerCantidadVisitaPorUsuario(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadVisitaPorUsuario, error) {
+	visitas := []model.CantidadVisitaPorUsuario{}
+
+	rows, err := v.db.QueryContext(ctx, `
+		SELECT  CONCAT(U.nombre,' ',U.apellido) nombre,
+		COUNT(*) cantidad
+		FROM    VISITA V
+			INNER JOIN Usuario U ON V.usuarioId = U.id
+		WHERE   V.FECHA BETWEEN $1 AND $2
+		GROUP BY U.nombre,U.apellido
+		ORDER BY cantidad
+		LIMIT 5
+	`, fechaInicio, fechaFin)
+
+	if err != nil {
+		return visitas, err
+	}
+
+	for rows.Next() {
+		var visita model.CantidadVisitaPorUsuario
+
+		err := rows.Scan(&visita.Nombre, &visita.Cantidad)
+		if err != nil {
+			return visitas, err
+		}
+
+		visitas = append(visitas, visita)
+	}
+
+	return visitas, nil
+}
+
+func (v *visitaRepositoryImpl) ObtenerCantidadVisitaPorTipo(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadVisitaPorTipo, error) {
+	visitas := []model.CantidadVisitaPorTipo{}
+
+	rows, err := v.db.QueryContext(ctx, `
+	SELECT  TV.nombre,
+			TV.color,
+			Count(*) cantidad
+	FROM    VISITA V
+		INNER JOIN TipoVisita TV ON V.tipoVisitaId = TV.id
+	WHERE   V.FECHA BETWEEN $1 AND $2
+	GROUP BY TV.nombre,TV.color
+	`, fechaInicio, fechaFin)
+
+	if err != nil {
+		return visitas, err
+	}
+
+	for rows.Next() {
+		var visita model.CantidadVisitaPorTipo
+
+		err := rows.Scan(&visita.Nombre, &visita.Color, &visita.Cantidad)
+		if err != nil {
+			return visitas, err
+		}
+
+		visitas = append(visitas, visita)
+	}
+
+	return visitas, nil
 }
