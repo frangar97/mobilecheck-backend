@@ -25,6 +25,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			{
 				usuario.GET("", h.obtenerUsuarios)
 				usuario.POST("", h.crearUsuario)
+				usuario.PUT("/:usuarioId", h.actualizarUsuario)
 			}
 
 			tipoVisita := authenticated.Group("/tipovisita")

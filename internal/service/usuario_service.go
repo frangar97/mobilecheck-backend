@@ -13,6 +13,7 @@ import (
 type UsuarioService interface {
 	ObtenerUsuarios(context.Context) ([]model.UsuarioModel, error)
 	CrearUsuario(context.Context, model.CreateUsuarioModel) (model.UsuarioModel, error)
+	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
 }
 
 type usuarioServiceImpl struct {
@@ -67,4 +68,8 @@ func (u *usuarioServiceImpl) CrearUsuario(ctx context.Context, usuario model.Cre
 	nuevoUsuario.Movil = *usuario.Movil
 
 	return nuevoUsuario, nil
+}
+
+func (u *usuarioServiceImpl) ActualizarUsuario(ctx context.Context, usuarioId int64, usuario model.UpdateUsuarioModel) (bool, error) {
+	return u.usuarioRepository.ActualizarUsuario(ctx, usuarioId, usuario)
 }

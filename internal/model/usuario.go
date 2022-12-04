@@ -25,14 +25,12 @@ type CreateUsuarioModel struct {
 }
 
 type UpdateUsuarioModel struct {
-	ID       int64  `json:"id" binding:"required"`
 	Nombre   string `json:"nombre" binding:"required"`
 	Apellido string `json:"apellido" binding:"required"`
-	Telefono string `json:"telefono" binding:"required"`
-	Email    string `json:"email" binding:"required"`
+	Telefono string `json:"telefono"`
+	Email    string `json:"email"`
 	Activo   *bool  `json:"activo" binding:"required"`
 	Usuario  string `json:"usuario" binding:"required"`
-	Password string `json:"-"`
 	Web      *bool  `json:"web" binding:"required"`
 	Movil    *bool  `json:"movil" binding:"required"`
 }

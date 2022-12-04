@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -35,4 +36,35 @@ func (h *Handler) crearUsuario(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, nuevoUsuario)
 
+}
+
+func (h *Handler) actualizarUsuario(ctx *gin.Context) {
+	usuarioIdParam := ctx.Param("usuarioId")
+
+	usuarioId, err := strconv.ParseInt(usuarioIdParam, 10, 64)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	var usuarioJSON model.UpdateUsuarioModel
+
+	if err := ctx.BindJSON(&usuarioJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	actualizado, err := h.services.UsuarioService.ActualizarUsuario(ctx.Request.Context(), usuarioId, usuarioJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if !actualizado {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "No se pudo actualizar el tipo visita"})
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }

@@ -12,6 +12,7 @@ type UsuarioRepository interface {
 	CrearUsuario(context.Context, model.CreateUsuarioModel) (int64, error)
 	ObtenerPorUsuario(context.Context, string) (model.UsuarioModel, error)
 	ObtenerPorId(context.Context, int64) (model.UsuarioModel, error)
+	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -72,4 +73,31 @@ func (u *usuarioRepositoryImpl) ObtenerPorId(ctx context.Context, usuarioId int6
 	err := u.db.QueryRowContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,password,web,movil FROM Usuario WHERE id = $1 LIMIT 1", usuarioId).Scan(&usuarioModel.ID, &usuarioModel.Nombre, &usuarioModel.Apellido, &usuarioModel.Telefono, &usuarioModel.Email, &usuarioModel.Activo, &usuarioModel.Usuario, &usuarioModel.Password, &usuarioModel.Web, &usuarioModel.Movil)
 
 	return usuarioModel, err
+}
+
+func (u *usuarioRepositoryImpl) ActualizarUsuario(ctx context.Context, usuarioId int64, usuario model.UpdateUsuarioModel) (bool, error) {
+	res, err := u.db.ExecContext(ctx, `
+		UPDATE Usuario
+		SET	   nombre = $1,
+			   apellido = $2,
+			   telefono = $3,
+			   email = $4,
+			   activo = $5,
+			   usuario = $6,
+			   web = $7,
+			   movil = $8
+		WHERE id = $9
+	`, usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, usuario.Activo, usuario.Usuario, usuario.Web, usuario.Movil, usuarioId)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }
