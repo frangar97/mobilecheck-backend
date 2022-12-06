@@ -16,6 +16,7 @@ type TareaModelWeb struct {
 	Descripcion string    `json:"descripcion"`
 	Fecha       time.Time `json:"fecha"`
 	Completada  bool      `json:"completada"`
+	Cliente     string    `json:"cliente"`
 }
 
 type CreateTareaModelMovil struct {

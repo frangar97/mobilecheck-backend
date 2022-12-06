@@ -38,7 +38,7 @@ func (t *tareaRepositoryImpl) ObtenerTareaPorIdMovil(ctx context.Context, tareaI
 func (t *tareaRepositoryImpl) ObtenerTareaPorIdWeb(ctx context.Context, tareaId int64) (model.TareaModelWeb, error) {
 	var tareaModel model.TareaModelWeb
 
-	err := t.db.QueryRowContext(ctx, "SELECT id,descripcion,fecha,completada FROM Tarea LIMIT 1", tareaId).Scan(&tareaModel.ID, &tareaModel.Descripcion, &tareaModel.Fecha, &tareaModel.Completada)
+	err := t.db.QueryRowContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.nombre FROM Tarea T INNER JOIN CLIENTE C ON T.clienteId = C.id WHERE T.id = $1 LIMIT 1", tareaId).Scan(&tareaModel.ID, &tareaModel.Descripcion, &tareaModel.Fecha, &tareaModel.Completada, &tareaModel.Cliente)
 
 	return tareaModel, err
 }
@@ -84,7 +84,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 }
 
 func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
-	rows, err := t.db.QueryContext(ctx, "SELECT id,descripcion,fecha,completada FROM Tarea WHERE fecha BETWEEN $1 AND $2 ORDER BY fecha", fechaInicio, fechaFinal)
+	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.nombre FROM Tarea T INNER JOIN CLIENTE C ON T.clienteId = C.id WHERE T.fecha BETWEEN $1 AND $2 ORDER BY T.fecha", fechaInicio, fechaFinal)
 	if err != nil {
 		return []model.TareaModelWeb{}, err
 	}
@@ -96,7 +96,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada)
+		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.Cliente)
 		if err != nil {
 			return nil, err
 		}
