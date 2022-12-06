@@ -9,8 +9,11 @@ import (
 
 type TareaRepository interface {
 	ObtenerTareaPorIdMovil(context.Context, int64) (model.TareaModelMovil, error)
+	ObtenerTareaPorIdWeb(context.Context, int64) (model.TareaModelWeb, error)
 	CrearTareaMovil(context.Context, model.CreateTareaModelMovil, int64) (int64, error)
+	CrearTareaWeb(context.Context, model.CreateTareaModelWeb) (int64, error)
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
+	ObtenerTareasWeb(context.Context, string, string) ([]model.TareaModelWeb, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 }
 
@@ -32,10 +35,26 @@ func (t *tareaRepositoryImpl) ObtenerTareaPorIdMovil(ctx context.Context, tareaI
 	return tareaModel, err
 }
 
+func (t *tareaRepositoryImpl) ObtenerTareaPorIdWeb(ctx context.Context, tareaId int64) (model.TareaModelWeb, error) {
+	var tareaModel model.TareaModelWeb
+
+	err := t.db.QueryRowContext(ctx, "SELECT id,descripcion,fecha,completada FROM Tarea LIMIT 1", tareaId).Scan(&tareaModel.ID, &tareaModel.Descripcion, &tareaModel.Fecha, &tareaModel.Completada)
+
+	return tareaModel, err
+}
+
 func (t *tareaRepositoryImpl) CrearTareaMovil(ctx context.Context, tarea model.CreateTareaModelMovil, usuarioId int64) (int64, error) {
 	var idGenerado int64
 
 	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(descripcion,fecha,clienteId,usuarioId,completada) VALUES($1,$2,$3,$4,false) RETURNING id", tarea.Descripcion, tarea.Fecha, tarea.ClienteId, usuarioId).Scan(&idGenerado)
+
+	return idGenerado, err
+}
+
+func (t *tareaRepositoryImpl) CrearTareaWeb(ctx context.Context, tarea model.CreateTareaModelWeb) (int64, error) {
+	var idGenerado int64
+
+	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(descripcion,fecha,clienteId,usuarioId,completada) VALUES($1,$2,$3,$4,false) RETURNING id", tarea.Descripcion, tarea.Fecha, tarea.ClienteId, tarea.UsuarioId).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -54,6 +73,30 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 		var tarea model.TareaModelMovil
 
 		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente)
+		if err != nil {
+			return nil, err
+		}
+
+		tareas = append(tareas, tarea)
+	}
+
+	return tareas, nil
+}
+
+func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
+	rows, err := t.db.QueryContext(ctx, "SELECT id,descripcion,fecha,completada FROM Tarea WHERE fecha BETWEEN $1 AND $2 ORDER BY fecha", fechaInicio, fechaFinal)
+	if err != nil {
+		return []model.TareaModelWeb{}, err
+	}
+
+	defer rows.Close()
+
+	tareas := []model.TareaModelWeb{}
+
+	for rows.Next() {
+		var tarea model.TareaModelWeb
+
+		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada)
 		if err != nil {
 			return nil, err
 		}

@@ -45,6 +45,8 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			tarea := authenticated.Group("/tarea")
 			{
 				tarea.GET("cantidadusuario", h.obtenerTareasWebCantidadPorUsuarioRangoFecha)
+				tarea.POST("", h.crearTareaWeb)
+				tarea.GET("", h.obtenerTareasWeb)
 			}
 		}
 

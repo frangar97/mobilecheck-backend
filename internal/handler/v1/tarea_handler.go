@@ -40,6 +40,37 @@ func (h *Handler) crearTareaMovil(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, nuevaTarea)
 }
 
+func (h *Handler) crearTareaWeb(ctx *gin.Context) {
+	var tareaJSON model.CreateTareaModelWeb
+
+	if err := ctx.BindJSON(&tareaJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	nuevaTarea, err := h.services.TareaService.CrearTareaWeb(ctx.Request.Context(), tareaJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, nuevaTarea)
+}
+
+func (h *Handler) obtenerTareasWeb(ctx *gin.Context) {
+	fechaInicio := ctx.Query("fechaInicio")
+	fechaFin := ctx.Query("fechaFin")
+	visitas, err := h.services.TareaService.ObtenerTareasWeb(ctx.Request.Context(), fechaInicio, fechaFin)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, visitas)
+}
+
 func (h *Handler) obtenerTareasWebCantidadPorUsuarioRangoFecha(ctx *gin.Context) {
 	fechaInicio := ctx.Query("fechaInicio")
 	fechaFin := ctx.Query("fechaFin")
