@@ -37,7 +37,8 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 			C.latitud,
 			C.longitud,
 			C.activo,
-			Concat(U.nombre,' ',U.apellido) Usuario
+			Concat(U.nombre,' ',U.apellido) Usuario,
+			C.usuarioId
 	FROM Cliente C
 		  INNER JOIN usuario U ON C.usuarioId = U.id
 	`)
@@ -51,7 +52,7 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario)
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario, &cliente.UsuarioId)
 
 		if err != nil {
 			return clientes, err
@@ -75,7 +76,8 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuario(ctx context.Context, u
 			C.latitud,
 			C.longitud,
 			C.activo,
-			Concat(U.nombre,' ',U.apellido) Usuario
+			Concat(U.nombre,' ',U.apellido) Usuario,
+			C.usuarioId
 	FROM Cliente C
 		  INNER JOIN usuario U ON C.usuarioId = U.id
 	WHERE C.usuarioId = $1
@@ -114,7 +116,8 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 			C.latitud,
 			C.longitud,
 			C.activo,
-			Concat(U.nombre,' ',U.apellido) Usuario
+			Concat(U.nombre,' ',U.apellido) Usuario,
+			C.usuarioId
 	FROM Cliente C
 		  INNER JOIN usuario U ON C.usuarioId = U.id
 	WHERE C.usuarioId = $1 AND C.activo = true

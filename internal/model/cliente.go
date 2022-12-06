@@ -10,6 +10,7 @@ type ClienteModel struct {
 	Longitud  float64 `json:"longitud" `
 	Usuario   string  `json:"usuario" `
 	Activo    bool    `json:"activo"`
+	UsuarioId int64   `json:"usuarioId"`
 }
 
 type CreateClienteModel struct {
