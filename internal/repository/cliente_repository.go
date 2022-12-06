@@ -132,7 +132,7 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario)
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario, &cliente.UsuarioId)
 
 		if err != nil {
 			return clientes, err
