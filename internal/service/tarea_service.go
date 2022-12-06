@@ -3,8 +3,11 @@ package service
 import (
 	"context"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/frangar97/mobilecheck-backend/internal/repository"
+	"github.com/gin-gonic/gin"
 )
 
 type TareaService interface {
@@ -13,15 +16,18 @@ type TareaService interface {
 	ObtenerTareasWeb(context.Context, string, string) ([]model.TareaModelWeb, error)
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
+	CompletarTarea(*gin.Context, model.CompletarTareaModel, int64) error
 }
 
 type tareaServiceImpl struct {
-	tareaRepository repository.TareaRepository
+	tareaRepository  repository.TareaRepository
+	visitaRepository repository.VisitaRepository
 }
 
-func newTareaService(tareaRepository repository.TareaRepository) *tareaServiceImpl {
+func newTareaService(tareaRepository repository.TareaRepository, visitaRepository repository.VisitaRepository) *tareaServiceImpl {
 	return &tareaServiceImpl{
-		tareaRepository: tareaRepository,
+		tareaRepository:  tareaRepository,
+		visitaRepository: visitaRepository,
 	}
 }
 
@@ -53,4 +59,42 @@ func (t *tareaServiceImpl) ObtenerTareasDelDia(ctx context.Context, fecha string
 
 func (t *tareaServiceImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.Context, fechaInicio string, fechaFin string) ([]model.CantidadTareaPorUsuario, error) {
 	return t.tareaRepository.ObtenerCantidadTareasUsuarioPorFecha(ctx, fechaInicio, fechaFin)
+}
+
+func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.CompletarTareaModel, usuarioId int64) error {
+	formfile, _, err := ctx.Request.FormFile("imagen")
+
+	if err != nil {
+		return err
+	}
+
+	cld, _ := cloudinary.NewFromParams("dzmgbv4qn", "676166561161436", "H7JuKbIvzimY1qQXqKhIHX3i-nM")
+	resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: "samples"})
+
+	if err != nil {
+		return err
+	}
+
+	visita := model.CreateVisitaModel{
+		Comentario:   tarea.Comentario,
+		Latitud:      tarea.Latitud,
+		Longitud:     tarea.Longitud,
+		Fecha:        tarea.Fecha,
+		ClienteId:    tarea.ClienteId,
+		TipoVisitaId: tarea.TipoVisitaId,
+	}
+
+	visitaId, err := t.visitaRepository.CrearVisita(ctx.Request.Context(), visita, resp.SecureURL, usuarioId)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = t.tareaRepository.CompletarTarea(ctx, tarea.TareaId, visitaId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

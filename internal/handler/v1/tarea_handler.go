@@ -83,3 +83,23 @@ func (h *Handler) obtenerTareasWebCantidadPorUsuarioRangoFecha(ctx *gin.Context)
 
 	ctx.JSON(http.StatusOK, visitas)
 }
+
+func (h *Handler) completarTarea(ctx *gin.Context) {
+	var tareaJSON model.CompletarTareaModel
+
+	if err := ctx.Bind(&tareaJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	usuarioId := ctx.GetInt64("usuarioId")
+
+	err := h.services.TareaService.CompletarTarea(ctx, tareaJSON, usuarioId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "creado con exito"})
+}

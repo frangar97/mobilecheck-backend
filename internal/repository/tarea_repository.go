@@ -15,6 +15,7 @@ type TareaRepository interface {
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
 	ObtenerTareasWeb(context.Context, string, string) ([]model.TareaModelWeb, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
+	CompletarTarea(context.Context, int64, int64) (bool, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -139,4 +140,25 @@ func (t *tareaRepositoryImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.C
 	}
 
 	return tareas, nil
+}
+
+func (t *tareaRepositoryImpl) CompletarTarea(ctx context.Context, tareaId int64, visitaId int64) (bool, error) {
+	res, err := t.db.ExecContext(ctx, `
+		UPDATE Tarea
+		SET	  visitaId = $1,
+			  completada = $2
+		WHERE id = $3
+	`, visitaId, true, tareaId)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }

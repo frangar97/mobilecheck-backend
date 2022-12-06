@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type TareaModelMovil struct {
 	ID          int64     `json:"id"`
@@ -37,4 +40,15 @@ type CantidadTareaPorUsuario struct {
 	Completadas int    `json:"completadas"`
 	Pendientes  int    `json:"pendientes"`
 	Total       int    `json:"total"`
+}
+
+type CompletarTareaModel struct {
+	Comentario   string                `form:"comentario" binding:"required"`
+	Latitud      float64               `form:"latitud" binding:"required"`
+	Longitud     float64               `form:"longitud" binding:"required"`
+	Fecha        string                `form:"fecha" binding:"required"`
+	Imagen       *multipart.FileHeader `form:"imagen" binding:"required"`
+	ClienteId    int64                 `form:"clienteId" binding:"required"`
+	TipoVisitaId int64                 `form:"tipoVisitaId" binding:"required"`
+	TareaId      int64                 `form:"tareaId" binding:"required"`
 }

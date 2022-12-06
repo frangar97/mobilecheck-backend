@@ -37,6 +37,7 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 			{
 				tarea.GET("", h.obtenerTareasDelDiaMovil)
 				tarea.POST("", h.crearTareaMovil)
+				tarea.POST("/completar", h.completarTarea)
 			}
 		}
 	}
