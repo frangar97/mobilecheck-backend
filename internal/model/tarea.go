@@ -52,3 +52,10 @@ type CompletarTareaModel struct {
 	TipoVisitaId int64                 `form:"tipoVisitaId" binding:"required"`
 	TareaId      int64                 `form:"tareaId" binding:"required"`
 }
+
+type CreateTareaMasivaModelWeb struct {
+	Descripcion string   `json:"descripcion" binding:"required"`
+	Fechas      []string `json:"fechas" binding:"required"`
+	ClienteId   int64    `json:"clienteId" binding:"required"`
+	UsuarioId   int64    `json:"usuarioId" binding:"required"`
+}

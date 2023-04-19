@@ -17,6 +17,7 @@ type TareaService interface {
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(*gin.Context, model.CompletarTareaModel, int64) error
+	CrearTareaMasivaWeb(context.Context, model.CreateTareaMasivaModelWeb) error
 }
 
 type tareaServiceImpl struct {
@@ -47,6 +48,26 @@ func (t *tareaServiceImpl) CrearTareaWeb(ctx context.Context, tareaCreate model.
 	}
 
 	return t.tareaRepository.ObtenerTareaPorIdWeb(ctx, idGenerado)
+}
+
+func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate model.CreateTareaMasivaModelWeb) error {
+
+	for _, fecha := range tareaCreate.Fechas {
+		tareaModel := model.CreateTareaModelWeb{
+			ClienteId:   tareaCreate.ClienteId,
+			UsuarioId:   tareaCreate.UsuarioId,
+			Descripcion: tareaCreate.Descripcion,
+			Fecha:       fecha,
+		}
+
+		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (t *tareaServiceImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
