@@ -63,3 +63,7 @@ CREATE TABLE Tarea(
 
 alter table Visita alter column fecha type timestamp WITH TIME ZONE USING fecha AT TIME ZONE 'GTM'
 alter table Tarea alter column fecha type timestamp WITH TIME ZONE USING fecha AT TIME ZONE 'GTM'
+
+INSERT INTO public.usuario(
+ nombre, apellido, telefono, email, activo, usuario, password, web, movil)
+	VALUES ('admin', 'admin','', '', true, 'admin', '$2a$10$xIWwKcbQCZ9wAqkt7SZ7yOcqmwDPFkWypOpNGY9HQpudTOJGRy222', true, true);
