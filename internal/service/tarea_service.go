@@ -54,10 +54,11 @@ func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate 
 
 	for _, fecha := range tareaCreate.Fechas {
 		tareaModel := model.CreateTareaModelWeb{
-			ClienteId:   tareaCreate.ClienteId,
-			UsuarioId:   tareaCreate.UsuarioId,
-			Descripcion: tareaCreate.Descripcion,
-			Fecha:       fecha,
+			ClienteId:       tareaCreate.ClienteId,
+			UsuarioId:       tareaCreate.UsuarioId,
+			Descripcion:     tareaCreate.Descripcion,
+			Fecha:           fecha,
+			ImagenRequerida: tareaCreate.ImagenRequerida,
 		}
 
 		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)

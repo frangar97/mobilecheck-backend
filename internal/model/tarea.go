@@ -15,11 +15,13 @@ type TareaModelMovil struct {
 }
 
 type TareaModelWeb struct {
-	ID          int64     `json:"id"`
-	Descripcion string    `json:"descripcion"`
-	Fecha       time.Time `json:"fecha"`
-	Completada  bool      `json:"completada"`
-	Cliente     string    `json:"cliente"`
+	ID              int64     `json:"id"`
+	Descripcion     string    `json:"descripcion"`
+	Fecha           time.Time `json:"fecha"`
+	Completada      bool      `json:"completada"`
+	Cliente         string    `json:"cliente"`
+	ImagenRequerida bool      `json:"imagenRequerida" binding:"required"`
+	Asesor          string    `json:"asesor" binding:"required"`
 }
 
 type CreateTareaModelMovil struct {
@@ -29,10 +31,11 @@ type CreateTareaModelMovil struct {
 }
 
 type CreateTareaModelWeb struct {
-	Descripcion string `json:"descripcion" binding:"required"`
-	Fecha       string `json:"fecha" binding:"required"`
-	ClienteId   int64  `json:"clienteId" binding:"required"`
-	UsuarioId   int64  `json:"usuarioId" binding:"required"`
+	Descripcion     string `json:"descripcion" binding:"required"`
+	Fecha           string `json:"fecha" binding:"required"`
+	ClienteId       int64  `json:"clienteId" binding:"required"`
+	UsuarioId       int64  `json:"usuarioId" binding:"required"`
+	ImagenRequerida *bool  `json:"imagenRequerida" binding:"required"`
 }
 
 type CantidadTareaPorUsuario struct {
@@ -54,8 +57,9 @@ type CompletarTareaModel struct {
 }
 
 type CreateTareaMasivaModelWeb struct {
-	Descripcion string   `json:"descripcion" binding:"required"`
-	Fechas      []string `json:"fechas" binding:"required"`
-	ClienteId   int64    `json:"clienteId" binding:"required"`
-	UsuarioId   int64    `json:"usuarioId" binding:"required"`
+	Descripcion     string   `json:"descripcion" binding:"required"`
+	Fechas          []string `json:"fechas" binding:"required"`
+	ClienteId       int64    `json:"clienteId" binding:"required"`
+	UsuarioId       int64    `json:"usuarioId" binding:"required"`
+	ImagenRequerida *bool    `json:"imagenRequerida" binding:"required"`
 }

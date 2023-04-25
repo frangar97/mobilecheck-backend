@@ -14,6 +14,7 @@ type VisitaRepository interface {
 	ObtenerVisitaPorId(context.Context, int64) (model.VisitaModel, error)
 	ObtenerCantidadVisitaPorUsuario(context.Context, string, string) ([]model.CantidadVisitaPorUsuario, error)
 	ObtenerCantidadVisitaPorTipo(context.Context, string, string) ([]model.CantidadVisitaPorTipo, error)
+	ObtenerVisitaTarea(context.Context, int64) ([]model.VisitaTareaModel, error)
 }
 
 type visitaRepositoryImpl struct {
@@ -199,4 +200,44 @@ func (v *visitaRepositoryImpl) ObtenerCantidadVisitaPorTipo(ctx context.Context,
 	}
 
 	return visitas, nil
+}
+
+func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea int64) ([]model.VisitaTareaModel, error) {
+	visitaTarea := []model.VisitaTareaModel{}
+
+	rows, err := v.db.QueryContext(ctx, `
+	SELECT V.id,
+		C.nombre  cliente,
+		V.comentario,
+		V.latitud,
+		V.longitud,
+		V.imagen,
+		TV.nombre  tipoVisita,
+		V.fecha
+		FROM tarea  T
+	INNER JOIN visita  V ON T.visitaid = V.id
+	INNER JOIN cliente  C ON C.id  = T.id 
+	INNER JOIN tipovisita  TV on TV.id = V.tipovisitaid
+	WHERE T.id = $1
+	`, idTarea)
+
+	if err != nil {
+		return visitaTarea, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var visita model.VisitaTareaModel
+
+		err := rows.Scan(&visita.ID, &visita.Cliente, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.TipoVisita, &visita.Fecha)
+
+		if err != nil {
+			return visitaTarea, err
+		}
+
+		visitaTarea = append(visitaTarea, visita)
+	}
+
+	return visitaTarea, nil
 }

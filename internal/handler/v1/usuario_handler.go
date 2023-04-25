@@ -68,3 +68,16 @@ func (h *Handler) actualizarUsuario(ctx *gin.Context) {
 
 	ctx.Status(http.StatusOK)
 }
+
+// ===============================Usuarios Asesores ===============================
+
+func (h *Handler) obtenerAsesores(ctx *gin.Context) {
+	usuarios, err := h.services.UsuarioService.ObtenerAsesores(ctx.Request.Context())
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, usuarios)
+}

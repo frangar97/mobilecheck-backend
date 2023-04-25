@@ -36,11 +36,8 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 			C.direccion,
 			C.latitud,
 			C.longitud,
-			C.activo,
-			Concat(U.nombre,' ',U.apellido) Usuario,
-			C.usuarioId
+			C.activo
 	FROM Cliente C
-		  INNER JOIN usuario U ON C.usuarioId = U.id
 	`)
 
 	if err != nil {
@@ -52,7 +49,7 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario, &cliente.UsuarioId)
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo)
 
 		if err != nil {
 			return clientes, err
@@ -116,11 +113,11 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 			C.latitud,
 			C.longitud,
 			C.activo,
-			Concat(U.nombre,' ',U.apellido) Usuario,
-			C.usuarioId
-	FROM Cliente C
-		  INNER JOIN usuario U ON C.usuarioId = U.id
-	WHERE C.usuarioId = $1 AND C.activo = true
+			T.usuarioId
+	FROM cliente C
+	INNER JOIN tarea T ON T.clienteid = C.id 
+	INNER JOIN usuario U ON T.usuarioid  = U.id
+	WHERE T.usuarioid = $1 AND C.activo = true
 	`, usuarioId)
 
 	if err != nil {

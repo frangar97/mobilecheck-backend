@@ -26,6 +26,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				usuario.GET("", h.obtenerUsuarios)
 				usuario.POST("", h.crearUsuario)
 				usuario.PUT("/:usuarioId", h.actualizarUsuario)
+				usuario.GET("asesores", h.obtenerAsesores)
 			}
 
 			tipoVisita := authenticated.Group("/tipovisita")
@@ -40,6 +41,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				visita.GET("", h.obtenerVisitasWebRangoFecha)
 				visita.GET("cantidadusuario", h.obtenerVisitasWebCantidadPorUsuarioRangoFecha)
 				visita.GET("cantidadtipo", h.obtenerVisitasWebCantidadPorTipoRangoFecha)
+				visita.GET("visitatarea/:id", h.obtenerVisitaTareaWeb)
 			}
 
 			tarea := authenticated.Group("/tarea")

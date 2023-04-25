@@ -13,6 +13,7 @@ type UsuarioRepository interface {
 	ObtenerPorUsuario(context.Context, string) (model.UsuarioModel, error)
 	ObtenerPorId(context.Context, int64) (model.UsuarioModel, error)
 	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
+	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -100,4 +101,32 @@ func (u *usuarioRepositoryImpl) ActualizarUsuario(ctx context.Context, usuarioId
 	}
 
 	return false, err
+}
+
+// ===============================Usuarios Asesores ===============================
+
+func (u *usuarioRepositoryImpl) ObtenerAsesores(ctx context.Context) ([]model.UsuarioModel, error) {
+	usuarios := []model.UsuarioModel{}
+
+	rows, err := u.db.QueryContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,web,movil FROM Usuario where movil = true")
+
+	if err != nil {
+		return usuarios, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var usuario model.UsuarioModel
+
+		err := rows.Scan(&usuario.ID, &usuario.Nombre, &usuario.Apellido, &usuario.Telefono, &usuario.Email, &usuario.Activo, &usuario.Usuario, &usuario.Web, &usuario.Movil)
+
+		if err != nil {
+			return usuarios, err
+		}
+
+		usuarios = append(usuarios, usuario)
+	}
+
+	return usuarios, nil
 }

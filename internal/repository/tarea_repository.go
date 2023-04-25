@@ -55,7 +55,7 @@ func (t *tareaRepositoryImpl) CrearTareaMovil(ctx context.Context, tarea model.C
 func (t *tareaRepositoryImpl) CrearTareaWeb(ctx context.Context, tarea model.CreateTareaModelWeb) (int64, error) {
 	var idGenerado int64
 
-	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(descripcion,fecha,clienteId,usuarioId,completada) VALUES($1,$2,$3,$4,false) RETURNING id", tarea.Descripcion, tarea.Fecha, tarea.ClienteId, tarea.UsuarioId).Scan(&idGenerado)
+	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(descripcion,fecha,clienteId,usuarioId,completada,imagenRequerida) VALUES($1,$2,$3,$4,false,$5) RETURNING id", tarea.Descripcion, tarea.Fecha, tarea.ClienteId, tarea.UsuarioId, tarea.ImagenRequerida).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -85,7 +85,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 }
 
 func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
-	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.nombre FROM Tarea T INNER JOIN CLIENTE C ON T.clienteId = C.id WHERE T.fecha BETWEEN $1 AND $2 ORDER BY T.fecha", fechaInicio, fechaFinal)
+	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.nombre,T.imagenRequerida, CONCAT(U.nombre,' ', U.apellido) asesor FROM Tarea T INNER JOIN CLIENTE C ON T.clienteId = C.id INNER JOIN USUARIO U ON T.usuarioid  = U.id  WHERE T.fecha BETWEEN $1 AND $2 ORDER BY T.fecha", fechaInicio, fechaFinal)
 	if err != nil {
 		return []model.TareaModelWeb{}, err
 	}
@@ -97,7 +97,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.Cliente)
+		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor)
 		if err != nil {
 			return nil, err
 		}

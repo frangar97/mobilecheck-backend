@@ -16,6 +16,7 @@ type VisitaService interface {
 	ObtenerVisitasPorUsuarioDelDia(context.Context, string, int64) ([]model.VisitaModel, error)
 	ObtenerCantidadVisitaPorUsuario(context.Context, string, string) ([]model.CantidadVisitaPorUsuario, error)
 	ObtenerCantidadVisitaPorTipo(context.Context, string, string) ([]model.CantidadVisitaPorTipo, error)
+	ObtenerVisitaTarea(context.Context, int64) ([]model.VisitaTareaModel, error)
 }
 
 type visitaServiceImpl struct {
@@ -68,4 +69,8 @@ func (v *visitaServiceImpl) CrearVisita(ctx *gin.Context, visita model.CreateVis
 	visitaDB, err = v.visitaRepository.ObtenerVisitaPorId(ctx, idGenerado)
 
 	return visitaDB, err
+}
+
+func (v *visitaServiceImpl) ObtenerVisitaTarea(ctx context.Context, idTarea int64) ([]model.VisitaTareaModel, error) {
+	return v.visitaRepository.ObtenerVisitaTarea(ctx, idTarea)
 }

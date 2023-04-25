@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -70,6 +71,21 @@ func (h *Handler) obtenerVisitasWebCantidadPorTipoRangoFecha(ctx *gin.Context) {
 	fechaInicio := ctx.Query("fechaInicio")
 	fechaFin := ctx.Query("fechaFin")
 	visitas, err := h.services.VisitaService.ObtenerCantidadVisitaPorTipo(ctx.Request.Context(), fechaInicio, fechaFin)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}
+
+func (h *Handler) obtenerVisitaTareaWeb(ctx *gin.Context) {
+
+	idTarea := ctx.Param("id")
+	tarea, err := strconv.ParseInt(idTarea, 0, 0)
+
+	visitas, err := h.services.VisitaService.ObtenerVisitaTarea(ctx.Request.Context(), tarea)
 
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
