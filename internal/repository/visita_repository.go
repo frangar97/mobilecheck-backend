@@ -206,19 +206,20 @@ func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea i
 	visitaTarea := []model.VisitaTareaModel{}
 
 	rows, err := v.db.QueryContext(ctx, `
-	SELECT V.id,
+	select 
+		V.id,
 		C.nombre  cliente,
 		V.comentario,
 		V.latitud,
 		V.longitud,
 		V.imagen,
-		TV.nombre  tipoVisita,
+		TV.nombre  tipoVisita,	
 		V.fecha
-		FROM tarea  T
-	INNER JOIN visita  V ON T.visitaid = V.id
-	INNER JOIN cliente  C ON C.id  = T.id 
-	INNER JOIN tipovisita  TV on TV.id = V.tipovisitaid
-	WHERE T.id = $1
+	from visita v 
+	inner join tarea t on t.visitaid = v.id 
+	inner join cliente c on c.id = t.clienteid 
+	inner join tipovisita tv on tv.id = v.tipovisitaid  
+	where t.id = $1
 	`, idTarea)
 
 	if err != nil {

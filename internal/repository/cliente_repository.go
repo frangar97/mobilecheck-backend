@@ -10,7 +10,7 @@ import (
 type ClienteRepository interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
-	ObtenerClientesPorUsuarioMovil(context.Context, int64) ([]model.ClienteModel, error)
+	ObtenerClientesPorUsuarioMovil(context.Context, int64, string) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel, int64) (int64, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 }
@@ -101,7 +101,7 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuario(ctx context.Context, u
 	return clientes, nil
 }
 
-func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context, usuarioId int64) ([]model.ClienteModel, error) {
+func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context, usuarioId int64, fecha string) ([]model.ClienteModel, error) {
 	clientes := []model.ClienteModel{}
 
 	rows, err := c.db.QueryContext(ctx, `
@@ -112,13 +112,11 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 			C.direccion,
 			C.latitud,
 			C.longitud,
-			C.activo,
-			T.usuarioId
+			C.activo			
 	FROM cliente C
-	INNER JOIN tarea T ON T.clienteid = C.id 
-	INNER JOIN usuario U ON T.usuarioid  = U.id
-	WHERE T.usuarioid = $1 AND C.activo = true
-	`, usuarioId)
+	INNER JOIN tarea T ON T.clienteid = C.id 	
+	WHERE T.usuarioid = $1 AND Date(T.fecha) = $2 AND C.activo = true
+	`, usuarioId, fecha)
 
 	if err != nil {
 		return clientes, err
@@ -129,7 +127,7 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo, &cliente.Usuario, &cliente.UsuarioId)
+		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo)
 
 		if err != nil {
 			return clientes, err

@@ -84,17 +84,23 @@ func (t *tareaServiceImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.Cont
 }
 
 func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.CompletarTareaModel, usuarioId int64) error {
-	formfile, _, err := ctx.Request.FormFile("imagen")
+	var urlImagen string
 
-	if err != nil {
-		return err
-	}
+	if *tarea.ImagenRequerida {
+		formfile, _, err := ctx.Request.FormFile("imagen")
 
-	cld, _ := cloudinary.NewFromParams("dzmgbv4qn", "676166561161436", "H7JuKbIvzimY1qQXqKhIHX3i-nM")
-	resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: "samples"})
+		if err != nil {
+			return err
+		}
 
-	if err != nil {
-		return err
+		cld, _ := cloudinary.NewFromParams("dzmgbv4qn", "676166561161436", "H7JuKbIvzimY1qQXqKhIHX3i-nM")
+		resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: "samples"})
+
+		if err != nil {
+			return err
+		}
+
+		urlImagen = resp.SecureURL
 	}
 
 	visita := model.CreateVisitaModel{
@@ -106,7 +112,7 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 		TipoVisitaId: tarea.TipoVisitaId,
 	}
 
-	visitaId, err := t.visitaRepository.CrearVisita(ctx.Request.Context(), visita, resp.SecureURL, usuarioId)
+	visitaId, err := t.visitaRepository.CrearVisita(ctx.Request.Context(), visita, urlImagen, usuarioId)
 
 	if err != nil {
 		return err

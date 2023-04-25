@@ -6,12 +6,13 @@ import (
 )
 
 type TareaModelMovil struct {
-	ID          int64     `json:"id"`
-	Descripcion string    `json:"descripcion"`
-	Fecha       time.Time `json:"fecha"`
-	Completada  bool      `json:"completada"`
-	ClienteId   int64     `json:"clienteId"`
-	Cliente     string    `json:"cliente"`
+	ID              int64     `json:"id"`
+	Descripcion     string    `json:"descripcion"`
+	Fecha           time.Time `json:"fecha"`
+	Completada      bool      `json:"completada"`
+	ClienteId       int64     `json:"clienteId"`
+	Cliente         string    `json:"cliente"`
+	ImagenRequerida bool      `json:"imagenRequerida"`
 }
 
 type TareaModelWeb struct {
@@ -46,14 +47,15 @@ type CantidadTareaPorUsuario struct {
 }
 
 type CompletarTareaModel struct {
-	Comentario   string                `form:"comentario" binding:"required"`
-	Latitud      float64               `form:"latitud" binding:"required"`
-	Longitud     float64               `form:"longitud" binding:"required"`
-	Fecha        string                `form:"fecha" binding:"required"`
-	Imagen       *multipart.FileHeader `form:"imagen" binding:"required"`
-	ClienteId    int64                 `form:"clienteId" binding:"required"`
-	TipoVisitaId int64                 `form:"tipoVisitaId" binding:"required"`
-	TareaId      int64                 `form:"tareaId" binding:"required"`
+	Comentario      string                `form:"comentario" binding:"required"`
+	Latitud         float64               `form:"latitud" binding:"required"`
+	Longitud        float64               `form:"longitud" binding:"required"`
+	Fecha           string                `form:"fecha" binding:"required"`
+	Imagen          *multipart.FileHeader `form:"imagen"`
+	ClienteId       int64                 `form:"clienteId" binding:"required"`
+	TipoVisitaId    int64                 `form:"tipoVisitaId" binding:"required"`
+	TareaId         int64                 `form:"tareaId" binding:"required"`
+	ImagenRequerida *bool                 `form:"imagenRequerida" binding:"required"`
 }
 
 type CreateTareaMasivaModelWeb struct {

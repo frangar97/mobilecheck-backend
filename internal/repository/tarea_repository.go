@@ -61,7 +61,7 @@ func (t *tareaRepositoryImpl) CrearTareaWeb(ctx context.Context, tarea model.Cre
 }
 
 func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.TareaModelMovil, error) {
-	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.id,C.nombre FROM Tarea T INNER JOIN Cliente C ON T.clienteId = C.id WHERE DATE(T.fecha) = $1 AND T.usuarioId = $2 ORDER BY T.fecha", fecha, usuarioId)
+	rows, err := t.db.QueryContext(ctx, "SELECT T.id,T.descripcion,T.fecha,T.completada,C.id,C.nombre,T.imagenrequerida FROM Tarea T INNER JOIN Cliente C ON T.clienteId = C.id WHERE DATE(T.fecha) = $1 AND T.usuarioId = $2 ORDER BY T.fecha", fecha, usuarioId)
 	if err != nil {
 		return []model.TareaModelMovil{}, err
 	}
@@ -73,7 +73,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 	for rows.Next() {
 		var tarea model.TareaModelMovil
 
-		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente)
+		err := rows.Scan(&tarea.ID, &tarea.Descripcion, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente, &tarea.ImagenRequerida)
 		if err != nil {
 			return nil, err
 		}

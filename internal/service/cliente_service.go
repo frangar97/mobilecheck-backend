@@ -12,7 +12,7 @@ import (
 type ClienteService interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
-	ObtenerClientesPorUsuarioMovil(context.Context, int64) ([]model.ClienteModel, error)
+	ObtenerClientesPorUsuarioMovil(context.Context, int64, string) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel, int64) (model.ClienteModel, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 }
@@ -37,8 +37,8 @@ func (c *clienteServiceImpl) ObtenerClientesPorUsuario(ctx context.Context, usua
 	return c.clienteRepository.ObtenerClientesPorUsuario(ctx, usuarioId)
 }
 
-func (c *clienteServiceImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context, usuarioId int64) ([]model.ClienteModel, error) {
-	return c.clienteRepository.ObtenerClientesPorUsuarioMovil(ctx, usuarioId)
+func (c *clienteServiceImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context, usuarioId int64, fecha string) ([]model.ClienteModel, error) {
+	return c.clienteRepository.ObtenerClientesPorUsuarioMovil(ctx, usuarioId, fecha)
 }
 
 func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel, usuarioId int64) (model.ClienteModel, error) {

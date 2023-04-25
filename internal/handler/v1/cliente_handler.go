@@ -40,7 +40,8 @@ func (h *Handler) obtenerClientesPorUsuario(ctx *gin.Context) {
 
 func (h *Handler) obtenerClientesMovil(ctx *gin.Context) {
 	usuarioId := ctx.GetInt64("usuarioId")
-	clientes, err := h.services.ClienteService.ObtenerClientesPorUsuarioMovil(ctx.Request.Context(), usuarioId)
+	fecha := ctx.Query("fecha")
+	clientes, err := h.services.ClienteService.ObtenerClientesPorUsuarioMovil(ctx.Request.Context(), usuarioId, fecha)
 
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
