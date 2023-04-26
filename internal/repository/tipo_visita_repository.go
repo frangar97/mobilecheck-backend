@@ -25,7 +25,7 @@ func newTipoVisitaRepository(db *sql.DB) *tipoVisitaRepositoryImpl {
 func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisita(ctx context.Context) ([]model.TipoVisitaModel, error) {
 	tiposVisita := []model.TipoVisitaModel{}
 
-	rows, err := t.db.QueryContext(ctx, "SELECT id,nombre,color,activo FROM TipoVisita")
+	rows, err := t.db.QueryContext(ctx, "SELECT id,nombre,color,activo,requieremeta FROM TipoVisita")
 
 	if err != nil {
 		return tiposVisita, err
@@ -36,7 +36,7 @@ func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisita(ctx context.Context) ([]mo
 	for rows.Next() {
 		var tipoVisita model.TipoVisitaModel
 
-		err := rows.Scan(&tipoVisita.ID, &tipoVisita.Nombre, &tipoVisita.Color, &tipoVisita.Activo)
+		err := rows.Scan(&tipoVisita.ID, &tipoVisita.Nombre, &tipoVisita.Color, &tipoVisita.Activo, &tipoVisita.RequiereMeta)
 
 		if err != nil {
 			return tiposVisita, err
@@ -77,7 +77,7 @@ func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisitaActiva(ctx context.Context)
 func (t *tipoVisitaRepositoryImpl) CrearTipoVisita(ctx context.Context, tipoVisita model.CreateTipoVisitaModel) (int64, error) {
 	var idGenerado int64
 
-	err := t.db.QueryRowContext(ctx, "INSERT INTO TipoVisita(nombre,color,activo) VALUES ($1,$2,$3) RETURNING id", tipoVisita.Nombre, tipoVisita.Color, true).Scan(&idGenerado)
+	err := t.db.QueryRowContext(ctx, "INSERT INTO TipoVisita(nombre,color,activo,requieremeta) VALUES ($1,$2,$3,$4) RETURNING id", tipoVisita.Nombre, tipoVisita.Color, true, tipoVisita.RequiereMeta).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -87,9 +87,10 @@ func (t *tipoVisitaRepositoryImpl) ActualizarTipoVisita(ctx context.Context, tip
 		UPDATE TipoVisita
 		SET	   nombre = $1,
 			   color = $2,
-			   activo = $3
-		WHERE id = $4
-	`, tipo.Nombre, tipo.Color, tipo.Activo, tipoVisitaId)
+			   activo = $3,
+			   requiereMeta = $4
+		WHERE id = $5
+	`, tipo.Nombre, tipo.Color, tipo.Activo, tipo.RequiereMeta, tipoVisitaId)
 
 	if err != nil {
 		return false, nil

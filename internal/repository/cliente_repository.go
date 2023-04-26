@@ -30,6 +30,7 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 
 	rows, err := c.db.QueryContext(ctx, `
 	SELECT  C.id,
+			C.codigocliente,
 			C.nombre,
 			C.telefono,
 			C.email,
@@ -49,7 +50,7 @@ func (c *clienteRepositoryImpl) ObtenerClientes(ctx context.Context) ([]model.Cl
 	for rows.Next() {
 		var cliente model.ClienteModel
 
-		err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo)
+		err := rows.Scan(&cliente.ID, &cliente.CodigoCliente, &cliente.Nombre, &cliente.Telefono, &cliente.Email, &cliente.Direccion, &cliente.Latitud, &cliente.Longitud, &cliente.Activo)
 
 		if err != nil {
 			return clientes, err

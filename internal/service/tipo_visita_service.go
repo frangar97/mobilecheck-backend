@@ -43,6 +43,7 @@ func (t *tipoVisitaServiceImpl) CrearTipoVisita(ctx context.Context, tipoVisita 
 	nuevoTipoVisita.Nombre = tipoVisita.Nombre
 	nuevoTipoVisita.Color = tipoVisita.Color
 	nuevoTipoVisita.Activo = true
+	nuevoTipoVisita.RequiereMeta = *tipoVisita.RequiereMeta
 
 	return nuevoTipoVisita, nil
 }
