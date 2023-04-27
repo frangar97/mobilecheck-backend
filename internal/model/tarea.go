@@ -55,7 +55,7 @@ type CantidadTareaPorUsuario struct {
 }
 
 type CompletarTareaModel struct {
-	Comentario      string                `form:"comentario" binding:"required"`
+	Comentario      string                `form:"comentario"`
 	Latitud         float64               `form:"latitud" binding:"required"`
 	Longitud        float64               `form:"longitud" binding:"required"`
 	Fecha           string                `form:"fecha" binding:"required"`
@@ -67,7 +67,7 @@ type CompletarTareaModel struct {
 }
 
 type CreateTareaMasivaModelWeb struct {
-	Meta            string   `json:"meta" binding:"required"`
+	Meta            string   `json:"meta"`
 	Fechas          []string `json:"fechas" binding:"required"`
 	ClienteId       int64    `json:"clienteId" binding:"required"`
 	UsuarioId       int64    `json:"usuarioId" binding:"required"`
