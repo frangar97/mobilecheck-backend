@@ -17,12 +17,17 @@ type TareaModelMovil struct {
 
 type TareaModelWeb struct {
 	ID              int64     `json:"id"`
-	Descripcion     string    `json:"descripcion"`
 	Fecha           time.Time `json:"fecha"`
 	Completada      bool      `json:"completada"`
 	Cliente         string    `json:"cliente"`
-	ImagenRequerida bool      `json:"imagenRequerida" binding:"required"`
-	Asesor          string    `json:"asesor" binding:"required"`
+	ImagenRequerida bool      `json:"imagenRequerida"`
+	Asesor          string    `json:"asesor"`
+	TipoVisitaId    int64     `json:"tipoVisitaId"`
+	Meta            string    `json:"meta"`
+	Latitud         float64   `json:"latitud"`
+	Longitud        float64   `json:"longitud"`
+	Imagen          string    `json:"imagen"`
+	TipoVisita      string    `json:"tipoVisita"`
 }
 
 type CreateTareaModelMovil struct {
@@ -32,10 +37,11 @@ type CreateTareaModelMovil struct {
 }
 
 type CreateTareaModelWeb struct {
-	Descripcion     string `json:"descripcion" binding:"required"`
 	Fecha           string `json:"fecha" binding:"required"`
 	ClienteId       int64  `json:"clienteId" binding:"required"`
 	UsuarioId       int64  `json:"usuarioId" binding:"required"`
+	TipoVisitaId    int64  `json:"tipoVisitaId" binding:"required"`
+	Meta            string `json:"meta" binding:"required"`
 	ImagenRequerida *bool  `json:"imagenRequerida" binding:"required"`
 }
 
@@ -59,9 +65,10 @@ type CompletarTareaModel struct {
 }
 
 type CreateTareaMasivaModelWeb struct {
-	Descripcion     string   `json:"descripcion" binding:"required"`
+	Meta            string   `json:"meta" binding:"required"`
 	Fechas          []string `json:"fechas" binding:"required"`
 	ClienteId       int64    `json:"clienteId" binding:"required"`
 	UsuarioId       int64    `json:"usuarioId" binding:"required"`
 	ImagenRequerida *bool    `json:"imagenRequerida" binding:"required"`
+	TipoVisitaId    int64    `json:"tipoVisitaId" binding:"required"`
 }

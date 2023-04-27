@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
@@ -43,8 +42,6 @@ func (h *Handler) crearTareaMovil(ctx *gin.Context) {
 
 func (h *Handler) crearTareaWeb(ctx *gin.Context) {
 	var tareaJSON model.CreateTareaModelWeb
-	fmt.Println("-----------")
-	fmt.Println(tareaJSON)
 
 	if err := ctx.BindJSON(&tareaJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
