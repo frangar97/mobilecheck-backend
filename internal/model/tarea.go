@@ -30,6 +30,7 @@ type TareaModelWeb struct {
 	Longitud        float64   `json:"longitud"`
 	Imagen          string    `json:"imagen"`
 	TipoVisita      string    `json:"tipoVisita"`
+	Comentario      string    `json:"comentario"`
 }
 
 type CreateTareaModelMovil struct {

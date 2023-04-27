@@ -100,13 +100,14 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	rows, err := t.db.QueryContext(ctx, `SELECT T.id,
 				T.fecha,
 				T.completada,
-				C.nombre,
+				C.nombre  cliente,
 				T.imagenRequerida, 
 				CONCAT(U.nombre,' ', U.apellido) asesor,	
 				COALESCE(v.latitud,0) latitud,
 				COALESCE(v.longitud,0) longitud,
 				COALESCE(v.imagen,'') imagen,
-				TV.nombre
+				TV.nombre  tipoVisita,
+				COALESCE(V.comentario,'') comentario
 			FROM Tarea T 
 			INNER JOIN CLIENTE C ON T.clienteId = C.id 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
@@ -124,7 +125,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario)
 		if err != nil {
 			return nil, err
 		}
