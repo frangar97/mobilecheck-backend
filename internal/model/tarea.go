@@ -7,12 +7,14 @@ import (
 
 type TareaModelMovil struct {
 	ID              int64     `json:"id"`
-	Descripcion     string    `json:"descripcion"`
+	Meta            string    `json:"meta"`
 	Fecha           time.Time `json:"fecha"`
 	Completada      bool      `json:"completada"`
 	ClienteId       int64     `json:"clienteId"`
 	Cliente         string    `json:"cliente"`
 	ImagenRequerida bool      `json:"imagenRequerida"`
+	TipoVisita      string    `json:"tipoVisita"`
+	Requieremeta    bool      `json:"requieremeta"`
 }
 
 type TareaModelWeb struct {
@@ -41,7 +43,7 @@ type CreateTareaModelWeb struct {
 	ClienteId       int64  `json:"clienteId" binding:"required"`
 	UsuarioId       int64  `json:"usuarioId" binding:"required"`
 	TipoVisitaId    int64  `json:"tipoVisitaId" binding:"required"`
-	Meta            string `json:"meta" binding:"required"`
+	Meta            string `json:"meta"`
 	ImagenRequerida *bool  `json:"imagenRequerida" binding:"required"`
 }
 
@@ -59,7 +61,7 @@ type CompletarTareaModel struct {
 	Fecha           string                `form:"fecha" binding:"required"`
 	Imagen          *multipart.FileHeader `form:"imagen"`
 	ClienteId       int64                 `form:"clienteId" binding:"required"`
-	TipoVisitaId    int64                 `form:"tipoVisitaId" binding:"required"`
+	Meta            string                `form:"meta" `
 	TareaId         int64                 `form:"tareaId" binding:"required"`
 	ImagenRequerida *bool                 `form:"imagenRequerida" binding:"required"`
 }

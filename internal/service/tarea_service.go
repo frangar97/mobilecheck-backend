@@ -105,12 +105,12 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 	}
 
 	visita := model.CreateVisitaModel{
-		Comentario:   tarea.Comentario,
-		Latitud:      tarea.Latitud,
-		Longitud:     tarea.Longitud,
-		Fecha:        tarea.Fecha,
-		ClienteId:    tarea.ClienteId,
-		TipoVisitaId: tarea.TipoVisitaId,
+		Comentario: tarea.Comentario,
+		Latitud:    tarea.Latitud,
+		Longitud:   tarea.Longitud,
+		Fecha:      tarea.Fecha,
+		ClienteId:  tarea.ClienteId,
+		Meta:       tarea.Meta,
 	}
 
 	visitaId, err := t.visitaRepository.CrearVisita(ctx.Request.Context(), visita, urlImagen, usuarioId)

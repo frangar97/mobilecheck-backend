@@ -12,19 +12,20 @@ type VisitaModel struct {
 	Longitud   float64   `json:"longitud"`
 	Imagen     string    `json:"imagen"`
 	Cliente    string    `json:"cliente"`
-	TipoVisita string    `json:"tipoVisita"`
+	Meta       string    `json:"meta"`
 	Color      string    `json:"color"`
 	Fecha      time.Time `json:"fecha"`
+	TipoVisita string    `json:"tipoVisita"`
 }
 
 type CreateVisitaModel struct {
-	Comentario   string                `form:"comentario" binding:"required"`
-	Latitud      float64               `form:"latitud" binding:"required"`
-	Longitud     float64               `form:"longitud" binding:"required"`
-	Fecha        string                `form:"fecha" binding:"required"`
-	Imagen       *multipart.FileHeader `form:"imagen" binding:"required"`
-	ClienteId    int64                 `form:"clienteId" binding:"required"`
-	TipoVisitaId int64                 `form:"tipoVisitaId" binding:"required"`
+	Comentario string                `form:"comentario" binding:"required"`
+	Latitud    float64               `form:"latitud" binding:"required"`
+	Longitud   float64               `form:"longitud" binding:"required"`
+	Fecha      string                `form:"fecha" binding:"required"`
+	Imagen     *multipart.FileHeader `form:"imagen" binding:"required"`
+	ClienteId  int64                 `form:"clienteId" binding:"required"`
+	Meta       string                `form:"meta"`
 }
 
 type CantidadVisitaPorUsuario struct {
