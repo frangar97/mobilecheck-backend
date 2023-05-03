@@ -179,10 +179,10 @@ func (v *visitaRepositoryImpl) ObtenerCantidadVisitaPorTipo(ctx context.Context,
 	SELECT  TV.nombre,
 			TV.color,
 			Count(*) cantidad
-	FROM    VISITA V
-	LEFT JOIN tarea T on T.visitaid  = V.id 
+	FROM    tarea T
+	LEFT JOIN VISITA V  on T.visitaid  = V.id 
 	INNER JOIN TipoVisita TV ON T.tipovisitaid  = TV.id
-	WHERE   V.FECHA BETWEEN $1 AND $2
+	WHERE   t.FECHA BETWEEN $1 AND $2
 	GROUP BY TV.nombre,TV.color
 	`, fechaInicio, fechaFin)
 
@@ -216,7 +216,10 @@ func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea i
 		V.longitud,
 		V.imagen,
 		TV.nombre  tipoVisita,	
-		V.fecha
+		V.fecha,
+		V.meta metaVisita,
+		T.meta metaTarea,
+		TV.requieremeta 
 	from visita v 
 	inner join tarea t on t.visitaid = v.id 
 	inner join cliente c on c.id = t.clienteid 
@@ -233,7 +236,7 @@ func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea i
 	for rows.Next() {
 		var visita model.VisitaTareaModel
 
-		err := rows.Scan(&visita.ID, &visita.Cliente, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.TipoVisita, &visita.Fecha)
+		err := rows.Scan(&visita.ID, &visita.Cliente, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.TipoVisita, &visita.Fecha, &visita.MetaVisita, &visita.MetaTarea, &visita.RequiereMeta)
 
 		if err != nil {
 			return visitaTarea, err

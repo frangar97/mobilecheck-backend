@@ -98,7 +98,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 
 func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
 	rows, err := t.db.QueryContext(ctx, `SELECT T.id,
-				T.fecha,
+				COALESCE(V.fecha, '0001-01-01 01:00:00+00') fecha,
 				T.completada,
 				C.nombre  cliente,
 				T.imagenRequerida, 
@@ -107,7 +107,10 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 				COALESCE(v.longitud,0) longitud,
 				COALESCE(v.imagen,'') imagen,
 				TV.nombre  tipoVisita,
-				COALESCE(V.comentario,'') comentario
+				COALESCE(V.comentario,'') comentario,
+				TV.requiereMeta,
+				COALESCE(T.meta,'') metaAsignada,
+				COALESCE(V.meta,'') metaCumplida
 			FROM Tarea T 
 			INNER JOIN CLIENTE C ON T.clienteId = C.id 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
@@ -125,7 +128,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida)
 		if err != nil {
 			return nil, err
 		}

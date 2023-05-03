@@ -40,12 +40,15 @@ type CantidadVisitaPorTipo struct {
 }
 
 type VisitaTareaModel struct {
-	ID         int64     `json:"id"`
-	Cliente    string    `json:"cliente"`
-	Comentario string    `json:"comentario"`
-	Latitud    float64   `json:"latitud"`
-	Longitud   float64   `json:"longitud"`
-	Imagen     string    `json:"imagen"`
-	TipoVisita string    `json:"tipoVisita"`
-	Fecha      time.Time `json:"fecha"`
+	ID           int64     `json:"id"`
+	Cliente      string    `json:"cliente"`
+	Comentario   string    `json:"comentario"`
+	Latitud      float64   `json:"latitud"`
+	Longitud     float64   `json:"longitud"`
+	Imagen       string    `json:"imagen"`
+	TipoVisita   string    `json:"tipoVisita"`
+	Fecha        time.Time `json:"fecha"`
+	MetaVisita   string    `json:"metaVisita"`
+	MetaTarea    string    `json:"metaTarea"`
+	RequiereMeta bool      `json:"requiereMeta"`
 }

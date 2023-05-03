@@ -31,6 +31,9 @@ type TareaModelWeb struct {
 	Imagen          string    `json:"imagen"`
 	TipoVisita      string    `json:"tipoVisita"`
 	Comentario      string    `json:"comentario"`
+	Requieremeta    bool      `json:"requiereMeta"`
+	MetaAsignada    string    `json:"metaAsignada"`
+	MetaCumplida    string    `json:"metaCumplida"`
 }
 
 type CreateTareaModelMovil struct {
