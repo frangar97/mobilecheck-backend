@@ -11,7 +11,7 @@ type ClienteRepository interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuarioMovil(context.Context, int64, string) ([]model.ClienteModel, error)
-	CrearCliente(context.Context, model.CreateClienteModel, int64) (int64, error)
+	CrearCliente(context.Context, model.CreateClienteModel) (int64, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 }
 
@@ -140,10 +140,10 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 	return clientes, nil
 }
 
-func (c *clienteRepositoryImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel, usuarioId int64) (int64, error) {
+func (c *clienteRepositoryImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel) (int64, error) {
 	var idGenerado int64
 
-	err := c.db.QueryRowContext(ctx, "INSERT INTO Cliente(nombre,telefono,email,direccion,latitud,longitud,activo,usuarioId) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING ID", clienteModel.Nombre, clienteModel.Telefono, clienteModel.Email, clienteModel.Direccion, clienteModel.Latitud, clienteModel.Longitud, true, usuarioId).Scan(&idGenerado)
+	err := c.db.QueryRowContext(ctx, "INSERT INTO Cliente(codigocliente,nombre,telefono,email,direccion,activo,latitud,longitud) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING ID", clienteModel.CodigoCliente, clienteModel.Nombre, clienteModel.Telefono, clienteModel.Email, clienteModel.Direccion, clienteModel.Activo, clienteModel.Latitud, clienteModel.Longitud).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -151,16 +151,16 @@ func (c *clienteRepositoryImpl) CrearCliente(ctx context.Context, clienteModel m
 func (c *clienteRepositoryImpl) ActualizarCliente(ctx context.Context, clienteId int64, cliente model.UpdateClienteModel) (bool, error) {
 	res, err := c.db.ExecContext(ctx, `
 		UPDATE Cliente
-		SET	   nombre = $1,
-			   telefono = $2,
-			   email = $3,
-			   direccion = $4,
-			   activo = $5,
-			   latitud = $6,
-			   longitud = $7,
-			   usuarioId = $8
+		SET	   codigocliente = $1,
+			   nombre = $2,
+			   telefono = $3,
+			   email = $4,
+			   direccion = $5,
+			   activo = $6,
+			   latitud = $7,
+			   longitud = $8
 		WHERE id = $9
-	`, cliente.Nombre, cliente.Telefono, cliente.Email, cliente.Direccion, cliente.Activo, cliente.Latitud, cliente.Longitud, cliente.UsuarioId, clienteId)
+	`, cliente.CodigoCliente, cliente.Nombre, cliente.Telefono, cliente.Email, cliente.Direccion, cliente.Activo, cliente.Latitud, cliente.Longitud, clienteId)
 
 	if err != nil {
 		return false, nil

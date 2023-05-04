@@ -18,6 +18,8 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			cliente := authenticated.Group("/cliente")
 			{
 				cliente.GET("", h.obtenerClientes)
+				cliente.POST("", h.crearCliente)
+				cliente.PUT("/:clienteId", h.actualizarCliente)
 				//cliente.GET("/:usuarioId", h.obtenerClientesPorUsuario)
 			}
 

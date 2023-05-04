@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/frangar97/mobilecheck-backend/internal/repository"
@@ -13,7 +11,7 @@ type ClienteService interface {
 	ObtenerClientes(context.Context) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuario(context.Context, int64) ([]model.ClienteModel, error)
 	ObtenerClientesPorUsuarioMovil(context.Context, int64, string) ([]model.ClienteModel, error)
-	CrearCliente(context.Context, model.CreateClienteModel, int64) (model.ClienteModel, error)
+	CrearCliente(context.Context, model.CreateClienteModel) (model.ClienteModel, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 }
 
@@ -41,24 +39,10 @@ func (c *clienteServiceImpl) ObtenerClientesPorUsuarioMovil(ctx context.Context,
 	return c.clienteRepository.ObtenerClientesPorUsuarioMovil(ctx, usuarioId, fecha)
 }
 
-func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel, usuarioId int64) (model.ClienteModel, error) {
+func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel) (model.ClienteModel, error) {
 	var cliente model.ClienteModel
 
-	usuario, err := c.usuarioRepository.ObtenerPorId(ctx, usuarioId)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return cliente, fmt.Errorf("el usuario no existe")
-		}
-
-		return cliente, err
-	}
-
-	if !usuario.Activo {
-		return cliente, fmt.Errorf("el usuario no puede realizar ninguna acción, ya que se encuentra desactivado")
-	}
-
-	idGenerado, err := c.clienteRepository.CrearCliente(ctx, clienteModel, usuarioId)
+	idGenerado, err := c.clienteRepository.CrearCliente(ctx, clienteModel)
 
 	if err != nil {
 		return cliente, err
@@ -72,7 +56,6 @@ func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel mode
 	cliente.Latitud = clienteModel.Latitud
 	cliente.Longitud = clienteModel.Longitud
 	cliente.Email = clienteModel.Email
-	cliente.Usuario = fmt.Sprintf("%s %s", usuario.Nombre, usuario.Apellido)
 
 	return cliente, nil
 }

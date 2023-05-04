@@ -15,21 +15,23 @@ type ClienteModel struct {
 }
 
 type CreateClienteModel struct {
-	Nombre    string  `json:"nombre" binding:"required"`
-	Telefono  string  `json:"telefono"`
-	Email     string  `json:"email"`
-	Direccion string  `json:"direccion"`
-	Latitud   float64 `json:"latitud" binding:"required"`
-	Longitud  float64 `json:"longitud" binding:"required"`
+	CodigoCliente string  `json:"codigoCliente"`
+	Nombre        string  `json:"nombre" binding:"required"`
+	Telefono      string  `json:"telefono"`
+	Email         string  `json:"email"`
+	Direccion     string  `json:"direccion"`
+	Latitud       float64 `json:"latitud"`
+	Longitud      float64 `json:"longitud"`
+	Activo        bool    `json:"activo"`
 }
 
 type UpdateClienteModel struct {
-	Nombre    string  `json:"nombre" binding:"required"`
-	Telefono  string  `json:"telefono" `
-	Email     string  `json:"email" `
-	Direccion string  `json:"direccion" `
-	Latitud   float64 `json:"latitud" binding:"required"`
-	Longitud  float64 `json:"longitud" binding:"required"`
-	UsuarioId int64   `json:"usuarioId" binding:"required"`
-	Activo    *bool   `json:"activo" binding:"required"`
+	CodigoCliente string  `json:"codigoCliente"`
+	Nombre        string  `json:"nombre" binding:"required"`
+	Telefono      string  `json:"telefono"`
+	Email         string  `json:"email"`
+	Direccion     string  `json:"direccion"`
+	Latitud       float64 `json:"latitud"`
+	Longitud      float64 `json:"longitud"`
+	Activo        bool    `json:"activo"`
 }
