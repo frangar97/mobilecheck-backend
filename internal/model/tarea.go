@@ -34,6 +34,7 @@ type TareaModelWeb struct {
 	Requieremeta    bool      `json:"requiereMeta"`
 	MetaAsignada    string    `json:"metaAsignada"`
 	MetaCumplida    string    `json:"metaCumplida"`
+	CodigoUsuario   string    `json:"codigoUsuario"`
 }
 
 type CreateTareaModelMovil struct {
