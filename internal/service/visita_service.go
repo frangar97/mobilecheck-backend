@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"os"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -53,8 +54,8 @@ func (v *visitaServiceImpl) CrearVisita(ctx *gin.Context, visita model.CreateVis
 		return visitaDB, err
 	}
 
-	cld, _ := cloudinary.NewFromParams("dzmgbv4qn", "676166561161436", "H7JuKbIvzimY1qQXqKhIHX3i-nM")
-	resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: "samples"})
+	cld, _ := cloudinary.NewFromParams(os.Getenv("CLOUDNAME"), os.Getenv("APIKEY"), os.Getenv("APISECRET"))
+	resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: os.Getenv("CLOUDFOLDER")})
 
 	if err != nil {
 		return visitaDB, err
