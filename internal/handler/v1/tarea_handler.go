@@ -121,3 +121,21 @@ func (h *Handler) crearTareaMasivaWeb(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Tareas creadas con exito"})
 }
+
+func (h *Handler) crearTareaMasivaExcelWeb(ctx *gin.Context) {
+	var tareaJSON model.CreateTareasExcelWeb
+
+	if err := ctx.BindJSON(&tareaJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	err := h.services.TareaService.CrearTareaMasivaExcelWeb(ctx.Request.Context(), tareaJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Tareas creadas con exito"})
+}

@@ -18,6 +18,7 @@ type TareaService interface {
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(*gin.Context, model.CompletarTareaModel, int64) error
 	CrearTareaMasivaWeb(context.Context, model.CreateTareaMasivaModelWeb) error
+	CrearTareaMasivaExcelWeb(context.Context, model.CreateTareasExcelWeb) error
 }
 
 type tareaServiceImpl struct {
@@ -123,6 +124,28 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCreate model.CreateTareasExcelWeb) error {
+
+	for _, tarea := range tareaCreate.Tareas {
+		tareaModel := model.CreateTareaModelWeb{
+			ClienteId:       tarea.ClienteId,
+			UsuarioId:       tarea.UsuarioId,
+			Meta:            tarea.Meta,
+			Fecha:           tarea.Fecha,
+			ImagenRequerida: tarea.ImagenRequerida,
+			TipoVisitaId:    tarea.TipoVisitaId,
+		}
+
+		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
