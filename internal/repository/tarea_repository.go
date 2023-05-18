@@ -16,6 +16,7 @@ type TareaRepository interface {
 	ObtenerTareasWeb(context.Context, string, string) ([]model.TareaModelWeb, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(context.Context, int64, int64) (bool, error)
+	VerificarTarea(context.Context, string, int64) (int, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -193,4 +194,23 @@ func (t *tareaRepositoryImpl) CompletarTarea(ctx context.Context, tareaId int64,
 	}
 
 	return false, err
+}
+
+func (t *tareaRepositoryImpl) VerificarTarea(ctx context.Context, fecha string, usuarioId int64) (int, error) {
+
+	rows, err := t.db.QueryContext(ctx, `select * from tarea where fecha = $1 and usuarioid = $2`, fecha, 8)
+	if err != nil {
+		return 0, err
+	}
+
+	defer rows.Close()
+
+	tarea := 0
+
+	for rows.Next() {
+
+		tarea = 1
+	}
+
+	return tarea, nil
 }

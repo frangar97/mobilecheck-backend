@@ -139,3 +139,18 @@ func (h *Handler) crearTareaMasivaExcelWeb(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Tareas creadas con exito"})
 }
+
+func (h *Handler) verificarTarea(ctx *gin.Context) {
+	// fechaTarea := ctx.Query("fechaTarea")
+	fecha := ctx.Query("fechaTarea") + " " + ctx.Query("horaTarea")
+	usuarioId := ctx.GetInt64("usuarioId")
+
+	tareas, err := h.services.TareaService.VerificarTarea(ctx.Request.Context(), fecha, usuarioId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tareas)
+}

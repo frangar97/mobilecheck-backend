@@ -20,6 +20,7 @@ type TareaService interface {
 	CompletarTarea(*gin.Context, model.CompletarTareaModel, int64) error
 	CrearTareaMasivaWeb(context.Context, model.CreateTareaMasivaModelWeb) error
 	CrearTareaMasivaExcelWeb(context.Context, model.CreateTareasExcelWeb) error
+	VerificarTarea(context.Context, string, int64) (int, error)
 }
 
 type tareaServiceImpl struct {
@@ -150,4 +151,8 @@ func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCr
 	}
 
 	return nil
+}
+
+func (t *tareaServiceImpl) VerificarTarea(ctx context.Context, fecha string, usuarioId int64) (int, error) {
+	return t.tareaRepository.VerificarTarea(ctx, fecha, usuarioId)
 }

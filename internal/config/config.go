@@ -2,6 +2,8 @@ package config
 
 import (
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type config struct {
@@ -10,11 +12,11 @@ type config struct {
 }
 
 func InitConfig() (*config, error) {
-	/*err := godotenv.Load()
+	err := godotenv.Load()
 
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
 	cfg := config{
 		Port:        os.Getenv("PORT"),
