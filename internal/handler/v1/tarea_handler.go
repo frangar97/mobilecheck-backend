@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -141,9 +142,9 @@ func (h *Handler) crearTareaMasivaExcelWeb(ctx *gin.Context) {
 }
 
 func (h *Handler) verificarTarea(ctx *gin.Context) {
-	// fechaTarea := ctx.Query("fechaTarea")
 	fecha := ctx.Query("fechaTarea") + " " + ctx.Query("horaTarea")
-	usuarioId := ctx.GetInt64("usuarioId")
+	responsable := ctx.Query("usuarioId")
+	usuarioId, err := strconv.ParseInt(responsable, 0, 0)
 
 	tareas, err := h.services.TareaService.VerificarTarea(ctx.Request.Context(), fecha, usuarioId)
 

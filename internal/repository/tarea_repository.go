@@ -198,7 +198,7 @@ func (t *tareaRepositoryImpl) CompletarTarea(ctx context.Context, tareaId int64,
 
 func (t *tareaRepositoryImpl) VerificarTarea(ctx context.Context, fecha string, usuarioId int64) (int, error) {
 
-	rows, err := t.db.QueryContext(ctx, `select * from tarea where fecha = $1 and usuarioid = $2`, fecha, 8)
+	rows, err := t.db.QueryContext(ctx, `select * from tarea where fecha = $1 and usuarioid = $2`, fecha, usuarioId)
 	if err != nil {
 		return 0, err
 	}
