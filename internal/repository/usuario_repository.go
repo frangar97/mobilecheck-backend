@@ -14,6 +14,7 @@ type UsuarioRepository interface {
 	ObtenerPorId(context.Context, int64) (model.UsuarioModel, error)
 	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
 	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
+	ObtenerUsuarioPorId(context.Context, int64) (bool, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -129,4 +130,23 @@ func (u *usuarioRepositoryImpl) ObtenerAsesores(ctx context.Context) ([]model.Us
 	}
 
 	return usuarios, nil
+}
+
+func (t *usuarioRepositoryImpl) ObtenerUsuarioPorId(ctx context.Context, usuarioId int64) (bool, error) {
+
+	rows, err := t.db.QueryContext(ctx, `select id from usuario where id = $1`, usuarioId)
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	existe := false
+
+	for rows.Next() {
+
+		existe = true
+	}
+
+	return existe, nil
 }

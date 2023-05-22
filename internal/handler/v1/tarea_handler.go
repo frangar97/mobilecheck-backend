@@ -155,3 +155,25 @@ func (h *Handler) verificarTarea(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, tareas)
 }
+
+func (h *Handler) validarTareaExcel(ctx *gin.Context) {
+	fecha := ctx.Query("fechaTarea") + " " + ctx.Query("horaTarea")
+
+	responsable := ctx.Query("usuarioId")
+	usuarioId, err := strconv.ParseInt(responsable, 0, 0)
+
+	cliente := ctx.Query("clienteId")
+	clienteId, err := strconv.ParseInt(cliente, 0, 0)
+
+	tipoVisita := ctx.Query("tipoVisitaId")
+	tipoVisitaId, err := strconv.ParseInt(tipoVisita, 0, 0)
+
+	tareas, err := h.services.TareaService.ValidarDataExcel(ctx, clienteId, usuarioId, tipoVisitaId, fecha)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tareas)
+}

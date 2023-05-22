@@ -83,3 +83,11 @@ type CreateTareaMasivaModelWeb struct {
 type CreateTareasExcelWeb struct {
 	Tareas []CreateTareaModelWeb `json:"tareas" binding:"required"`
 }
+
+type ValidarTareasExcelWeb struct {
+	Cliente     string `json:"cliente"`
+	Responsable string `json:"responsable"`
+	TipoVisita  string `json:"tipoVisita"`
+	Tarea       string `json:"tarea"`
+	Error       bool   `json:"error"`
+}

@@ -12,6 +12,7 @@ type TipoVisitaRepository interface {
 	ObtenerTiposVisitaActiva(context.Context) ([]model.TipoVisitaModel, error)
 	CrearTipoVisita(context.Context, model.CreateTipoVisitaModel) (int64, error)
 	ActualizarTipoVisita(context.Context, int64, model.UpdateTipoVisitaModel) (bool, error)
+	ObtenerTipoVisitaPorId(context.Context, int64) (bool, error)
 }
 
 type tipoVisitaRepositoryImpl struct {
@@ -103,4 +104,23 @@ func (t *tipoVisitaRepositoryImpl) ActualizarTipoVisita(ctx context.Context, tip
 	}
 
 	return false, err
+}
+
+func (t *tipoVisitaRepositoryImpl) ObtenerTipoVisitaPorId(ctx context.Context, tipoVisitaId int64) (bool, error) {
+
+	rows, err := t.db.QueryContext(ctx, `select id from tipovisita where id = $1`, tipoVisitaId)
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	existe := false
+
+	for rows.Next() {
+
+		existe = true
+	}
+
+	return existe, nil
 }

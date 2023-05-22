@@ -21,17 +21,24 @@ type TareaService interface {
 	CrearTareaMasivaWeb(context.Context, model.CreateTareaMasivaModelWeb) error
 	CrearTareaMasivaExcelWeb(context.Context, model.CreateTareasExcelWeb) error
 	VerificarTarea(context.Context, string, int64) (int, error)
+	ValidarDataExcel(*gin.Context, int64, int64, int64, string) (model.ValidarTareasExcelWeb, error)
 }
 
 type tareaServiceImpl struct {
-	tareaRepository  repository.TareaRepository
-	visitaRepository repository.VisitaRepository
+	tareaRepository      repository.TareaRepository
+	visitaRepository     repository.VisitaRepository
+	clienteRepository    repository.ClienteRepository
+	usuarioRepository    repository.UsuarioRepository
+	tipoVisitaRepository repository.TipoVisitaRepository
 }
 
-func newTareaService(tareaRepository repository.TareaRepository, visitaRepository repository.VisitaRepository) *tareaServiceImpl {
+func newTareaService(tareaRepository repository.TareaRepository, visitaRepository repository.VisitaRepository, clienteRepository repository.ClienteRepository, usuarioRepository repository.UsuarioRepository, tipoVisitaRepository repository.TipoVisitaRepository) *tareaServiceImpl {
 	return &tareaServiceImpl{
-		tareaRepository:  tareaRepository,
-		visitaRepository: visitaRepository,
+		tareaRepository:      tareaRepository,
+		visitaRepository:     visitaRepository,
+		clienteRepository:    clienteRepository,
+		usuarioRepository:    usuarioRepository,
+		tipoVisitaRepository: tipoVisitaRepository,
 	}
 }
 
@@ -155,4 +162,52 @@ func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCr
 
 func (t *tareaServiceImpl) VerificarTarea(ctx context.Context, fecha string, usuarioId int64) (int, error) {
 	return t.tareaRepository.VerificarTarea(ctx, fecha, usuarioId)
+}
+
+func (t *tareaServiceImpl) ValidarDataExcel(ctx *gin.Context, clienteId int64, usuarioId int64, tipoVisitaId int64, fecha string) (model.ValidarTareasExcelWeb, error) {
+
+	clienteResult, err := t.clienteRepository.ObtenerClientePorId(ctx, clienteId)
+
+	responsableResult, err := t.usuarioRepository.ObtenerUsuarioPorId(ctx, usuarioId)
+
+	tipovisitaResult, err := t.tipoVisitaRepository.ObtenerTipoVisitaPorId(ctx, tipoVisitaId)
+
+	tareaExiste, err := t.VerificarTarea(ctx, fecha, usuarioId)
+
+	tarea := ""
+	cliente := ""
+	responsable := ""
+	tipovisita := ""
+
+	if tareaExiste > 0 {
+		tarea = "La impulsadora(Responsable Id) ya tiene asignada una tarea para esta fecha y hora"
+	}
+
+	if !clienteResult {
+		cliente = "Cliente(Cliente Id) no existe"
+	}
+
+	if !responsableResult {
+		responsable = "Impulsadora(Responsable Id) no existe"
+	}
+
+	if !tipovisitaResult {
+		tipovisita = "Tipo de visita(Tipo Visita Id) no existe"
+	}
+
+	validar := false
+
+	if !clienteResult || !responsableResult || !tipovisitaResult || tarea != "" {
+		validar = true
+	}
+
+	result := model.ValidarTareasExcelWeb{
+		Cliente:     cliente,
+		Responsable: responsable,
+		TipoVisita:  tipovisita,
+		Tarea:       tarea,
+		Error:       validar,
+	}
+
+	return result, err
 }
