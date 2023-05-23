@@ -100,3 +100,15 @@ func (h *Handler) actualizarCliente(ctx *gin.Context) {
 
 	ctx.Status(http.StatusOK)
 }
+
+func (h *Handler) obtenerClientePorCodigo(ctx *gin.Context) {
+	codigoCliente := ctx.Query("codigoCliente")
+	cliente, err := h.services.ClienteService.ObtenerClientePorCodigo(ctx.Request.Context(), codigoCliente)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, cliente)
+}

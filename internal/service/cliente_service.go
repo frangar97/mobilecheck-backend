@@ -13,6 +13,7 @@ type ClienteService interface {
 	ObtenerClientesPorUsuarioMovil(context.Context, int64, string) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel) (model.ClienteModel, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
+	ObtenerClientePorCodigo(context.Context, string) (bool, error)
 }
 
 type clienteServiceImpl struct {
@@ -62,4 +63,8 @@ func (c *clienteServiceImpl) CrearCliente(ctx context.Context, clienteModel mode
 
 func (c *clienteServiceImpl) ActualizarCliente(ctx context.Context, clienteId int64, cliente model.UpdateClienteModel) (bool, error) {
 	return c.clienteRepository.ActualizarCliente(ctx, clienteId, cliente)
+}
+
+func (c *clienteServiceImpl) ObtenerClientePorCodigo(ctx context.Context, codigoCliente string) (bool, error) {
+	return c.clienteRepository.ObtenerClientePorCodigo(ctx, codigoCliente)
 }

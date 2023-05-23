@@ -14,6 +14,7 @@ type ClienteRepository interface {
 	CrearCliente(context.Context, model.CreateClienteModel) (int64, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 	ObtenerClientePorId(context.Context, int64) (bool, error)
+	ObtenerClientePorCodigo(context.Context, string) (bool, error)
 }
 
 type clienteRepositoryImpl struct {
@@ -179,6 +180,25 @@ func (c *clienteRepositoryImpl) ActualizarCliente(ctx context.Context, clienteId
 func (t *clienteRepositoryImpl) ObtenerClientePorId(ctx context.Context, clienteId int64) (bool, error) {
 
 	rows, err := t.db.QueryContext(ctx, `select id from cliente where id = $1`, clienteId)
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	existe := false
+
+	for rows.Next() {
+
+		existe = true
+	}
+
+	return existe, nil
+}
+
+func (t *clienteRepositoryImpl) ObtenerClientePorCodigo(ctx context.Context, codigoCliente string) (bool, error) {
+
+	rows, err := t.db.QueryContext(ctx, `select codigocliente from cliente where codigocliente = $1`, codigoCliente)
 	if err != nil {
 		return false, err
 	}
