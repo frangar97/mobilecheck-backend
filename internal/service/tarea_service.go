@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -22,6 +23,7 @@ type TareaService interface {
 	CrearTareaMasivaExcelWeb(context.Context, model.CreateTareasExcelWeb) error
 	VerificarTarea(context.Context, string, int64) (int, error)
 	ValidarDataExcel(*gin.Context, int64, int64, int64, string) (model.ValidarTareasExcelWeb, error)
+	ObtenerTareasHorasWeb(context.Context, model.ParamReportTareasHoras) ([]model.TareaHorasModelReporteWeb, error)
 }
 
 type tareaServiceImpl struct {
@@ -210,4 +212,29 @@ func (t *tareaServiceImpl) ValidarDataExcel(ctx *gin.Context, clienteId int64, u
 	}
 
 	return result, err
+}
+
+func (t *tareaServiceImpl) ObtenerTareasHorasWeb(ctx context.Context, parametros model.ParamReportTareasHoras) ([]model.TareaHorasModelReporteWeb, error) {
+	tareas := []model.TareaHorasModelReporteWeb{}
+	for _, usuarioId := range parametros.UsuarioId {
+		for _, fecha := range parametros.Fechas {
+			fmt.Println("------------------")
+			fmt.Println(usuarioId)
+			fmt.Println(fecha)
+
+			var tarea model.TareaHorasModelReporteWeb
+			result, err := t.tareaRepository.ObtenerTareasHorasWeb(ctx, usuarioId, fecha)
+			if err != nil {
+				return result, err
+			}
+			for _, report := range result {
+				tarea = report
+			}
+
+			if tarea.Asesor != "" {
+				tareas = append(tareas, tarea)
+			}
+		}
+	}
+	return tareas, nil
 }

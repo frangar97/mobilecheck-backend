@@ -17,6 +17,7 @@ type TareaRepository interface {
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(context.Context, int64, int64) (bool, error)
 	VerificarTarea(context.Context, string, int64) (int, error)
+	ObtenerTareasHorasWeb(context.Context, int, string) ([]model.TareaHorasModelReporteWeb, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -112,7 +113,8 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 				TV.requiereMeta,
 				COALESCE(T.meta,'') metaAsignada,
 				COALESCE(V.meta,'') metaCumplida,
-				U.usuario codigoUsuario
+				U.usuario codigoUsuario,
+				U.id usuarioId
 			FROM Tarea T 
 			INNER JOIN CLIENTE C ON T.clienteId = C.id 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
@@ -130,7 +132,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId)
 		if err != nil {
 			return nil, err
 		}
@@ -213,4 +215,47 @@ func (t *tareaRepositoryImpl) VerificarTarea(ctx context.Context, fecha string, 
 	}
 
 	return tarea, nil
+}
+
+func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuarioId int, fecha string) ([]model.TareaHorasModelReporteWeb, error) {
+	rows, err := t.db.QueryContext(ctx, `SELECT    a.codigousuario,
+ 									a.cliente,
+ 									a.asesor,
+ 									a.completada as entradaCompletada,
+ 									b.completada as salidaCompletada,
+ 									to_char( a.fecha, 'YYYY-MM-DD') as fecha,
+ 									to_char( a.fecha, 'HH12:MI AM') as horaentrada,
+ 									to_char( b.fecha, 'HH12:MI AM') as horaSalida,
+ 									age(b.fecha::timestamp, a.fecha::timestamp)  as horasTrabajadas,
+ 									a.comentario as comentarioEntrada,
+ 									b.comentario as comentarioSalida,
+ 									CONCAT('https://maps.google.com/?q=',a.latitud,',',a.longitud)as ubicacionEntrada,
+ 									CONCAT('https://maps.google.com/?q=',b.latitud,',',b.longitud)as ubicacionSalida,
+ 									a.imagen as imagenEntrada,
+ 									b.imagen as imaenSalida
+ 								FROM (
+ 								SELECT codigousuario, cliente, asesor, tipovisita, completada, fecha, requieremeta, metaasignada, metacumplida, comentario, imagen, latitud, longitud,clienteid
+ 								from view_tareasdetalle
+ 								where Date(fecha) = $1 and idtipovisita = 1 and usuarioid=$2
+ 								) a
+ 								INNER JOIN (
+ 								SELECT codigousuario, cliente, asesor, tipovisita, completada, fecha, requieremeta, metaasignada, metacumplida, comentario, imagen, latitud, longitud,clienteid
+ 								from view_tareasdetalle
+ 								where  Date(fecha) = $1 and idtipovisita = 2 and usuarioid=$2
+ 								) b on Date(a.fecha)  = Date(b.fecha)  and a.clienteid =b.clienteid`, fecha, usuarioId)
+	if err != nil {
+		return []model.TareaHorasModelReporteWeb{}, err
+	}
+	defer rows.Close()
+	tareas := []model.TareaHorasModelReporteWeb{}
+	for rows.Next() {
+		var tarea model.TareaHorasModelReporteWeb
+		err := rows.Scan(&tarea.Codigousuario, &tarea.Cliente, &tarea.Asesor, &tarea.EntradaCompletada, &tarea.SalidaCompletada, &tarea.Fecha, &tarea.HoraEntrada, &tarea.HoraSalida, &tarea.HorasTrabajadas, &tarea.ComentarioEntrada, &tarea.ComentarioSalida, &tarea.UbicacionEntrada, &tarea.UbicacionSalida, &tarea.ImagenEntrada, &tarea.ImaenSalida)
+		if err != nil {
+			return nil, err
+		}
+
+		tareas = append(tareas, tarea)
+	}
+	return tareas, nil
 }

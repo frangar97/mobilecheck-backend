@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -175,5 +176,32 @@ func (h *Handler) validarTareaExcel(ctx *gin.Context) {
 		return
 	}
 
+	ctx.JSON(http.StatusOK, tareas)
+}
+
+func (h *Handler) obtenerTareasHorasWeb(ctx *gin.Context) {
+
+	var tareaJSON model.ParamReportTareasHoras
+
+	fechas := strings.Split(ctx.Query("fechas"), ",")
+	responsables := strings.Split(ctx.Query("usuarioId"), ",")
+	var responsableId = []int{}
+
+	for _, i := range responsables {
+		j, err := strconv.Atoi(i)
+		if err != nil {
+			panic(err)
+		}
+		responsableId = append(responsableId, j)
+	}
+
+	tareaJSON.Fechas = fechas
+	tareaJSON.UsuarioId = responsableId
+
+	tareas, err := h.services.TareaService.ObtenerTareasHorasWeb(ctx, tareaJSON)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 	ctx.JSON(http.StatusOK, tareas)
 }

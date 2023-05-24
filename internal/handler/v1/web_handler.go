@@ -56,6 +56,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tarea.POST("tareasmasivasexcel", h.crearTareaMasivaExcelWeb)
 				tarea.GET("verificarTarea", h.verificarTarea)
 				tarea.GET("validarTareaExcel", h.validarTareaExcel)
+				tarea.GET("obtenerTareasHoras", h.obtenerTareasHorasWeb)
 			}
 		}
 

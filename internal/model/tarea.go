@@ -35,6 +35,7 @@ type TareaModelWeb struct {
 	MetaAsignada    string    `json:"metaAsignada"`
 	MetaCumplida    string    `json:"metaCumplida"`
 	CodigoUsuario   string    `json:"codigoUsuario"`
+	UsuarioId       int64     `json:"usuarioId"`
 }
 
 type CreateTareaModelMovil struct {
@@ -90,4 +91,27 @@ type ValidarTareasExcelWeb struct {
 	TipoVisita  string `json:"tipoVisita"`
 	Tarea       string `json:"tarea"`
 	Error       bool   `json:"error"`
+}
+
+type TareaHorasModelReporteWeb struct {
+	Codigousuario     string `json:"codigousuario"`
+	Cliente           string `json:"cliente"`
+	Asesor            string `json:"asesor"`
+	EntradaCompletada bool   `json:"EntradaCompletada"`
+	SalidaCompletada  bool   `json:"salidaCompletada"`
+	Fecha             string `json:"fecha"`
+	HoraEntrada       string `json:"horaEntrada"`
+	HoraSalida        string `json:"horaSalida"`
+	HorasTrabajadas   string `json:"horasTrabajadas"`
+	ComentarioEntrada string `json:"comentarioEntrada"`
+	ComentarioSalida  string `json:"comentarioSalida"`
+	UbicacionEntrada  string `json:"ubicacionEntrada"`
+	UbicacionSalida   string `json:"ubicacionSalida"`
+	ImagenEntrada     string `json:"imagenEntrada"`
+	ImaenSalida       string `json:"imaenSalida"`
+}
+
+type ParamReportTareasHoras struct {
+	UsuarioId []int    `json:"usuarioId"`
+	Fechas    []string `json:"fechas"`
 }
