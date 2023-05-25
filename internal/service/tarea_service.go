@@ -150,6 +150,8 @@ func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCr
 			Fecha:           tarea.Fecha,
 			ImagenRequerida: tarea.ImagenRequerida,
 			TipoVisitaId:    tarea.TipoVisitaId,
+			MetaLinea:       tarea.MetaLinea,
+			MetaSubLinea:    tarea.MetaSubLinea,
 		}
 
 		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)
@@ -231,7 +233,7 @@ func (t *tareaServiceImpl) ObtenerTareasHorasWeb(ctx context.Context, parametros
 				tarea = report
 			}
 
-			if tarea.Asesor != "" {
+			if tarea.Respomsable != "" {
 				tareas = append(tareas, tarea)
 			}
 		}

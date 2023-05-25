@@ -26,7 +26,7 @@ func newTipoVisitaRepository(db *sql.DB) *tipoVisitaRepositoryImpl {
 func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisita(ctx context.Context) ([]model.TipoVisitaModel, error) {
 	tiposVisita := []model.TipoVisitaModel{}
 
-	rows, err := t.db.QueryContext(ctx, "SELECT id,nombre,color,activo,requieremeta FROM TipoVisita")
+	rows, err := t.db.QueryContext(ctx, "SELECT id,nombre,color,activo,requieremeta,requieremetalinea,requieremetasublinea FROM TipoVisita")
 
 	if err != nil {
 		return tiposVisita, err
@@ -37,7 +37,7 @@ func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisita(ctx context.Context) ([]mo
 	for rows.Next() {
 		var tipoVisita model.TipoVisitaModel
 
-		err := rows.Scan(&tipoVisita.ID, &tipoVisita.Nombre, &tipoVisita.Color, &tipoVisita.Activo, &tipoVisita.RequiereMeta)
+		err := rows.Scan(&tipoVisita.ID, &tipoVisita.Nombre, &tipoVisita.Color, &tipoVisita.Activo, &tipoVisita.RequiereMeta, &tipoVisita.RequiereMetaLinea, &tipoVisita.RequiereMetaSubLinea)
 
 		if err != nil {
 			return tiposVisita, err
@@ -78,7 +78,7 @@ func (t *tipoVisitaRepositoryImpl) ObtenerTiposVisitaActiva(ctx context.Context)
 func (t *tipoVisitaRepositoryImpl) CrearTipoVisita(ctx context.Context, tipoVisita model.CreateTipoVisitaModel) (int64, error) {
 	var idGenerado int64
 
-	err := t.db.QueryRowContext(ctx, "INSERT INTO TipoVisita(nombre,color,activo,requieremeta) VALUES ($1,$2,$3,$4) RETURNING id", tipoVisita.Nombre, tipoVisita.Color, true, tipoVisita.RequiereMeta).Scan(&idGenerado)
+	err := t.db.QueryRowContext(ctx, "INSERT INTO TipoVisita(nombre,color,activo,requieremeta,requieremetalinea,requieremetasublinea) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id", tipoVisita.Nombre, tipoVisita.Color, true, tipoVisita.RequiereMeta, tipoVisita.RequiereMetaLinea, tipoVisita.RequiereMetaSubLinea).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -89,9 +89,11 @@ func (t *tipoVisitaRepositoryImpl) ActualizarTipoVisita(ctx context.Context, tip
 		SET	   nombre = $1,
 			   color = $2,
 			   activo = $3,
-			   requiereMeta = $4
-		WHERE id = $5
-	`, tipo.Nombre, tipo.Color, tipo.Activo, tipo.RequiereMeta, tipoVisitaId)
+			   requiereMeta = $4,
+			   requieremetalinea = $5,
+			   requieremetasublinea = $6
+		WHERE id = $7
+	`, tipo.Nombre, tipo.Color, tipo.Activo, tipo.RequiereMeta, tipo.RequiereMetaLinea, tipo.RequiereMetaSubLinea, tipoVisitaId)
 
 	if err != nil {
 		return false, nil

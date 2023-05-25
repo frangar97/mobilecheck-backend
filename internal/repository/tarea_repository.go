@@ -57,7 +57,7 @@ func (t *tareaRepositoryImpl) CrearTareaMovil(ctx context.Context, tarea model.C
 func (t *tareaRepositoryImpl) CrearTareaWeb(ctx context.Context, tarea model.CreateTareaModelWeb) (int64, error) {
 	var idGenerado int64
 
-	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(clienteId,usuarioId,tipovisitaid,meta,fecha,imagenRequerida,completada) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id", tarea.ClienteId, tarea.UsuarioId, tarea.TipoVisitaId, tarea.Meta, tarea.Fecha, tarea.ImagenRequerida, false).Scan(&idGenerado)
+	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(clienteId,usuarioId,tipovisitaid,meta,fecha,imagenRequerida,completada,metalinea,metasublinea) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id", tarea.ClienteId, tarea.UsuarioId, tarea.TipoVisitaId, tarea.Meta, tarea.Fecha, tarea.ImagenRequerida, false, tarea.MetaLinea, tarea.MetaSubLinea).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -114,7 +114,14 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 				COALESCE(T.meta,'') metaAsignada,
 				COALESCE(V.meta,'') metaCumplida,
 				U.usuario codigoUsuario,
-				U.id usuarioId
+				U.id usuarioId,
+				COALESCE(T.metalinea,'') metaLineaAsignada,
+				COALESCE(T.metasublinea,'') metaSubLineaAsignada,
+				COALESCE(V.metalinea,'') metaLineaCumplida,
+				COALESCE(V.metasublinea,'') metaSubLineaCumpida,
+				C.codigoCliente,
+				COALESCE(C.latitud,0) latitudCliente,
+				COALESCE(C.longitud,0) longitudCliente
 			FROM Tarea T 
 			INNER JOIN CLIENTE C ON T.clienteId = C.id 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
@@ -132,7 +139,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId, &tarea.MetaLineaAsignada, &tarea.MetaSubLineaAsignada, &tarea.MetaLineaCumplida, &tarea.MetaSubLineaCumplida, &tarea.CodigoCliente, &tarea.LatitudCliente, &tarea.LongitudCliente)
 		if err != nil {
 			return nil, err
 		}
@@ -219,30 +226,34 @@ func (t *tareaRepositoryImpl) VerificarTarea(ctx context.Context, fecha string, 
 
 func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuarioId int, fecha string) ([]model.TareaHorasModelReporteWeb, error) {
 	rows, err := t.db.QueryContext(ctx, `SELECT    a.codigousuario,
- 									a.cliente,
- 									a.asesor,
- 									a.completada as entradaCompletada,
- 									b.completada as salidaCompletada,
- 									to_char( a.fecha, 'YYYY-MM-DD') as fecha,
- 									to_char( a.fecha, 'HH12:MI AM') as horaentrada,
- 									to_char( b.fecha, 'HH12:MI AM') as horaSalida,
- 									age(b.fecha::timestamp, a.fecha::timestamp)  as horasTrabajadas,
- 									a.comentario as comentarioEntrada,
- 									b.comentario as comentarioSalida,
- 									CONCAT('https://maps.google.com/?q=',a.latitud,',',a.longitud)as ubicacionEntrada,
- 									CONCAT('https://maps.google.com/?q=',b.latitud,',',b.longitud)as ubicacionSalida,
- 									a.imagen as imagenEntrada,
- 									b.imagen as imaenSalida
- 								FROM (
- 								SELECT codigousuario, cliente, asesor, tipovisita, completada, fecha, requieremeta, metaasignada, metacumplida, comentario, imagen, latitud, longitud,clienteid
- 								from view_tareasdetalle
- 								where Date(fecha) = $1 and idtipovisita = 1 and usuarioid=$2
- 								) a
- 								INNER JOIN (
- 								SELECT codigousuario, cliente, asesor, tipovisita, completada, fecha, requieremeta, metaasignada, metacumplida, comentario, imagen, latitud, longitud,clienteid
- 								from view_tareasdetalle
- 								where  Date(fecha) = $1 and idtipovisita = 2 and usuarioid=$2
- 								) b on Date(a.fecha)  = Date(b.fecha)  and a.clienteid =b.clienteid`, fecha, usuarioId)
+									a.asesor,
+									a.codigoCliente,
+									a.cliente,
+									a.fechaTarea,
+									a.fechaVisita as fechaEntrada,	
+									b.fechaVisita as fechaSalida,	
+									a.comentario as comentarioEntrada,
+									b.comentario as comentarioSalida,
+									CONCAT('https://maps.google.com/?q=',a.latitud,',',a.longitud)as ubicacionEntrada,
+									CONCAT('https://maps.google.com/?q=',b.latitud,',',b.longitud)as ubicacionSalida,
+									a.imagen as imagenEntrada,
+									b.imagen as imaenSalida,
+									a.latitud as latitudEntrada,
+									a.longitud as longitudEntrada,
+									a.latitud as latitudSalida,
+									a.longitud as longitudSalida,
+									a.latitudCliente,
+									a.longitudCliente				
+									FROM (
+									SELECT codigousuario, asesor, codigocliente, cliente, tipovisita, fechaTarea, fechaVisita, comentario, imagen, latitud, longitud, latitudCliente, longitudCliente,clienteid
+									from view_tareasdetalle
+									where Date(fechaTarea) = $1 and idtipovisita = 1 and usuarioid=$2
+									) a
+									INNER JOIN (
+									SELECT codigousuario, asesor, codigocliente, cliente, tipovisita, fechaTarea, fechaVisita, comentario, imagen, latitud, longitud, latitudCliente, longitudCliente,clienteid
+									from view_tareasdetalle
+									where  Date(fechaTarea) = $1 and idtipovisita = 2 and usuarioid= $2
+									) b on Date(a.fechaTarea)  = Date(b.fechaTarea)  and a.clienteid =b.clienteid`, fecha, usuarioId)
 	if err != nil {
 		return []model.TareaHorasModelReporteWeb{}, err
 	}
@@ -250,7 +261,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuario
 	tareas := []model.TareaHorasModelReporteWeb{}
 	for rows.Next() {
 		var tarea model.TareaHorasModelReporteWeb
-		err := rows.Scan(&tarea.Codigousuario, &tarea.Cliente, &tarea.Asesor, &tarea.EntradaCompletada, &tarea.SalidaCompletada, &tarea.Fecha, &tarea.HoraEntrada, &tarea.HoraSalida, &tarea.HorasTrabajadas, &tarea.ComentarioEntrada, &tarea.ComentarioSalida, &tarea.UbicacionEntrada, &tarea.UbicacionSalida, &tarea.ImagenEntrada, &tarea.ImaenSalida)
+		err := rows.Scan(&tarea.Codigousuario, &tarea.Respomsable, &tarea.CodigoCliente, &tarea.Cliente, &tarea.Fecha, &tarea.FechaEntrada, &tarea.FechaSalida, &tarea.ComentarioEntrada, &tarea.ComentarioSalida, &tarea.ImagenEntrada, &tarea.ImagenSalida, &tarea.UbicacionEntrada, &tarea.UbicacionSalida, &tarea.LatitudEntrada, &tarea.LongitudEntrada, &tarea.LatitudSalida, &tarea.LongitudSalida, &tarea.LatitudCliente, &tarea.LongitudCliente)
 		if err != nil {
 			return nil, err
 		}

@@ -219,7 +219,15 @@ func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea i
 		V.fecha,
 		V.meta metaVisita,
 		T.meta metaTarea,
-		TV.requieremeta 
+		TV.requieremeta,
+		COALESCE(T.metaLinea,'') metalineaTarea,
+		COALESCE(V.metaLinea,'') metalineaVisita,
+		COALESCE(T.metaSublinea,'') metaSublineaTarea,
+		COALESCE(V.metaSublinea,'') metaSublineaVisita,
+		COALESCE(C.latitud,0) latitudCliente,
+		COALESCE(c.longitud,0) longitudCliente,
+		TV.requieremetalinea,
+		TV.requieremetasublinea 
 	from visita v 
 	inner join tarea t on t.visitaid = v.id 
 	inner join cliente c on c.id = t.clienteid 
@@ -236,7 +244,7 @@ func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea i
 	for rows.Next() {
 		var visita model.VisitaTareaModel
 
-		err := rows.Scan(&visita.ID, &visita.Cliente, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.TipoVisita, &visita.Fecha, &visita.MetaVisita, &visita.MetaTarea, &visita.RequiereMeta)
+		err := rows.Scan(&visita.ID, &visita.Cliente, &visita.Comentario, &visita.Latitud, &visita.Longitud, &visita.Imagen, &visita.TipoVisita, &visita.Fecha, &visita.MetaVisita, &visita.MetaTarea, &visita.RequiereMeta, &visita.MetaLineaTarea, &visita.MetaLineaVisita, &visita.MetaSubLineaTarea, &visita.MetaSubLineaVisita, &visita.LatitudCliente, &visita.LongitudCliente, &visita.RequiereMetaLinea, &visita.RequiereMetaSubLinea)
 
 		if err != nil {
 			return visitaTarea, err

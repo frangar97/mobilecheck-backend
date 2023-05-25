@@ -40,15 +40,23 @@ type CantidadVisitaPorTipo struct {
 }
 
 type VisitaTareaModel struct {
-	ID           int64     `json:"id"`
-	Cliente      string    `json:"cliente"`
-	Comentario   string    `json:"comentario"`
-	Latitud      float64   `json:"latitud"`
-	Longitud     float64   `json:"longitud"`
-	Imagen       string    `json:"imagen"`
-	TipoVisita   string    `json:"tipoVisita"`
-	Fecha        time.Time `json:"fecha"`
-	MetaVisita   string    `json:"metaVisita"`
-	MetaTarea    string    `json:"metaTarea"`
-	RequiereMeta bool      `json:"requiereMeta"`
+	ID                   int64     `json:"id"`
+	Cliente              string    `json:"cliente"`
+	Comentario           string    `json:"comentario"`
+	Latitud              float64   `json:"latitud"`
+	Longitud             float64   `json:"longitud"`
+	Imagen               string    `json:"imagen"`
+	TipoVisita           string    `json:"tipoVisita"`
+	Fecha                time.Time `json:"fecha"`
+	MetaVisita           string    `json:"metaVisita"`
+	MetaTarea            string    `json:"metaTarea"`
+	RequiereMeta         bool      `json:"requiereMeta"`
+	MetaLineaTarea       string    `json:"metaLineaTarea"`
+	MetaLineaVisita      string    `json:"metaLineaVisita"`
+	MetaSubLineaTarea    string    `json:"metaSubLineaTarea"`
+	MetaSubLineaVisita   string    `json:"metaSubLineaVisita"`
+	LatitudCliente       float64   `json:"latitudCliente"`
+	LongitudCliente      float64   `json:"longitudCliente"`
+	RequiereMetaLinea    bool      `json:"requiereMetaLinea"`
+	RequiereMetaSubLinea bool      `json:"requiereMetaSubLinea"`
 }

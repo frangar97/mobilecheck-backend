@@ -18,24 +18,31 @@ type TareaModelMovil struct {
 }
 
 type TareaModelWeb struct {
-	ID              int64     `json:"id"`
-	Fecha           time.Time `json:"fecha"`
-	Completada      bool      `json:"completada"`
-	Cliente         string    `json:"cliente"`
-	ImagenRequerida bool      `json:"imagenRequerida"`
-	Asesor          string    `json:"asesor"`
-	TipoVisitaId    int64     `json:"tipoVisitaId"`
-	Meta            string    `json:"meta"`
-	Latitud         float64   `json:"latitud"`
-	Longitud        float64   `json:"longitud"`
-	Imagen          string    `json:"imagen"`
-	TipoVisita      string    `json:"tipoVisita"`
-	Comentario      string    `json:"comentario"`
-	Requieremeta    bool      `json:"requiereMeta"`
-	MetaAsignada    string    `json:"metaAsignada"`
-	MetaCumplida    string    `json:"metaCumplida"`
-	CodigoUsuario   string    `json:"codigoUsuario"`
-	UsuarioId       int64     `json:"usuarioId"`
+	ID                   int64     `json:"id"`
+	Fecha                time.Time `json:"fecha"`
+	Completada           bool      `json:"completada"`
+	Cliente              string    `json:"cliente"`
+	ImagenRequerida      bool      `json:"imagenRequerida"`
+	Asesor               string    `json:"asesor"`
+	TipoVisitaId         int64     `json:"tipoVisitaId"`
+	Meta                 string    `json:"meta"`
+	Latitud              float64   `json:"latitud"`
+	Longitud             float64   `json:"longitud"`
+	Imagen               string    `json:"imagen"`
+	TipoVisita           string    `json:"tipoVisita"`
+	Comentario           string    `json:"comentario"`
+	Requieremeta         bool      `json:"requiereMeta"`
+	MetaAsignada         string    `json:"metaAsignada"`
+	MetaCumplida         string    `json:"metaCumplida"`
+	CodigoUsuario        string    `json:"codigoUsuario"`
+	UsuarioId            int64     `json:"usuarioId"`
+	MetaLineaAsignada    string    `json:"metaLineaAsignada"`
+	MetaSubLineaAsignada string    `json:"metaSubLineaAsignada"`
+	MetaLineaCumplida    string    `json:"metaLineaCumplida"`
+	MetaSubLineaCumplida string    `json:"metaSubLineaCumplida"`
+	CodigoCliente        string    `json:"codigoCliente"`
+	LatitudCliente       float64   `json:"latitudCliente"`
+	LongitudCliente      float64   `json:"longitudCliente"`
 }
 
 type CreateTareaModelMovil struct {
@@ -51,6 +58,8 @@ type CreateTareaModelWeb struct {
 	TipoVisitaId    int64  `json:"tipoVisitaId" binding:"required"`
 	Meta            string `json:"meta"`
 	ImagenRequerida *bool  `json:"imagenRequerida" binding:"required"`
+	MetaLinea       string `json:"metaLinea"`
+	MetaSubLinea    string `json:"metaSubLinea"`
 }
 
 type CantidadTareaPorUsuario struct {
@@ -94,21 +103,25 @@ type ValidarTareasExcelWeb struct {
 }
 
 type TareaHorasModelReporteWeb struct {
-	Codigousuario     string `json:"codigousuario"`
-	Cliente           string `json:"cliente"`
-	Asesor            string `json:"asesor"`
-	EntradaCompletada bool   `json:"EntradaCompletada"`
-	SalidaCompletada  bool   `json:"salidaCompletada"`
-	Fecha             string `json:"fecha"`
-	HoraEntrada       string `json:"horaEntrada"`
-	HoraSalida        string `json:"horaSalida"`
-	HorasTrabajadas   string `json:"horasTrabajadas"`
-	ComentarioEntrada string `json:"comentarioEntrada"`
-	ComentarioSalida  string `json:"comentarioSalida"`
-	UbicacionEntrada  string `json:"ubicacionEntrada"`
-	UbicacionSalida   string `json:"ubicacionSalida"`
-	ImagenEntrada     string `json:"imagenEntrada"`
-	ImaenSalida       string `json:"imaenSalida"`
+	Codigousuario     string  `json:"codigoUsuario"`
+	Respomsable       string  `json:"respomsable"`
+	CodigoCliente     string  `json:"codigoCliente"`
+	Cliente           string  `json:"cliente"`
+	Fecha             string  `json:"fecha"`
+	FechaEntrada      string  `json:"fechaEntrada"`
+	FechaSalida       string  `json:"fechaSalida"`
+	ComentarioEntrada string  `json:"comentarioEntrada"`
+	ComentarioSalida  string  `json:"comentarioSalida"`
+	ImagenEntrada     string  `json:"imagenEntrada"`
+	ImagenSalida      string  `json:"imagenSalida"`
+	UbicacionEntrada  string  `json:"ubicacionEntrada"`
+	UbicacionSalida   string  `json:"ubicacionSalida"`
+	LatitudEntrada    float64 `json:"latitudEntrada"`
+	LongitudEntrada   float64 `json:"longitudEntrada"`
+	LatitudSalida     float64 `json:"latitudSalida"`
+	LongitudSalida    float64 `json:"longitudSalida"`
+	LatitudCliente    float64 `json:"latitudCliente"`
+	LongitudCliente   float64 `json:"longitudCliente"`
 }
 
 type ParamReportTareasHoras struct {
