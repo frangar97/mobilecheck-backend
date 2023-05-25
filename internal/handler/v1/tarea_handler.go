@@ -205,3 +205,24 @@ func (h *Handler) obtenerTareasHorasWeb(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, tareas)
 }
+
+func (h *Handler) eliminarTareas(ctx *gin.Context) {
+
+	tareas := strings.Split(ctx.Query("tareas"), ",")
+	var tareasId = []int64{}
+
+	for _, i := range tareas {
+		j, err := strconv.Atoi(i)
+		if err != nil {
+			panic(err)
+		}
+		tareasId = append(tareasId, int64(j))
+	}
+
+	rows, err := h.services.TareaService.EliminarTareas(ctx, tareasId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, rows)
+}

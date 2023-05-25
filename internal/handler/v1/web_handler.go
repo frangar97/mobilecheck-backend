@@ -57,6 +57,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tarea.GET("verificarTarea", h.verificarTarea)
 				tarea.GET("validarTareaExcel", h.validarTareaExcel)
 				tarea.GET("obtenerTareasHoras", h.obtenerTareasHorasWeb)
+				tarea.DELETE("eliminarTareas", h.eliminarTareas)
 			}
 		}
 

@@ -6,15 +6,19 @@ import (
 )
 
 type TareaModelMovil struct {
-	ID              int64     `json:"id"`
-	Meta            string    `json:"meta"`
-	Fecha           time.Time `json:"fecha"`
-	Completada      bool      `json:"completada"`
-	ClienteId       int64     `json:"clienteId"`
-	Cliente         string    `json:"cliente"`
-	ImagenRequerida bool      `json:"imagenRequerida"`
-	TipoVisita      string    `json:"tipoVisita"`
-	Requieremeta    bool      `json:"requieremeta"`
+	ID                   int64     `json:"id"`
+	Meta                 string    `json:"meta"`
+	Fecha                time.Time `json:"fecha"`
+	Completada           bool      `json:"completada"`
+	ClienteId            int64     `json:"clienteId"`
+	Cliente              string    `json:"cliente"`
+	ImagenRequerida      bool      `json:"imagenRequerida"`
+	TipoVisita           string    `json:"tipoVisita"`
+	Requieremeta         bool      `json:"requieremeta"`
+	MetaLinea            string    `json:"metaLinea"`
+	MetaSublinea         string    `json:"metaSublinea"`
+	RequieremetaLinea    bool      `json:"requiereMetaLinea"`
+	RequieremetaSubLinea bool      `json:"requiereMetaSubLinea"`
 }
 
 type TareaModelWeb struct {
@@ -79,6 +83,8 @@ type CompletarTareaModel struct {
 	Meta            string                `form:"meta" `
 	TareaId         int64                 `form:"tareaId" binding:"required"`
 	ImagenRequerida *bool                 `form:"imagenRequerida" binding:"required"`
+	MetaLinea       string                `form:"metaLinea" `
+	MetaSubLinea    string                `form:"metaSubLinea" `
 }
 
 type CreateTareaMasivaModelWeb struct {

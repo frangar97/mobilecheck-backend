@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 )
@@ -18,6 +19,7 @@ type TareaRepository interface {
 	CompletarTarea(context.Context, int64, int64) (bool, error)
 	VerificarTarea(context.Context, string, int64) (int, error)
 	ObtenerTareasHorasWeb(context.Context, int, string) ([]model.TareaHorasModelReporteWeb, error)
+	EliminarTarea(context.Context, int64) (int64, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -71,7 +73,11 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 				T.imagenrequerida,
 				TV.nombre as tipoVisita,
 				T.meta,
-				TV.requieremeta  
+				TV.requieremeta,
+				T.metaLinea,
+				T.metaSublinea,
+				TV.requieremetaLinea,
+				TV.requieremetaSubLinea  
 			FROM Tarea T 
 			INNER JOIN Cliente C ON T.clienteId = C.id
 			inner join tipovisita TV on TV.id = T.tipovisitaid 
@@ -87,7 +93,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 	for rows.Next() {
 		var tarea model.TareaModelMovil
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.TipoVisita, &tarea.Meta, &tarea.Requieremeta)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.TipoVisita, &tarea.Meta, &tarea.Requieremeta, &tarea.MetaLinea, &tarea.MetaSublinea, &tarea.RequieremetaLinea, &tarea.RequieremetaSubLinea)
 		if err != nil {
 			return nil, err
 		}
@@ -269,4 +275,17 @@ func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuario
 		tareas = append(tareas, tarea)
 	}
 	return tareas, nil
+}
+
+func (t *tareaRepositoryImpl) EliminarTarea(ctx context.Context, tareaId int64) (int64, error) {
+	fmt.Println("id")
+	fmt.Println(tareaId)
+	res, err := t.db.ExecContext(ctx, `delete from tarea where id=$1`, tareaId)
+
+	if err != nil {
+		return 0, nil
+	}
+	count, err := res.RowsAffected()
+
+	return count, err
 }

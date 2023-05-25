@@ -24,6 +24,7 @@ type TareaService interface {
 	VerificarTarea(context.Context, string, int64) (int, error)
 	ValidarDataExcel(*gin.Context, int64, int64, int64, string) (model.ValidarTareasExcelWeb, error)
 	ObtenerTareasHorasWeb(context.Context, model.ParamReportTareasHoras) ([]model.TareaHorasModelReporteWeb, error)
+	EliminarTareas(context.Context, []int64) (int, error)
 }
 
 type tareaServiceImpl struct {
@@ -117,12 +118,14 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 	}
 
 	visita := model.CreateVisitaModel{
-		Comentario: tarea.Comentario,
-		Latitud:    tarea.Latitud,
-		Longitud:   tarea.Longitud,
-		Fecha:      tarea.Fecha,
-		ClienteId:  tarea.ClienteId,
-		Meta:       tarea.Meta,
+		Comentario:   tarea.Comentario,
+		Latitud:      tarea.Latitud,
+		Longitud:     tarea.Longitud,
+		Fecha:        tarea.Fecha,
+		ClienteId:    tarea.ClienteId,
+		Meta:         tarea.Meta,
+		MetaLinea:    tarea.MetaLinea,
+		MetaSubLinea: tarea.MetaSubLinea,
 	}
 
 	visitaId, err := t.visitaRepository.CrearVisita(ctx.Request.Context(), visita, urlImagen, usuarioId)
@@ -220,9 +223,6 @@ func (t *tareaServiceImpl) ObtenerTareasHorasWeb(ctx context.Context, parametros
 	tareas := []model.TareaHorasModelReporteWeb{}
 	for _, usuarioId := range parametros.UsuarioId {
 		for _, fecha := range parametros.Fechas {
-			fmt.Println("------------------")
-			fmt.Println(usuarioId)
-			fmt.Println(fecha)
 
 			var tarea model.TareaHorasModelReporteWeb
 			result, err := t.tareaRepository.ObtenerTareasHorasWeb(ctx, usuarioId, fecha)
@@ -239,4 +239,25 @@ func (t *tareaServiceImpl) ObtenerTareasHorasWeb(ctx context.Context, parametros
 		}
 	}
 	return tareas, nil
+}
+
+func (t *tareaServiceImpl) EliminarTareas(ctx context.Context, tareasId []int64) (int, error) {
+
+	rowsDeleted := 0
+
+	for _, tareaId := range tareasId {
+
+		result, err := t.tareaRepository.EliminarTarea(ctx, tareaId)
+		if err != nil {
+			return int(result), err
+		}
+
+		rowsDeleted = rowsDeleted + int(result)
+
+	}
+
+	fmt.Println("eliminadas")
+	fmt.Println(rowsDeleted)
+
+	return rowsDeleted, nil
 }
