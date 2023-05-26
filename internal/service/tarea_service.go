@@ -73,6 +73,8 @@ func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate 
 			Fecha:           fecha,
 			ImagenRequerida: tareaCreate.ImagenRequerida,
 			TipoVisitaId:    tareaCreate.TipoVisitaId,
+			MetaLinea:       tareaCreate.MetaLinea,
+			MetaSubLinea:    tareaCreate.MetaSubLinea,
 		}
 
 		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)

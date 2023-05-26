@@ -94,6 +94,8 @@ type CreateTareaMasivaModelWeb struct {
 	UsuarioId       int64    `json:"usuarioId" binding:"required"`
 	ImagenRequerida *bool    `json:"imagenRequerida" binding:"required"`
 	TipoVisitaId    int64    `json:"tipoVisitaId" binding:"required"`
+	MetaLinea       string   `json:"metaLinea"`
+	MetaSubLinea    string   `json:"metaSubLinea"`
 }
 
 type CreateTareasExcelWeb struct {
