@@ -109,25 +109,26 @@ type ValidarTareasExcelWeb struct {
 }
 
 type TareaHorasModelReporteWeb struct {
-	Codigousuario     string  `json:"codigoUsuario"`
-	Respomsable       string  `json:"respomsable"`
-	CodigoCliente     string  `json:"codigoCliente"`
-	Cliente           string  `json:"cliente"`
-	Fecha             string  `json:"fecha"`
-	FechaEntrada      string  `json:"fechaEntrada"`
-	FechaSalida       string  `json:"fechaSalida"`
-	ComentarioEntrada string  `json:"comentarioEntrada"`
-	ComentarioSalida  string  `json:"comentarioSalida"`
-	ImagenEntrada     string  `json:"imagenEntrada"`
-	ImagenSalida      string  `json:"imagenSalida"`
-	UbicacionEntrada  string  `json:"ubicacionEntrada"`
-	UbicacionSalida   string  `json:"ubicacionSalida"`
-	LatitudEntrada    float64 `json:"latitudEntrada"`
-	LongitudEntrada   float64 `json:"longitudEntrada"`
-	LatitudSalida     float64 `json:"latitudSalida"`
-	LongitudSalida    float64 `json:"longitudSalida"`
-	LatitudCliente    float64 `json:"latitudCliente"`
-	LongitudCliente   float64 `json:"longitudCliente"`
+	Codigousuario     string    `json:"codigoUsuario"`
+	Respomsable       string    `json:"respomsable"`
+	CodigoCliente     string    `json:"codigoCliente"`
+	Cliente           string    `json:"cliente"`
+	Fecha             string    `json:"fecha"`
+	FechaEntrada      time.Time `json:"fechaEntrada"`
+	FechaSalida       time.Time `json:"fechaSalida"`
+	HorasTrabajadas   string    `json:"horasTrabajadas"`
+	ComentarioEntrada string    `json:"comentarioEntrada"`
+	ComentarioSalida  string    `json:"comentarioSalida"`
+	ImagenEntrada     string    `json:"imagenEntrada"`
+	ImagenSalida      string    `json:"imagenSalida"`
+	UbicacionEntrada  string    `json:"ubicacionEntrada"`
+	UbicacionSalida   string    `json:"ubicacionSalida"`
+	LatitudEntrada    float64   `json:"latitudEntrada"`
+	LongitudEntrada   float64   `json:"longitudEntrada"`
+	LatitudSalida     float64   `json:"latitudSalida"`
+	LongitudSalida    float64   `json:"longitudSalida"`
+	LatitudCliente    float64   `json:"latitudCliente"`
+	LongitudCliente   float64   `json:"longitudCliente"`
 }
 
 type ParamReportTareasHoras struct {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 )
@@ -249,7 +250,8 @@ func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuario
 									a.latitud as latitudSalida,
 									a.longitud as longitudSalida,
 									a.latitudCliente,
-									a.longitudCliente				
+									a.longitudCliente,
+									age(b.fechaVisita::timestamp, a.fechaVisita::timestamp)  as horasTrabajadas				
 									FROM (
 									SELECT codigousuario, asesor, codigocliente, cliente, tipovisita, fechaTarea, fechaVisita, comentario, imagen, latitud, longitud, latitudCliente, longitudCliente,clienteid
 									from view_tareasdetalle
@@ -267,7 +269,9 @@ func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuario
 	tareas := []model.TareaHorasModelReporteWeb{}
 	for rows.Next() {
 		var tarea model.TareaHorasModelReporteWeb
-		err := rows.Scan(&tarea.Codigousuario, &tarea.Respomsable, &tarea.CodigoCliente, &tarea.Cliente, &tarea.Fecha, &tarea.FechaEntrada, &tarea.FechaSalida, &tarea.ComentarioEntrada, &tarea.ComentarioSalida, &tarea.ImagenEntrada, &tarea.ImagenSalida, &tarea.UbicacionEntrada, &tarea.UbicacionSalida, &tarea.LatitudEntrada, &tarea.LongitudEntrada, &tarea.LatitudSalida, &tarea.LongitudSalida, &tarea.LatitudCliente, &tarea.LongitudCliente)
+
+		err := rows.Scan(&tarea.Codigousuario, &tarea.Respomsable, &tarea.CodigoCliente, &tarea.Cliente, &tarea.Fecha, &tarea.FechaEntrada, &tarea.FechaSalida, &tarea.ComentarioEntrada, &tarea.ComentarioSalida, &tarea.ImagenEntrada, &tarea.ImagenSalida, &tarea.UbicacionEntrada, &tarea.UbicacionSalida, &tarea.LatitudEntrada, &tarea.LongitudEntrada, &tarea.LatitudSalida, &tarea.LongitudSalida, &tarea.LatitudCliente, &tarea.LongitudCliente, &tarea.HorasTrabajadas)
+
 		if err != nil {
 			return nil, err
 		}
@@ -288,4 +292,21 @@ func (t *tareaRepositoryImpl) EliminarTarea(ctx context.Context, tareaId int64) 
 	count, err := res.RowsAffected()
 
 	return count, err
+}
+
+func horas(inicio time.Time, fin time.Time) time.Duration {
+
+	loc, err := time.LoadLocation("America/Tegucigalpa")
+	if err != nil {
+		panic(err)
+	}
+
+	t := time.Date(inicio.Year(), inicio.Month(), inicio.Day(), inicio.Hour(), inicio.Minute(), inicio.Second(), inicio.Nanosecond(), loc)
+	t2 := time.Date(fin.Year(), fin.Month(), fin.Day(), fin.Hour(), fin.Minute(), fin.Second(), fin.Nanosecond(), loc)
+
+	dur := t2.Sub(t)
+	fmt.Println(dur)
+	fmt.Println(dur.Hours())
+	return dur
+
 }
