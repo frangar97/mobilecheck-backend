@@ -247,8 +247,8 @@ func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuario
 									b.imagen as imaenSalida,
 									a.latitud as latitudEntrada,
 									a.longitud as longitudEntrada,
-									a.latitud as latitudSalida,
-									a.longitud as longitudSalida,
+									b.latitud as latitudSalida,
+									b.longitud as longitudSalida,
 									a.latitudCliente,
 									a.longitudCliente,
 									age(b.fechaVisita::timestamp, a.fechaVisita::timestamp)  as horasTrabajadas				
