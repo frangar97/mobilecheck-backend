@@ -21,7 +21,9 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				cliente.POST("", h.crearCliente)
 				cliente.PUT("/:clienteId", h.actualizarCliente)
 				//cliente.GET("/:usuarioId", h.obtenerClientesPorUsuario)
-				cliente.GET("obtenerClientePorCodigo", h.obtenerClientePorCodigo)
+				//====================Validaciones====================
+				cliente.GET("ValidarCodigoClienteNuevo", h.validarCodigoClienteNuevo)
+				cliente.GET("ValidarCodigoClienteModificar", h.validarCodigoClienteModificar)
 			}
 
 			usuario := authenticated.Group("/usuario")

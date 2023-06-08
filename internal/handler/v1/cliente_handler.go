@@ -101,9 +101,29 @@ func (h *Handler) actualizarCliente(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func (h *Handler) obtenerClientePorCodigo(ctx *gin.Context) {
+func (h *Handler) validarCodigoClienteNuevo(ctx *gin.Context) {
 	codigoCliente := ctx.Query("codigoCliente")
-	cliente, err := h.services.ClienteService.ObtenerClientePorCodigo(ctx.Request.Context(), codigoCliente)
+	cliente, err := h.services.ClienteService.ValidarCodigoClienteNuevo(ctx.Request.Context(), codigoCliente)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, cliente)
+}
+
+func (h *Handler) validarCodigoClienteModificar(ctx *gin.Context) {
+	codigoCliente := ctx.Query("codigoCliente")
+	id := ctx.Query("id")
+
+	clienteId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	cliente, err := h.services.ClienteService.ValidarCodigoClienteModificar(codigoCliente, clienteId)
 
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)

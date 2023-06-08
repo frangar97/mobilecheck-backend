@@ -14,7 +14,8 @@ type ClienteRepository interface {
 	CrearCliente(context.Context, model.CreateClienteModel) (int64, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
 	ObtenerClientePorId(context.Context, int64) (bool, error)
-	ObtenerClientePorCodigo(context.Context, string) (bool, error)
+	ValidarCodigoClienteNuevo(context.Context, string) (bool, error)
+	ValidarCodigoClienteModificar(string, int64) (int64, error)
 }
 
 type clienteRepositoryImpl struct {
@@ -196,7 +197,7 @@ func (t *clienteRepositoryImpl) ObtenerClientePorId(ctx context.Context, cliente
 	return existe, nil
 }
 
-func (t *clienteRepositoryImpl) ObtenerClientePorCodigo(ctx context.Context, codigoCliente string) (bool, error) {
+func (t *clienteRepositoryImpl) ValidarCodigoClienteNuevo(ctx context.Context, codigoCliente string) (bool, error) {
 
 	rows, err := t.db.QueryContext(ctx, `select codigocliente from cliente where codigocliente = $1`, codigoCliente)
 	if err != nil {
@@ -213,4 +214,13 @@ func (t *clienteRepositoryImpl) ObtenerClientePorCodigo(ctx context.Context, cod
 	}
 
 	return existe, nil
+}
+
+func (t *clienteRepositoryImpl) ValidarCodigoClienteModificar(codigoCliente string, id int64) (int64, error) {
+	var count int64
+	err := t.db.QueryRow(`select count(codigocliente) from cliente where codigocliente = $1 and id != $2`, codigoCliente, id).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

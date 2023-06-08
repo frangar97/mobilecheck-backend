@@ -13,7 +13,8 @@ type ClienteService interface {
 	ObtenerClientesPorUsuarioMovil(context.Context, int64, string) ([]model.ClienteModel, error)
 	CrearCliente(context.Context, model.CreateClienteModel) (model.ClienteModel, error)
 	ActualizarCliente(context.Context, int64, model.UpdateClienteModel) (bool, error)
-	ObtenerClientePorCodigo(context.Context, string) (bool, error)
+	ValidarCodigoClienteNuevo(context.Context, string) (bool, error)
+	ValidarCodigoClienteModificar(string, int64) (int64, error)
 }
 
 type clienteServiceImpl struct {
@@ -65,6 +66,10 @@ func (c *clienteServiceImpl) ActualizarCliente(ctx context.Context, clienteId in
 	return c.clienteRepository.ActualizarCliente(ctx, clienteId, cliente)
 }
 
-func (c *clienteServiceImpl) ObtenerClientePorCodigo(ctx context.Context, codigoCliente string) (bool, error) {
-	return c.clienteRepository.ObtenerClientePorCodigo(ctx, codigoCliente)
+func (c *clienteServiceImpl) ValidarCodigoClienteNuevo(ctx context.Context, codigoCliente string) (bool, error) {
+	return c.clienteRepository.ValidarCodigoClienteNuevo(ctx, codigoCliente)
+}
+
+func (c *clienteServiceImpl) ValidarCodigoClienteModificar(codigoCliente string, id int64) (int64, error) {
+	return c.clienteRepository.ValidarCodigoClienteModificar(codigoCliente, id)
 }
