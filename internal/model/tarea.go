@@ -56,14 +56,16 @@ type CreateTareaModelMovil struct {
 }
 
 type CreateTareaModelWeb struct {
-	Fecha           string `json:"fecha" binding:"required"`
-	ClienteId       int64  `json:"clienteId" binding:"required"`
-	UsuarioId       int64  `json:"usuarioId" binding:"required"`
-	TipoVisitaId    int64  `json:"tipoVisitaId" binding:"required"`
-	Meta            string `json:"meta"`
-	ImagenRequerida *bool  `json:"imagenRequerida" binding:"required"`
-	MetaLinea       string `json:"metaLinea"`
-	MetaSubLinea    string `json:"metaSubLinea"`
+	Fecha           string    `json:"fecha" binding:"required"`
+	ClienteId       int64     `json:"clienteId" binding:"required"`
+	UsuarioId       int64     `json:"usuarioId" binding:"required"`
+	TipoVisitaId    int64     `json:"tipoVisitaId" binding:"required"`
+	Meta            string    `json:"meta"`
+	ImagenRequerida *bool     `json:"imagenRequerida" binding:"required"`
+	MetaLinea       string    `json:"metaLinea"`
+	MetaSubLinea    string    `json:"metaSubLinea"`
+	UsuarioCrea     int64     `json:"UsuarioCrea"`
+	FechaCrea       time.Time `json:"fechacrea"`
 }
 
 type CantidadTareaPorUsuario struct {

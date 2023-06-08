@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,9 @@ func (h *Handler) obtenerTiposVisitaActiva(ctx *gin.Context) {
 func (h *Handler) crearTipoVisita(ctx *gin.Context) {
 	var tipoVisitaJSON model.CreateTipoVisitaModel
 
+	tipoVisitaJSON.UsuarioCrea = ctx.GetInt64("usuarioId")
+	tipoVisitaJSON.FechaCrea = time.Now()
+
 	if err := ctx.BindJSON(&tipoVisitaJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
@@ -60,6 +64,9 @@ func (h *Handler) actualizarTipoVisita(ctx *gin.Context) {
 
 	var tiposVisitaJSON model.UpdateTipoVisitaModel
 
+	tiposVisitaJSON.UsuarioModifica = ctx.GetInt64("usuarioId")
+	tiposVisitaJSON.FechaModifica = time.Now()
+
 	if err := ctx.BindJSON(&tiposVisitaJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
@@ -78,4 +85,37 @@ func (h *Handler) actualizarTipoVisita(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
+}
+
+func (h *Handler) validarTipoVisitaNuevo(ctx *gin.Context) {
+	tipoVisita := ctx.Query("tipoVisita")
+
+	cliente, err := h.services.TipoVisitaService.ValidarTipoVisitaNuevo(tipoVisita)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, cliente)
+}
+
+func (h *Handler) validarTipoVisitaModificar(ctx *gin.Context) {
+	tipoVisita := ctx.Query("tipoVisita")
+	id := ctx.Query("id")
+
+	tipoVisitaId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	existe, err := h.services.TipoVisitaService.ValidarTipoVisitaModificar(tipoVisita, tipoVisitaId)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, existe)
 }

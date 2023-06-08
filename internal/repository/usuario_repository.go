@@ -15,6 +15,8 @@ type UsuarioRepository interface {
 	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
 	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
 	ObtenerUsuarioPorId(context.Context, int64) (bool, error)
+	ValidarUsuarioNuevo(string) (int64, error)
+	ValidarUsuarioModificar(string, int64) (int64, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -149,4 +151,22 @@ func (t *usuarioRepositoryImpl) ObtenerUsuarioPorId(ctx context.Context, usuario
 	}
 
 	return existe, nil
+}
+
+func (t *usuarioRepositoryImpl) ValidarUsuarioNuevo(usuario string) (int64, error) {
+	var count int64
+	err := t.db.QueryRow(`select count(usuario) from usuario  where usuario  = $1`, usuario).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (t *usuarioRepositoryImpl) ValidarUsuarioModificar(usuario string, id int64) (int64, error) {
+	var count int64
+	err := t.db.QueryRow(`select count(usuario) from usuario  where usuario  = $1 and id != $2`, usuario, id).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

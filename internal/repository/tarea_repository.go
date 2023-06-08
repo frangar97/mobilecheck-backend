@@ -60,7 +60,7 @@ func (t *tareaRepositoryImpl) CrearTareaMovil(ctx context.Context, tarea model.C
 func (t *tareaRepositoryImpl) CrearTareaWeb(ctx context.Context, tarea model.CreateTareaModelWeb) (int64, error) {
 	var idGenerado int64
 
-	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(clienteId,usuarioId,tipovisitaid,meta,fecha,imagenRequerida,completada,metalinea,metasublinea) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id", tarea.ClienteId, tarea.UsuarioId, tarea.TipoVisitaId, tarea.Meta, tarea.Fecha, tarea.ImagenRequerida, false, tarea.MetaLinea, tarea.MetaSubLinea).Scan(&idGenerado)
+	err := t.db.QueryRowContext(ctx, "INSERT INTO Tarea(clienteId,usuarioId,tipovisitaid,meta,fecha,imagenRequerida,completada,metalinea,metasublinea,usuariocrea,fechacrea) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id", tarea.ClienteId, tarea.UsuarioId, tarea.TipoVisitaId, tarea.Meta, tarea.Fecha, tarea.ImagenRequerida, false, tarea.MetaLinea, tarea.MetaSubLinea, tarea.UsuarioCrea, tarea.FechaCrea).Scan(&idGenerado)
 
 	return idGenerado, err
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,9 @@ func (h *Handler) crearTareaMovil(ctx *gin.Context) {
 
 func (h *Handler) crearTareaWeb(ctx *gin.Context) {
 	var tareaJSON model.CreateTareaModelWeb
+
+	tareaJSON.UsuarioCrea = ctx.GetInt64("usuarioId")
+	tareaJSON.FechaCrea = time.Now()
 
 	if err := ctx.BindJSON(&tareaJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
@@ -109,12 +113,15 @@ func (h *Handler) completarTarea(ctx *gin.Context) {
 func (h *Handler) crearTareaMasivaWeb(ctx *gin.Context) {
 	var tareaJSON model.CreateTareaMasivaModelWeb
 
+	usuarioCrea := ctx.GetInt64("usuarioId")
+	fechaCrea := time.Now()
+
 	if err := ctx.BindJSON(&tareaJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 
-	err := h.services.TareaService.CrearTareaMasivaWeb(ctx.Request.Context(), tareaJSON)
+	err := h.services.TareaService.CrearTareaMasivaWeb(ctx.Request.Context(), tareaJSON, usuarioCrea, fechaCrea)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -127,12 +134,15 @@ func (h *Handler) crearTareaMasivaWeb(ctx *gin.Context) {
 func (h *Handler) crearTareaMasivaExcelWeb(ctx *gin.Context) {
 	var tareaJSON model.CreateTareasExcelWeb
 
+	usuarioCrea := ctx.GetInt64("usuarioId")
+	fechaCrea := time.Now()
+
 	if err := ctx.BindJSON(&tareaJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 
-	err := h.services.TareaService.CrearTareaMasivaExcelWeb(ctx.Request.Context(), tareaJSON)
+	err := h.services.TareaService.CrearTareaMasivaExcelWeb(ctx.Request.Context(), tareaJSON, usuarioCrea, fechaCrea)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})

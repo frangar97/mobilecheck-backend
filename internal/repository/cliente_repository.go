@@ -146,7 +146,7 @@ func (c *clienteRepositoryImpl) ObtenerClientesPorUsuarioMovil(ctx context.Conte
 func (c *clienteRepositoryImpl) CrearCliente(ctx context.Context, clienteModel model.CreateClienteModel) (int64, error) {
 	var idGenerado int64
 
-	err := c.db.QueryRowContext(ctx, "INSERT INTO Cliente(codigocliente,nombre,telefono,email,direccion,activo,latitud,longitud) values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING ID", clienteModel.CodigoCliente, clienteModel.Nombre, clienteModel.Telefono, clienteModel.Email, clienteModel.Direccion, clienteModel.Activo, clienteModel.Latitud, clienteModel.Longitud).Scan(&idGenerado)
+	err := c.db.QueryRowContext(ctx, "INSERT INTO Cliente(codigocliente,nombre,telefono,email,direccion,activo,latitud,longitud,usuariocrea,fechacrea) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING ID", clienteModel.CodigoCliente, clienteModel.Nombre, clienteModel.Telefono, clienteModel.Email, clienteModel.Direccion, clienteModel.Activo, clienteModel.Latitud, clienteModel.Longitud, clienteModel.UsuarioCrea, clienteModel.FechaCrea).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -161,9 +161,11 @@ func (c *clienteRepositoryImpl) ActualizarCliente(ctx context.Context, clienteId
 			   direccion = $5,
 			   activo = $6,
 			   latitud = $7,
-			   longitud = $8
-		WHERE id = $9
-	`, cliente.CodigoCliente, cliente.Nombre, cliente.Telefono, cliente.Email, cliente.Direccion, cliente.Activo, cliente.Latitud, cliente.Longitud, clienteId)
+			   longitud = $8,
+			   usuariomodifica = $9,
+			   fechamodifica = $10
+		WHERE id = $11
+	`, cliente.CodigoCliente, cliente.Nombre, cliente.Telefono, cliente.Email, cliente.Direccion, cliente.Activo, cliente.Latitud, cliente.Longitud, cliente.UsuarioModifica, cliente.FechaModifica, clienteId)
 
 	if err != nil {
 		return false, nil

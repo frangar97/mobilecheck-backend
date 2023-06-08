@@ -22,8 +22,8 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				cliente.PUT("/:clienteId", h.actualizarCliente)
 				//cliente.GET("/:usuarioId", h.obtenerClientesPorUsuario)
 				//====================Validaciones====================
-				cliente.GET("ValidarCodigoClienteNuevo", h.validarCodigoClienteNuevo)
-				cliente.GET("ValidarCodigoClienteModificar", h.validarCodigoClienteModificar)
+				cliente.GET("validarCodigoClienteNuevo", h.validarCodigoClienteNuevo)
+				cliente.GET("validarCodigoClienteModificar", h.validarCodigoClienteModificar)
 			}
 
 			usuario := authenticated.Group("/usuario")
@@ -32,6 +32,9 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				usuario.POST("", h.crearUsuario)
 				usuario.PUT("/:usuarioId", h.actualizarUsuario)
 				usuario.GET("asesores", h.obtenerAsesores)
+				//====================Validaciones====================
+				usuario.GET("validarUsuarioNuevo", h.validarUsuarioNuevo)
+				usuario.GET("validarUsuarioModificar", h.validarUsuarioModificar)
 			}
 
 			tipoVisita := authenticated.Group("/tipovisita")
@@ -39,6 +42,9 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tipoVisita.GET("", h.obtenerTiposVisita)
 				tipoVisita.POST("", h.crearTipoVisita)
 				tipoVisita.PUT("/:tipoVisitaId", h.actualizarTipoVisita)
+				//====================Validaciones====================
+				tipoVisita.GET("validarTipoVisitaNuevo", h.validarTipoVisitaNuevo)
+				tipoVisita.GET("validarTipoVisitaModificar", h.validarTipoVisitaModificar)
 			}
 
 			visita := authenticated.Group("/visita")

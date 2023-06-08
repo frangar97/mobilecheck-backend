@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -19,8 +20,8 @@ type TareaService interface {
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(*gin.Context, model.CompletarTareaModel, int64) error
-	CrearTareaMasivaWeb(context.Context, model.CreateTareaMasivaModelWeb) error
-	CrearTareaMasivaExcelWeb(context.Context, model.CreateTareasExcelWeb) error
+	CrearTareaMasivaWeb(context.Context, model.CreateTareaMasivaModelWeb, int64, time.Time) error
+	CrearTareaMasivaExcelWeb(context.Context, model.CreateTareasExcelWeb, int64, time.Time) error
 	VerificarTarea(context.Context, string, int64) (int, error)
 	ValidarDataExcel(*gin.Context, int64, int64, int64, string) (model.ValidarTareasExcelWeb, error)
 	ObtenerTareasHorasWeb(context.Context, model.ParamReportTareasHoras) ([]model.TareaHorasModelReporteWeb, error)
@@ -63,7 +64,7 @@ func (t *tareaServiceImpl) CrearTareaWeb(ctx context.Context, tareaCreate model.
 	return t.tareaRepository.ObtenerTareaPorIdWeb(ctx, idGenerado)
 }
 
-func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate model.CreateTareaMasivaModelWeb) error {
+func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate model.CreateTareaMasivaModelWeb, usuarioCrea int64, fechacrea time.Time) error {
 
 	for _, fecha := range tareaCreate.Fechas {
 		tareaModel := model.CreateTareaModelWeb{
@@ -75,6 +76,8 @@ func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate 
 			TipoVisitaId:    tareaCreate.TipoVisitaId,
 			MetaLinea:       tareaCreate.MetaLinea,
 			MetaSubLinea:    tareaCreate.MetaSubLinea,
+			UsuarioCrea:     usuarioCrea,
+			FechaCrea:       fechacrea,
 		}
 
 		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)
@@ -145,7 +148,7 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 	return nil
 }
 
-func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCreate model.CreateTareasExcelWeb) error {
+func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCreate model.CreateTareasExcelWeb, usuarioCrea int64, fechaCrea time.Time) error {
 
 	for _, tarea := range tareaCreate.Tareas {
 		tareaModel := model.CreateTareaModelWeb{
@@ -157,6 +160,8 @@ func (t *tareaServiceImpl) CrearTareaMasivaExcelWeb(ctx context.Context, tareaCr
 			TipoVisitaId:    tarea.TipoVisitaId,
 			MetaLinea:       tarea.MetaLinea,
 			MetaSubLinea:    tarea.MetaSubLinea,
+			UsuarioCrea:     usuarioCrea,
+			FechaCrea:       fechaCrea,
 		}
 
 		_, err := t.tareaRepository.CrearTareaWeb(ctx, tareaModel)

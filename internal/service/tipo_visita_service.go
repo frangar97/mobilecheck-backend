@@ -12,6 +12,8 @@ type TipoVisitaService interface {
 	ObtenerTiposVisitaActiva(context.Context) ([]model.TipoVisitaModel, error)
 	CrearTipoVisita(context.Context, model.CreateTipoVisitaModel) (model.TipoVisitaModel, error)
 	ActualizarTipoVisita(context.Context, int64, model.UpdateTipoVisitaModel) (bool, error)
+	ValidarTipoVisitaNuevo(string) (int64, error)
+	ValidarTipoVisitaModificar(string, int64) (int64, error)
 }
 
 type tipoVisitaServiceImpl struct {
@@ -52,4 +54,12 @@ func (t *tipoVisitaServiceImpl) CrearTipoVisita(ctx context.Context, tipoVisita 
 
 func (t *tipoVisitaServiceImpl) ActualizarTipoVisita(ctx context.Context, tipoVisitaId int64, tipo model.UpdateTipoVisitaModel) (bool, error) {
 	return t.tipoVisitaRepository.ActualizarTipoVisita(ctx, tipoVisitaId, tipo)
+}
+
+func (t *tipoVisitaServiceImpl) ValidarTipoVisitaNuevo(tipoVisita string) (int64, error) {
+	return t.tipoVisitaRepository.ValidarTipoVisitaNuevo(tipoVisita)
+}
+
+func (t *tipoVisitaServiceImpl) ValidarTipoVisitaModificar(tipoVisita string, id int64) (int64, error) {
+	return t.tipoVisitaRepository.ValidarTipoVisitaModificar(tipoVisita, id)
 }

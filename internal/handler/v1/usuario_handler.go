@@ -69,6 +69,39 @@ func (h *Handler) actualizarUsuario(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+func (h *Handler) validarUsuarioNuevo(ctx *gin.Context) {
+	usuario := ctx.Query("usuarioCodigo")
+
+	cliente, err := h.services.UsuarioService.ValidarUsuarioNuevo(usuario)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, cliente)
+}
+
+func (h *Handler) validarUsuarioModificar(ctx *gin.Context) {
+	usuario := ctx.Query("usuarioCodigo")
+	id := ctx.Query("id")
+
+	tipoVisitaId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	existe, err := h.services.UsuarioService.ValidarUsuarioModificar(usuario, tipoVisitaId)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, existe)
+}
+
 // ===============================Usuarios Asesores ===============================
 
 func (h *Handler) obtenerAsesores(ctx *gin.Context) {

@@ -15,6 +15,8 @@ type UsuarioService interface {
 	CrearUsuario(context.Context, model.CreateUsuarioModel) (model.UsuarioModel, error)
 	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
 	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
+	ValidarUsuarioNuevo(string) (int64, error)
+	ValidarUsuarioModificar(string, int64) (int64, error)
 }
 
 type usuarioServiceImpl struct {
@@ -73,6 +75,14 @@ func (u *usuarioServiceImpl) CrearUsuario(ctx context.Context, usuario model.Cre
 
 func (u *usuarioServiceImpl) ActualizarUsuario(ctx context.Context, usuarioId int64, usuario model.UpdateUsuarioModel) (bool, error) {
 	return u.usuarioRepository.ActualizarUsuario(ctx, usuarioId, usuario)
+}
+
+func (u *usuarioServiceImpl) ValidarUsuarioNuevo(usuario string) (int64, error) {
+	return u.usuarioRepository.ValidarUsuarioNuevo(usuario)
+}
+
+func (u *usuarioServiceImpl) ValidarUsuarioModificar(usuario string, id int64) (int64, error) {
+	return u.usuarioRepository.ValidarUsuarioModificar(usuario, id)
 }
 
 // ===============================Usuarios Asesores ===============================
