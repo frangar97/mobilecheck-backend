@@ -47,6 +47,7 @@ type TareaModelWeb struct {
 	CodigoCliente        string    `json:"codigoCliente"`
 	LatitudCliente       float64   `json:"latitudCliente"`
 	LongitudCliente      float64   `json:"longitudCliente"`
+	FechaAsignada        time.Time `json:"fechaAsignada"`
 }
 
 type CreateTareaModelMovil struct {

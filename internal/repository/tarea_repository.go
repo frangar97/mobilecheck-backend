@@ -128,7 +128,8 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 				COALESCE(V.metasublinea,'') metaSubLineaCumpida,
 				C.codigoCliente,
 				COALESCE(C.latitud,0) latitudCliente,
-				COALESCE(C.longitud,0) longitudCliente
+				COALESCE(C.longitud,0) longitudCliente,
+				T.fecha fechaAsignada
 			FROM Tarea T 
 			INNER JOIN CLIENTE C ON T.clienteId = C.id 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
@@ -146,7 +147,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId, &tarea.MetaLineaAsignada, &tarea.MetaSubLineaAsignada, &tarea.MetaLineaCumplida, &tarea.MetaSubLineaCumplida, &tarea.CodigoCliente, &tarea.LatitudCliente, &tarea.LongitudCliente)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId, &tarea.MetaLineaAsignada, &tarea.MetaSubLineaAsignada, &tarea.MetaLineaCumplida, &tarea.MetaSubLineaCumplida, &tarea.CodigoCliente, &tarea.LatitudCliente, &tarea.LongitudCliente, &tarea.FechaAsignada)
 		if err != nil {
 			return nil, err
 		}
