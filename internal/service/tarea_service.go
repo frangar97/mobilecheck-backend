@@ -231,18 +231,19 @@ func (t *tareaServiceImpl) ObtenerTareasHorasWeb(ctx context.Context, parametros
 	for _, usuarioId := range parametros.UsuarioId {
 		for _, fecha := range parametros.Fechas {
 
-			var tarea model.TareaHorasModelReporteWeb
+			//var tarea model.TareaHorasModelReporteWeb
 			result, err := t.tareaRepository.ObtenerTareasHorasWeb(ctx, usuarioId, fecha)
 			if err != nil {
 				return result, err
 			}
 			for _, report := range result {
-				tarea = report
+				//tarea = report
+				tareas = append(tareas, report)
 			}
 
-			if tarea.Respomsable != "" {
-				tareas = append(tareas, tarea)
-			}
+			// if tarea.Respomsable != "" {
+			//tareas = append(tareas, tarea)
+			// }
 		}
 	}
 	return tareas, nil
