@@ -102,8 +102,6 @@ func (h *Handler) validarUsuarioModificar(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, existe)
 }
 
-// ===============================Usuarios Asesores ===============================
-
 func (h *Handler) obtenerAsesores(ctx *gin.Context) {
 	usuarios, err := h.services.UsuarioService.ObtenerAsesores(ctx.Request.Context())
 
@@ -113,4 +111,28 @@ func (h *Handler) obtenerAsesores(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, usuarios)
+}
+
+func (h *Handler) updatePassword(ctx *gin.Context) {
+
+	var usuarioJSON model.UpdatePasswordModel
+
+	if err := ctx.BindJSON(&usuarioJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	actualizado, err := h.services.UsuarioService.UpdatePassword(ctx.Request.Context(), usuarioJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if !actualizado {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "No se pudo actualizar la cntraseña"})
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }

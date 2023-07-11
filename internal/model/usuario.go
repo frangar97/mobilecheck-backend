@@ -34,3 +34,8 @@ type UpdateUsuarioModel struct {
 	Web      *bool  `json:"web" binding:"required"`
 	Movil    *bool  `json:"movil" binding:"required"`
 }
+
+type UpdatePasswordModel struct {
+	Id       int64  `json:"id" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}

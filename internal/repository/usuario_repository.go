@@ -17,6 +17,7 @@ type UsuarioRepository interface {
 	ObtenerUsuarioPorId(context.Context, int64) (bool, error)
 	ValidarUsuarioNuevo(string) (int64, error)
 	ValidarUsuarioModificar(string, int64) (int64, error)
+	UpdatePassword(context.Context, model.UpdatePasswordModel) (bool, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -106,8 +107,6 @@ func (u *usuarioRepositoryImpl) ActualizarUsuario(ctx context.Context, usuarioId
 	return false, err
 }
 
-// ===============================Usuarios Asesores ===============================
-
 func (u *usuarioRepositoryImpl) ObtenerAsesores(ctx context.Context) ([]model.UsuarioModel, error) {
 	usuarios := []model.UsuarioModel{}
 
@@ -169,4 +168,24 @@ func (t *usuarioRepositoryImpl) ValidarUsuarioModificar(usuario string, id int64
 		return 0, err
 	}
 	return count, nil
+}
+
+func (u *usuarioRepositoryImpl) UpdatePassword(ctx context.Context, usuario model.UpdatePasswordModel) (bool, error) {
+	res, err := u.db.ExecContext(ctx, `
+		UPDATE Usuario
+		SET	   password =$1
+		WHERE id = $2
+	`, usuario.Password, usuario.Id)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }

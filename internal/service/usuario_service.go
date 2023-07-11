@@ -17,6 +17,7 @@ type UsuarioService interface {
 	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
 	ValidarUsuarioNuevo(string) (int64, error)
 	ValidarUsuarioModificar(string, int64) (int64, error)
+	UpdatePassword(context.Context, model.UpdatePasswordModel) (bool, error)
 }
 
 type usuarioServiceImpl struct {
@@ -83,6 +84,26 @@ func (u *usuarioServiceImpl) ValidarUsuarioNuevo(usuario string) (int64, error) 
 
 func (u *usuarioServiceImpl) ValidarUsuarioModificar(usuario string, id int64) (int64, error) {
 	return u.usuarioRepository.ValidarUsuarioModificar(usuario, id)
+}
+
+func (u *usuarioServiceImpl) UpdatePassword(ctx context.Context, usuario model.UpdatePasswordModel) (bool, error) {
+
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(usuario.Password), bcrypt.DefaultCost)
+
+	usuario.Password = string(hashPassword)
+
+	if err != nil {
+		return false, err
+	}
+
+	result, err := u.usuarioRepository.UpdatePassword(ctx, usuario)
+
+	if err != nil {
+		return false, err
+	}
+	usuario.Password = string(hashPassword)
+
+	return result, nil
 }
 
 // ===============================Usuarios Asesores ===============================

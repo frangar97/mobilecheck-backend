@@ -32,6 +32,7 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				usuario.POST("", h.crearUsuario)
 				usuario.PUT("/:usuarioId", h.actualizarUsuario)
 				usuario.GET("asesores", h.obtenerAsesores)
+				usuario.PUT("updatePassword", h.updatePassword)
 				//====================Validaciones====================
 				usuario.GET("validarUsuarioNuevo", h.validarUsuarioNuevo)
 				usuario.GET("validarUsuarioModificar", h.validarUsuarioModificar)
