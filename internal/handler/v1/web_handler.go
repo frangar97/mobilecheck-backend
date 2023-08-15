@@ -67,6 +67,14 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tarea.GET("validarTareaExcel", h.validarTareaExcel)
 				tarea.GET("obtenerTareasHoras", h.obtenerTareasHorasWeb)
 				tarea.DELETE("eliminarTareas", h.eliminarTareas)
+				tarea.GET("TareasImpulsadorDia", h.obtenerTareasDelDiaMovil)
+				tarea.POST("completarTareaWeb", h.completarTarea)
+			}
+
+			pais := authenticated.Group("/pais")
+			{
+				pais.GET("", h.obtenerPaises)
+
 			}
 		}
 

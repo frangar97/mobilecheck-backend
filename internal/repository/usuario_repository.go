@@ -33,7 +33,7 @@ func newUsuarioRepository(db *sql.DB) *usuarioRepositoryImpl {
 func (u *usuarioRepositoryImpl) ObtenerUsuarios(ctx context.Context) ([]model.UsuarioModel, error) {
 	usuarios := []model.UsuarioModel{}
 
-	rows, err := u.db.QueryContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,web,movil FROM Usuario")
+	rows, err := u.db.QueryContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,web,movil,paisid FROM Usuario")
 
 	if err != nil {
 		return usuarios, err
@@ -44,7 +44,7 @@ func (u *usuarioRepositoryImpl) ObtenerUsuarios(ctx context.Context) ([]model.Us
 	for rows.Next() {
 		var usuario model.UsuarioModel
 
-		err := rows.Scan(&usuario.ID, &usuario.Nombre, &usuario.Apellido, &usuario.Telefono, &usuario.Email, &usuario.Activo, &usuario.Usuario, &usuario.Web, &usuario.Movil)
+		err := rows.Scan(&usuario.ID, &usuario.Nombre, &usuario.Apellido, &usuario.Telefono, &usuario.Email, &usuario.Activo, &usuario.Usuario, &usuario.Web, &usuario.Movil, &usuario.PaisId)
 
 		if err != nil {
 			return usuarios, err
@@ -59,7 +59,7 @@ func (u *usuarioRepositoryImpl) ObtenerUsuarios(ctx context.Context) ([]model.Us
 func (u *usuarioRepositoryImpl) CrearUsuario(ctx context.Context, usuario model.CreateUsuarioModel) (int64, error) {
 	var idGenerado int64
 
-	err := u.db.QueryRowContext(ctx, "INSERT INTO Usuario(nombre,apellido,telefono,email,activo,usuario,password,web,movil) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id", usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, true, usuario.Usuario, usuario.Password, usuario.Web, usuario.Movil).Scan(&idGenerado)
+	err := u.db.QueryRowContext(ctx, "INSERT INTO Usuario(nombre,apellido,telefono,email,activo,usuario,password,web,movil,paisid) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id", usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, true, usuario.Usuario, usuario.Password, usuario.Web, usuario.Movil, usuario.PaisId).Scan(&idGenerado)
 
 	return idGenerado, err
 }
@@ -90,9 +90,10 @@ func (u *usuarioRepositoryImpl) ActualizarUsuario(ctx context.Context, usuarioId
 			   activo = $5,
 			   usuario = $6,
 			   web = $7,
-			   movil = $8
-		WHERE id = $9
-	`, usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, usuario.Activo, usuario.Usuario, usuario.Web, usuario.Movil, usuarioId)
+			   movil = $8,
+			   paisid = $9
+		WHERE id = $10
+	`, usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, usuario.Activo, usuario.Usuario, usuario.Web, usuario.Movil, usuario.PaisId, usuarioId)
 
 	if err != nil {
 		return false, nil

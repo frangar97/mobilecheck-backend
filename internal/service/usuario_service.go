@@ -70,6 +70,7 @@ func (u *usuarioServiceImpl) CrearUsuario(ctx context.Context, usuario model.Cre
 	nuevoUsuario.Usuario = usuario.Usuario
 	nuevoUsuario.Web = *usuario.Web
 	nuevoUsuario.Movil = *usuario.Movil
+	nuevoUsuario.PaisId = usuario.PaisId
 
 	return nuevoUsuario, nil
 }

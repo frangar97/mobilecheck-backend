@@ -11,6 +11,7 @@ type UsuarioModel struct {
 	Password string `json:"-"`
 	Web      bool   `json:"web"`
 	Movil    bool   `json:"movil"`
+	PaisId   int64  `json:"paisid"`
 }
 
 type CreateUsuarioModel struct {
@@ -22,6 +23,7 @@ type CreateUsuarioModel struct {
 	Password string `json:"password" binding:"required"`
 	Web      *bool  `json:"web" binding:"required"`
 	Movil    *bool  `json:"movil" binding:"required"`
+	PaisId   int64  `json:"paisid" binding:"required"`
 }
 
 type UpdateUsuarioModel struct {
@@ -33,6 +35,7 @@ type UpdateUsuarioModel struct {
 	Usuario  string `json:"usuario" binding:"required"`
 	Web      *bool  `json:"web" binding:"required"`
 	Movil    *bool  `json:"movil" binding:"required"`
+	PaisId   int64  `json:"paisid" binding:"required"`
 }
 
 type UpdatePasswordModel struct {
