@@ -131,6 +131,7 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 		Meta:         tarea.Meta,
 		MetaLinea:    tarea.MetaLinea,
 		MetaSubLinea: tarea.MetaSubLinea,
+		Ip:           tarea.Ip,
 	}
 
 	visitaId, err := t.visitaRepository.CrearVisita(ctx.Request.Context(), visita, urlImagen, usuarioId)

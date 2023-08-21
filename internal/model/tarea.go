@@ -88,6 +88,7 @@ type CompletarTareaModel struct {
 	ImagenRequerida *bool                 `form:"imagenRequerida" binding:"required"`
 	MetaLinea       string                `form:"metaLinea" `
 	MetaSubLinea    string                `form:"metaSubLinea" `
+	Ip              string                `form:"ip" `
 }
 
 type CreateTareaMasivaModelWeb struct {

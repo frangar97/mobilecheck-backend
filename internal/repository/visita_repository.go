@@ -28,7 +28,7 @@ func newVisitaRepository(db *sql.DB) *visitaRepositoryImpl {
 func (v *visitaRepositoryImpl) CrearVisita(ctx context.Context, visita model.CreateVisitaModel, imagenUrl string, usuarioId int64) (int64, error) {
 	var idGenerado int64
 
-	err := v.db.QueryRowContext(ctx, "INSERT INTO Visita(comentario,latitud,longitud,fecha,imagen,usuarioId,clienteId,meta,metalinea,metasublinea) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id", visita.Comentario, visita.Latitud, visita.Longitud, visita.Fecha, imagenUrl, usuarioId, visita.ClienteId, visita.Meta, visita.MetaLinea, visita.MetaSubLinea).Scan(&idGenerado)
+	err := v.db.QueryRowContext(ctx, "INSERT INTO Visita(comentario,latitud,longitud,fecha,imagen,usuarioId,clienteId,meta,metalinea,metasublinea,ip) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id", visita.Comentario, visita.Latitud, visita.Longitud, visita.Fecha, imagenUrl, usuarioId, visita.ClienteId, visita.Meta, visita.MetaLinea, visita.MetaSubLinea, visita.Ip).Scan(&idGenerado)
 
 	return idGenerado, err
 }

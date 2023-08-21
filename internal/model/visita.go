@@ -28,6 +28,7 @@ type CreateVisitaModel struct {
 	Meta         string                `form:"meta"`
 	MetaLinea    string                `form:"metaLinea" `
 	MetaSubLinea string                `form:"metaSubLinea" `
+	Ip           string                `form:"ip" `
 }
 
 type CantidadVisitaPorUsuario struct {
