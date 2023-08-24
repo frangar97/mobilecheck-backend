@@ -15,7 +15,7 @@ type TareaRepository interface {
 	CrearTareaMovil(context.Context, model.CreateTareaModelMovil, int64) (int64, error)
 	CrearTareaWeb(context.Context, model.CreateTareaModelWeb) (int64, error)
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
-	ObtenerTareasWeb(context.Context, string, string) ([]model.TareaModelWeb, error)
+	ObtenerTareasWeb(context.Context, string, string, int64) ([]model.TareaModelWeb, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(context.Context, int64, int64) (bool, error)
 	VerificarTarea(context.Context, string, int64) (int, error)
@@ -105,7 +105,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 	return tareas, nil
 }
 
-func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
+func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string, paisId int64) ([]model.TareaModelWeb, error) {
 	rows, err := t.db.QueryContext(ctx, `SELECT T.id,
 				COALESCE(V.fecha, '0001-01-01 01:00:00+00') fecha,
 				T.completada,
@@ -135,7 +135,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
 			LEFT  JOIN visita v on V.id = T.visitaid
 			INNER JOIN tipovisita TV ON TV.id = T.tipovisitaid  
-		WHERE T.fecha BETWEEN $1 AND $2 ORDER BY T.fecha`, fechaInicio, fechaFinal)
+		WHERE T.fecha BETWEEN $1 AND $2 AND U.paisid = $3 ORDER BY T.fecha`, fechaInicio, fechaFinal, paisId)
 	if err != nil {
 		return []model.TareaModelWeb{}, err
 	}

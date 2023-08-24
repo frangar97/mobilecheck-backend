@@ -16,7 +16,7 @@ import (
 type TareaService interface {
 	CrearTareaMovil(context.Context, model.CreateTareaModelMovil, int64) (model.TareaModelMovil, error)
 	CrearTareaWeb(context.Context, model.CreateTareaModelWeb) (model.TareaModelWeb, error)
-	ObtenerTareasWeb(context.Context, string, string) ([]model.TareaModelWeb, error)
+	ObtenerTareasWeb(context.Context, string, string, int64) ([]model.TareaModelWeb, error)
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
 	CompletarTarea(*gin.Context, model.CompletarTareaModel, int64) error
@@ -90,8 +90,8 @@ func (t *tareaServiceImpl) CrearTareaMasivaWeb(ctx context.Context, tareaCreate 
 	return nil
 }
 
-func (t *tareaServiceImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string) ([]model.TareaModelWeb, error) {
-	return t.tareaRepository.ObtenerTareasWeb(ctx, fechaInicio, fechaFinal)
+func (t *tareaServiceImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio string, fechaFinal string, paisId int64) ([]model.TareaModelWeb, error) {
+	return t.tareaRepository.ObtenerTareasWeb(ctx, fechaInicio, fechaFinal, paisId)
 }
 
 func (t *tareaServiceImpl) ObtenerTareasDelDia(ctx context.Context, fecha string, usuarioId int64) ([]model.TareaModelMovil, error) {

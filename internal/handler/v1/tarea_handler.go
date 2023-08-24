@@ -65,9 +65,10 @@ func (h *Handler) crearTareaWeb(ctx *gin.Context) {
 }
 
 func (h *Handler) obtenerTareasWeb(ctx *gin.Context) {
+	paisId := ctx.GetInt64("paisId")
 	fechaInicio := ctx.Query("fechaInicio")
 	fechaFin := ctx.Query("fechaFin")
-	visitas, err := h.services.TareaService.ObtenerTareasWeb(ctx.Request.Context(), fechaInicio, fechaFin)
+	visitas, err := h.services.TareaService.ObtenerTareasWeb(ctx.Request.Context(), fechaInicio, fechaFin, paisId)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})

@@ -14,7 +14,7 @@ type UsuarioService interface {
 	ObtenerUsuarios(context.Context) ([]model.UsuarioModel, error)
 	CrearUsuario(context.Context, model.CreateUsuarioModel) (model.UsuarioModel, error)
 	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
-	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
+	ObtenerAsesores(context.Context, int64) ([]model.UsuarioModel, error)
 	ValidarUsuarioNuevo(string) (int64, error)
 	ValidarUsuarioModificar(string, int64) (int64, error)
 	UpdatePassword(context.Context, model.UpdatePasswordModel) (bool, error)
@@ -109,6 +109,6 @@ func (u *usuarioServiceImpl) UpdatePassword(ctx context.Context, usuario model.U
 
 // ===============================Usuarios Asesores ===============================
 
-func (u *usuarioServiceImpl) ObtenerAsesores(ctx context.Context) ([]model.UsuarioModel, error) {
-	return u.usuarioRepository.ObtenerAsesores(ctx)
+func (u *usuarioServiceImpl) ObtenerAsesores(ctx context.Context, paisId int64) ([]model.UsuarioModel, error) {
+	return u.usuarioRepository.ObtenerAsesores(ctx, paisId)
 }

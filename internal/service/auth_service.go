@@ -53,6 +53,7 @@ func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthC
 		"usuarioId": usuario.ID,
 		"web":       usuario.Web,
 		"movil":     usuario.Movil,
+		"paisId":    usuario.PaisId,
 	})
 
 	tokenString, err := token.SignedString([]byte("ProbandoTokenSeguridad"))

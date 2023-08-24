@@ -13,7 +13,7 @@ type UsuarioRepository interface {
 	ObtenerPorUsuario(context.Context, string) (model.UsuarioModel, error)
 	ObtenerPorId(context.Context, int64) (model.UsuarioModel, error)
 	ActualizarUsuario(context.Context, int64, model.UpdateUsuarioModel) (bool, error)
-	ObtenerAsesores(context.Context) ([]model.UsuarioModel, error)
+	ObtenerAsesores(context.Context, int64) ([]model.UsuarioModel, error)
 	ObtenerUsuarioPorId(context.Context, int64) (bool, error)
 	ValidarUsuarioNuevo(string) (int64, error)
 	ValidarUsuarioModificar(string, int64) (int64, error)
@@ -67,7 +67,7 @@ func (u *usuarioRepositoryImpl) CrearUsuario(ctx context.Context, usuario model.
 func (u *usuarioRepositoryImpl) ObtenerPorUsuario(ctx context.Context, usuario string) (model.UsuarioModel, error) {
 	var usuarioModel model.UsuarioModel
 
-	err := u.db.QueryRowContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,password,web,movil FROM Usuario WHERE usuario = $1 LIMIT 1", usuario).Scan(&usuarioModel.ID, &usuarioModel.Nombre, &usuarioModel.Apellido, &usuarioModel.Telefono, &usuarioModel.Email, &usuarioModel.Activo, &usuarioModel.Usuario, &usuarioModel.Password, &usuarioModel.Web, &usuarioModel.Movil)
+	err := u.db.QueryRowContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,password,web,movil,paisId FROM Usuario WHERE usuario = $1 LIMIT 1", usuario).Scan(&usuarioModel.ID, &usuarioModel.Nombre, &usuarioModel.Apellido, &usuarioModel.Telefono, &usuarioModel.Email, &usuarioModel.Activo, &usuarioModel.Usuario, &usuarioModel.Password, &usuarioModel.Web, &usuarioModel.Movil, &usuarioModel.PaisId)
 
 	return usuarioModel, err
 }
@@ -108,10 +108,10 @@ func (u *usuarioRepositoryImpl) ActualizarUsuario(ctx context.Context, usuarioId
 	return false, err
 }
 
-func (u *usuarioRepositoryImpl) ObtenerAsesores(ctx context.Context) ([]model.UsuarioModel, error) {
+func (u *usuarioRepositoryImpl) ObtenerAsesores(ctx context.Context, paisId int64) ([]model.UsuarioModel, error) {
 	usuarios := []model.UsuarioModel{}
 
-	rows, err := u.db.QueryContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,web,movil FROM Usuario where movil = true")
+	rows, err := u.db.QueryContext(ctx, "SELECT id,nombre,apellido,telefono,email,activo,usuario,web,movil FROM Usuario where movil = true and paisId = $1", paisId)
 
 	if err != nil {
 		return usuarios, err

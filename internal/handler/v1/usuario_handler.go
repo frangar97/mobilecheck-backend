@@ -103,7 +103,8 @@ func (h *Handler) validarUsuarioModificar(ctx *gin.Context) {
 }
 
 func (h *Handler) obtenerAsesores(ctx *gin.Context) {
-	usuarios, err := h.services.UsuarioService.ObtenerAsesores(ctx.Request.Context())
+	paisId := ctx.GetInt64("paisId")
+	usuarios, err := h.services.UsuarioService.ObtenerAsesores(ctx.Request.Context(), paisId)
 
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
