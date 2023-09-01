@@ -3,6 +3,7 @@ module github.com/frangar97/mobilecheck-backend
 go 1.19
 
 require (
+	github.com/ahmetb/go-linq v3.0.0+incompatible // indirect
 	github.com/cloudinary/cloudinary-go/v2 v2.1.0 // indirect
 	github.com/creasty/defaults v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

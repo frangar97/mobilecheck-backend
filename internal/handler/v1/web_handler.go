@@ -76,6 +76,15 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				pais.GET("", h.obtenerPaises)
 
 			}
+
+			acceso := authenticated.Group("/acceso")
+			{
+				acceso.GET("menuAsignado", h.obtenerMenuUsuario)
+				acceso.GET("obtenerAccesosMenuUsuario", h.obtenerAccesosMenuUsuario)
+				acceso.GET("obtenerAccesosPantallaUsuario", h.obtenerAccesosPantallaUsuario)
+				acceso.POST("asignarMenuUsuario", h.asignarMenuUsuario)
+
+			}
 		}
 
 	}
@@ -89,12 +98,12 @@ func (h *Handler) LoginWeb(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.services.AuthService.LoginWeb(ctx.Request.Context(), credenciales)
+	token, permisos, err := h.services.AuthService.LoginWeb(ctx.Request.Context(), credenciales)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
+	ctx.JSON(http.StatusOK, gin.H{"token": token, "permisos": permisos})
 }

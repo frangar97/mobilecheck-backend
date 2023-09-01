@@ -9,6 +9,7 @@ type Repository struct {
 	VisitaRepository     VisitaRepository
 	TareaRepository      TareaRepository
 	PaisRepository       PaisRepository
+	AccesoRepository     AccesoRepository
 }
 
 func NewRepositories(db *sql.DB) *Repository {
@@ -19,5 +20,6 @@ func NewRepositories(db *sql.DB) *Repository {
 		VisitaRepository:     newVisitaRepository(db),
 		TareaRepository:      newTareaRepository(db),
 		PaisRepository:       newPaisRepository(db),
+		AccesoRepository:     newAccesoRepository(db),
 	}
 }
