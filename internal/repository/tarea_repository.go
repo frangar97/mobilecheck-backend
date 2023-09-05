@@ -283,8 +283,6 @@ func (t *tareaRepositoryImpl) ObtenerTareasHorasWeb(ctx context.Context, usuario
 }
 
 func (t *tareaRepositoryImpl) EliminarTarea(ctx context.Context, tareaId int64) (int64, error) {
-	fmt.Println("id")
-	fmt.Println(tareaId)
 	res, err := t.db.ExecContext(ctx, `delete from tarea where id=$1`, tareaId)
 
 	if err != nil {

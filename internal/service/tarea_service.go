@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"time"
 
@@ -232,19 +231,13 @@ func (t *tareaServiceImpl) ObtenerTareasHorasWeb(ctx context.Context, parametros
 	for _, usuarioId := range parametros.UsuarioId {
 		for _, fecha := range parametros.Fechas {
 
-			//var tarea model.TareaHorasModelReporteWeb
 			result, err := t.tareaRepository.ObtenerTareasHorasWeb(ctx, usuarioId, fecha)
 			if err != nil {
 				return result, err
 			}
 			for _, report := range result {
-				//tarea = report
 				tareas = append(tareas, report)
 			}
-
-			// if tarea.Respomsable != "" {
-			//tareas = append(tareas, tarea)
-			// }
 		}
 	}
 	return tareas, nil
@@ -260,13 +253,8 @@ func (t *tareaServiceImpl) EliminarTareas(ctx context.Context, tareasId []int64)
 		if err != nil {
 			return int(result), err
 		}
-
 		rowsDeleted = rowsDeleted + int(result)
-
 	}
-
-	fmt.Println("eliminadas")
-	fmt.Println(rowsDeleted)
 
 	return rowsDeleted, nil
 }

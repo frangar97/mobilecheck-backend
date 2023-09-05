@@ -63,7 +63,6 @@ func (h *Handler) crearCliente(ctx *gin.Context) {
 		return
 	}
 
-	//usuarioId := ctx.GetInt64("usuarioId")
 	nuevoCliente, err := h.services.ClienteService.CrearCliente(ctx.Request.Context(), clienteJSON)
 
 	if err != nil {

@@ -96,10 +96,6 @@ func (h *Handler) asignarMenuUsuario(ctx *gin.Context) {
 	OpcionMenuJSON.UsuarioAccion = ctx.GetInt64("usuarioId")
 	OpcionMenuJSON.FechaAccion = time.Now()
 
-	println(OpcionMenuJSON.Idusuario)
-	println(OpcionMenuJSON.Idmenuopcion)
-	println("------------------------")
-
 	accesos, err := h.services.AccesoService.AsignarMenu(ctx.Request.Context(), OpcionMenuJSON)
 
 	if err != nil {
