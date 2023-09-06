@@ -74,7 +74,6 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			pais := authenticated.Group("/pais")
 			{
 				pais.GET("", h.obtenerPaises)
-
 			}
 
 			acceso := authenticated.Group("/acceso")
@@ -83,13 +82,21 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				acceso.GET("obtenerAccesosMenuUsuario", h.obtenerAccesosMenuUsuario)
 				acceso.GET("obtenerAccesosPantallaUsuario", h.obtenerAccesosPantallaUsuario)
 				acceso.POST("asignarMenuUsuario", h.asignarMenuUsuario)
-
 			}
 
 			reporte := authenticated.Group("/reporte")
 			{
 				reporte.GET("ObtenerImpulsadorasSubcidioTelefono", h.ObtenerImpulsadorasSubcidioTelefono)
+			}
 
+			cargoUsuario := authenticated.Group("/cargoUsuario")
+			{
+				cargoUsuario.GET("", h.obtenerCargoUsuario)
+			}
+
+			tipoContrato := authenticated.Group("/tipoContrato")
+			{
+				tipoContrato.GET("", h.obtenerTipoContrato)
 			}
 		}
 
