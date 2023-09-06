@@ -55,6 +55,7 @@ type ImpulsadorasPayRollModel struct {
 	NumeroCuenta string `json:"numeroCuenta"`
 	TipoContrato string `json:"tipoContrato"`
 	Valor        string `json:"valor"`
+	Estado       string `json:"estado"`
 }
 
 type ImpulsadorasPayRollDataModel struct {
