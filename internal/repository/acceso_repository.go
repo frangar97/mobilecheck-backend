@@ -244,8 +244,6 @@ func (t *accesoRepositoryImpl) ActualizarMenuAsignado(ctx context.Context, id in
 }
 
 func (t *accesoRepositoryImpl) VaidarOpcionMenuAsignado(ctx context.Context, usuarioId int64, idMenuOpcino int64) (model.AsignarMenuUsuarioModel, error) {
-	println(usuarioId)
-	println(idMenuOpcino)
 
 	var menuOpcionModel model.AsignarMenuUsuarioModel
 

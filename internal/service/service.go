@@ -11,6 +11,7 @@ type Service struct {
 	TareaService      TareaService
 	PaisService       PaisService
 	AccesoService     AccesoService
+	ReporteService    ReporteService
 }
 
 func NewServices(repositories *repository.Repository) *Service {
@@ -23,5 +24,6 @@ func NewServices(repositories *repository.Repository) *Service {
 		TareaService:      newTareaService(repositories.TareaRepository, repositories.VisitaRepository, repositories.ClienteRepository, repositories.UsuarioRepository, repositories.TipoVisitaRepository),
 		PaisService:       newPaisService(repositories.PaisRepository),
 		AccesoService:     newAccesoService(repositories.AccesoRepository),
+		ReporteService:    newReporteService(repositories.UsuarioRepository),
 	}
 }

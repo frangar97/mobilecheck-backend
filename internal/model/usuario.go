@@ -42,3 +42,23 @@ type UpdatePasswordModel struct {
 	Id       int64  `json:"id" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+type CodigoUsuarioModel struct {
+	CodigoUsuario string `json:"CodigoUsuario"`
+	TipoContrato  string `json:"tipoContrato"`
+	Nombre        string `json:"nombre"`
+}
+
+type ImpulsadorasPayRollModel struct {
+	Codigo       string `json:"codigo"`
+	Nombre       string `json:"nombre"`
+	NumeroCuenta string `json:"numeroCuenta"`
+	TipoContrato string `json:"tipoContrato"`
+	Valor        string `json:"valor"`
+}
+
+type ImpulsadorasPayRollDataModel struct {
+	SinCodigoPayRoll       []ImpulsadorasPayRollModel `json:"sinCodigoPayRoll"`
+	Reporte                []ImpulsadorasPayRollModel `json:"reporte"`
+	NoEncontradosEnPayroll []ImpulsadorasPayRollModel `json:"noEncontrados"`
+}

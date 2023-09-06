@@ -85,6 +85,12 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				acceso.POST("asignarMenuUsuario", h.asignarMenuUsuario)
 
 			}
+
+			reporte := authenticated.Group("/reporte")
+			{
+				reporte.GET("ObtenerImpulsadorasSubcidioTelefono", h.ObtenerImpulsadorasSubcidioTelefono)
+
+			}
 		}
 
 	}

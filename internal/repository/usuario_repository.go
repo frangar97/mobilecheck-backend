@@ -18,6 +18,7 @@ type UsuarioRepository interface {
 	ValidarUsuarioNuevo(string) (int64, error)
 	ValidarUsuarioModificar(string, int64) (int64, error)
 	UpdatePassword(context.Context, model.UpdatePasswordModel) (bool, error)
+	ObtenerCodigoUsuariosImpulsadoras(context.Context) ([]model.CodigoUsuarioModel, error)
 }
 
 type usuarioRepositoryImpl struct {
@@ -189,4 +190,32 @@ func (u *usuarioRepositoryImpl) UpdatePassword(ctx context.Context, usuario mode
 	}
 
 	return false, err
+}
+
+func (u *usuarioRepositoryImpl) ObtenerCodigoUsuariosImpulsadoras(ctx context.Context) ([]model.CodigoUsuarioModel, error) {
+	usuarios := []model.CodigoUsuarioModel{}
+
+	rows, err := u.db.QueryContext(ctx, `select u.usuario, tc.tipo, concat(nombre, ' ' , apellido) as nombre   from usuario u
+	inner join tipocontrato tc on u.tipocontratoid = tc.id 
+	where activo = true and cargoId = 2 and paisid  = 1`)
+
+	if err != nil {
+		return usuarios, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var usuario model.CodigoUsuarioModel
+
+		err := rows.Scan(&usuario.CodigoUsuario, &usuario.TipoContrato, &usuario.Nombre)
+
+		if err != nil {
+			return usuarios, err
+		}
+
+		usuarios = append(usuarios, usuario)
+	}
+
+	return usuarios, nil
 }
