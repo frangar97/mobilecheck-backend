@@ -51,15 +51,11 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 					return c.(model.ImpulsadorasPayRollModel).Codigo == codigo.CodigoUsuario
 				}).(model.ImpulsadorasPayRollModel)
 
-			if registroEncontrado.Codigo == "SIN CODIGO" {
-				dataReporte.SinCodigoPayRoll = append(dataReporte.SinCodigoPayRoll, registroEncontrado)
-			} else {
+			registroEncontrado.Valor = "250.00"
+			registroEncontrado.TipoContrato = codigo.TipoContrato
 
-				registroEncontrado.Valor = "250.00"
-				registroEncontrado.TipoContrato = codigo.TipoContrato
+			dataReporte.Reporte = append(dataReporte.Reporte, registroEncontrado)
 
-				dataReporte.Reporte = append(dataReporte.Reporte, registroEncontrado)
-			}
 		} else {
 			estado, err := c.ObtenerEstadoImpulsadoraPayRoll(ctx, codigo.CodigoUsuario)
 			if err != nil {
@@ -74,6 +70,15 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 		}
 
 	}
+
+	var impulsadorasFiltradas []model.ImpulsadorasPayRollModel
+	linq.From(dataPayRoll).
+		Where(func(c interface{}) bool {
+			return c.(model.ImpulsadorasPayRollModel).Codigo == "SIN CODIGO"
+		}).
+		ToSlice(&impulsadorasFiltradas)
+
+	dataReporte.SinCodigoPayRoll = impulsadorasFiltradas
 
 	return dataReporte, nil
 }
