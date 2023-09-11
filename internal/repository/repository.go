@@ -3,27 +3,31 @@ package repository
 import "database/sql"
 
 type Repository struct {
-	ClienteRepository      ClienteRepository
-	UsuarioRepository      UsuarioRepository
-	TipoVisitaRepository   TipoVisitaRepository
-	VisitaRepository       VisitaRepository
-	TareaRepository        TareaRepository
-	PaisRepository         PaisRepository
-	AccesoRepository       AccesoRepository
-	CargoUsuarioRepository CargoUsuarioRepository
-	TipoContratoRepository TipoContratoRepository
+	ClienteRepository              ClienteRepository
+	UsuarioRepository              UsuarioRepository
+	TipoVisitaRepository           TipoVisitaRepository
+	VisitaRepository               VisitaRepository
+	TareaRepository                TareaRepository
+	PaisRepository                 PaisRepository
+	AccesoRepository               AccesoRepository
+	CargoUsuarioRepository         CargoUsuarioRepository
+	TipoContratoRepository         TipoContratoRepository
+	SubsidioImpulsadorasRepository SubsidioImpulsadorasRepository
+	ImportarExportarDataRepository ImportarExportarDataRepository
 }
 
-func NewRepositories(db *sql.DB) *Repository {
+func NewRepositories(postgresDB *sql.DB, sqlserverDB *sql.DB) *Repository {
 	return &Repository{
-		UsuarioRepository:      newUsuarioRepository(db),
-		TipoVisitaRepository:   newTipoVisitaRepository(db),
-		ClienteRepository:      newClienteRepository(db),
-		VisitaRepository:       newVisitaRepository(db),
-		TareaRepository:        newTareaRepository(db),
-		PaisRepository:         newPaisRepository(db),
-		AccesoRepository:       newAccesoRepository(db),
-		CargoUsuarioRepository: newCargoUsuarioRepository(db),
-		TipoContratoRepository: newTipoContratoRepository(db),
+		UsuarioRepository:              newUsuarioRepository(postgresDB),
+		TipoVisitaRepository:           newTipoVisitaRepository(postgresDB),
+		ClienteRepository:              newClienteRepository(postgresDB),
+		VisitaRepository:               newVisitaRepository(postgresDB),
+		TareaRepository:                newTareaRepository(postgresDB),
+		PaisRepository:                 newPaisRepository(postgresDB),
+		AccesoRepository:               newAccesoRepository(postgresDB),
+		CargoUsuarioRepository:         newCargoUsuarioRepository(postgresDB),
+		TipoContratoRepository:         newTipoContratoRepository(postgresDB),
+		SubsidioImpulsadorasRepository: newSubsidioImpulsadorasRepository(postgresDB),
+		ImportarExportarDataRepository: newImportarExportarDataRepository(postgresDB, sqlserverDB),
 	}
 }

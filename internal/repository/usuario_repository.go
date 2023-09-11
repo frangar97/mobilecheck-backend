@@ -99,7 +99,6 @@ func (u *usuarioRepositoryImpl) ActualizarUsuario(ctx context.Context, usuarioId
 	`, usuario.Nombre, usuario.Apellido, usuario.Telefono, usuario.Email, usuario.Activo, usuario.Usuario, usuario.Web, usuario.Movil, usuario.PaisId, usuario.TipoContratoId, usuario.CargoId, usuarioId)
 
 	if err != nil {
-		println(err.Error())
 		return false, nil
 	}
 

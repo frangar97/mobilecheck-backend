@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
@@ -304,8 +303,6 @@ func horas(inicio time.Time, fin time.Time) time.Duration {
 	t2 := time.Date(fin.Year(), fin.Month(), fin.Day(), fin.Hour(), fin.Minute(), fin.Second(), fin.Nanosecond(), loc)
 
 	dur := t2.Sub(t)
-	fmt.Println(dur)
-	fmt.Println(dur.Hours())
 	return dur
 
 }

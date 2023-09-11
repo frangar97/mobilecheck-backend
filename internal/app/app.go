@@ -9,24 +9,35 @@ import (
 	"github.com/frangar97/mobilecheck-backend/internal/repository"
 	"github.com/frangar97/mobilecheck-backend/internal/service"
 	"github.com/frangar97/mobilecheck-backend/pkg/postgres"
+	"github.com/frangar97/mobilecheck-backend/pkg/sqlserver"
+	"github.com/gin-gonic/gin"
 )
 
 func Run() {
+	gin.SetMode(gin.ReleaseMode)
 	cfg, err := config.InitConfig()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db, err := postgres.NewClient(cfg.DatabaseUrl)
+	postgresdb, err := postgres.NewClient(cfg.DatabaseUrl)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer db.Close()
+	defer postgresdb.Close()
 
-	repositories := repository.NewRepositories(db)
+	sqlserverdb, err := sqlserver.NewClient(cfg.SqlServerDatabaseUrl)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer sqlserverdb.Close()
+
+	repositories := repository.NewRepositories(postgresdb, sqlserverdb)
 	services := service.NewServices(repositories)
 
 	handlers := handler.NewHandler(services)

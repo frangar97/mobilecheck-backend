@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,7 +22,6 @@ func (h *Handler) obtenerMenuUsuario(ctx *gin.Context) {
 	accesos, err := h.services.AccesoService.ObtenerMenuUsuario(ctx.Request.Context(), usuarioId, dispositivo)
 
 	if err != nil {
-		fmt.Println(err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -46,7 +44,6 @@ func (h *Handler) obtenerAccesosMenuUsuario(ctx *gin.Context) {
 	accesos, err := h.services.AccesoService.ObtenerAccesosMenuUsuario(ctx.Request.Context(), usuarioId, dispositivo)
 
 	if err != nil {
-		fmt.Println(err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -81,13 +78,11 @@ func (h *Handler) asignarMenuUsuario(ctx *gin.Context) {
 
 	Idusuario, err := strconv.ParseInt(ctx.Query("idusuario"), 0, 0)
 	if err != nil {
-		println(err.Error())
 		return
 	}
 
 	Idmenuopcion, err := strconv.ParseInt(ctx.Query("idmenuopcion"), 0, 0)
 	if err != nil {
-		println(err.Error())
 		return
 	}
 
@@ -99,7 +94,6 @@ func (h *Handler) asignarMenuUsuario(ctx *gin.Context) {
 	accesos, err := h.services.AccesoService.AsignarMenu(ctx.Request.Context(), OpcionMenuJSON)
 
 	if err != nil {
-		println(err.Error())
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

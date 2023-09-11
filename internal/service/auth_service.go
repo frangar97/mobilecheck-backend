@@ -126,7 +126,6 @@ func (a *authServiceImpl) PermisosWeb(ctx context.Context, usuarioId int64) ([]m
 		pantallas, err := a.accesoReposcitory.ObtenerPantallaUsuario(ctx, usuarioId, menu.ID)
 
 		if err != nil {
-			println(err)
 			return nil, fmt.Errorf("Error al obtener las pantallas del usuario")
 		}
 

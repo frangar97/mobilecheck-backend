@@ -98,6 +98,11 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 			{
 				tipoContrato.GET("", h.obtenerTipoContrato)
 			}
+
+			importarExportarData := authenticated.Group("/importarExportarData")
+			{
+				importarExportarData.GET("actualizarSubsidioTelefoniaImpulsadoras", h.actualizarSubsidioTelefoniaImpulsadoras)
+			}
 		}
 
 	}

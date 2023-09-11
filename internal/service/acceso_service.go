@@ -112,7 +112,6 @@ func (t *accesoServiceImpl) AsignarMenu(ctx context.Context, opcionMenu model.As
 	existe, err := t.accesoRepository.VaidarOpcionMenuAsignado(ctx, opcionMenu.Idusuario, opcionMenu.Idmenuopcion)
 
 	if err != nil {
-		println(err.Error())
 		return 0, err
 	}
 

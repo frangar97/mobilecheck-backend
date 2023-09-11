@@ -2,10 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
 
 	"github.com/ahmetb/go-linq"
 	"github.com/frangar97/mobilecheck-backend/internal/model"
@@ -18,10 +14,11 @@ type ReporteService interface {
 
 type reporteServiceImpl struct {
 	usuarioRepository repository.UsuarioRepository
+	reporteRepository repository.SubsidioImpulsadorasRepository
 }
 
-func newReporteService(usuarioRepository repository.UsuarioRepository) *reporteServiceImpl {
-	return &reporteServiceImpl{usuarioRepository: usuarioRepository}
+func newReporteService(reporteRepository repository.SubsidioImpulsadorasRepository, usuarioRepository repository.UsuarioRepository) *reporteServiceImpl {
+	return &reporteServiceImpl{reporteRepository: reporteRepository, usuarioRepository: usuarioRepository}
 }
 
 func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Context) (model.ImpulsadorasPayRollDataModel, error) {
@@ -32,7 +29,7 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 		return dataReporte, err
 	}
 
-	dataPayRoll, err := c.ObtenerImpulsadorasPayRoll(ctx)
+	dataPayRoll, err := c.reporteRepository.ObtenerImpulsadorasSubcidioTelefono(ctx)
 	if err != nil {
 		return dataReporte, err
 	}
@@ -57,7 +54,7 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 			dataReporte.Reporte = append(dataReporte.Reporte, registroEncontrado)
 
 		} else {
-			estado, err := c.ObtenerEstadoImpulsadoraPayRoll(ctx, codigo.CodigoUsuario)
+			estado, err := c.reporteRepository.ObtenerEstadoImpulsadoras(ctx, codigo.CodigoUsuario)
 			if err != nil {
 				return dataReporte, err
 			}
@@ -81,98 +78,4 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 	dataReporte.SinCodigoPayRoll = impulsadorasFiltradas
 
 	return dataReporte, nil
-}
-
-func (c *reporteServiceImpl) ObtenerImpulsadorasPayRoll(ctx context.Context) ([]model.ImpulsadorasPayRollModel, error) {
-
-	impulsadoras := []model.ImpulsadorasPayRollModel{}
-	driver := os.Getenv("DB_DRIVER")
-
-	connectionString := c.ConexionPayRoll(ctx)
-
-	// Abre la conexión a SQL Server
-	db, err := sql.Open(driver, connectionString)
-
-	if err != nil {
-		log.Fatalf("Error al abrir la conexión a SQL Server: %v", err)
-	}
-	defer db.Close()
-
-	rows, err := db.QueryContext(ctx, `select COALESCE(COD_ALTERNO, 'SIN CODIGO') as codigo,
-									CONCAT(PRIMER_NOMBRE , ' ' ,  SEGUNDO_NOMBRE, ' ' , APE_PATERNO, ' ' , APE_MATERNO ) as nombre,
-									NUM_CUENTA_BANCO_PAGO as numeroCuenta,
-									TIP_ESTADO
-									from PLA_PERSONAL where COD_CATEGORIA = 66 and TIP_ESTADO = 'AC' `)
-	if err != nil {
-		log.Fatalf("Error al ejecutar la consulta: %v", err)
-	}
-
-	defer rows.Close()
-	defer db.Close()
-
-	for rows.Next() {
-		var usuario model.ImpulsadorasPayRollModel
-
-		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado)
-		if err != nil {
-			println(err.Error())
-			return impulsadoras, err
-		}
-
-		impulsadoras = append(impulsadoras, usuario)
-	}
-	return impulsadoras, nil
-
-}
-
-func (c *reporteServiceImpl) ObtenerEstadoImpulsadoraPayRoll(ctx context.Context, codigo string) (string, error) {
-
-	driver := os.Getenv("DB_DRIVER")
-	connectionString := c.ConexionPayRoll(ctx)
-
-	// Abre la conexión a SQL Server
-	db, err := sql.Open(driver, connectionString)
-
-	if err != nil {
-		log.Fatalf("Error al abrir la conexión a SQL Server: %v", err)
-	}
-	defer db.Close()
-
-	rows, err := db.QueryContext(ctx, `select TIP_ESTADO from PLA_PERSONAL where COD_ALTERNO = $1 `, codigo)
-	if err != nil {
-		log.Fatalf("Error al ejecutar la consulta: %v", err)
-	}
-
-	defer rows.Close()
-	defer db.Close()
-
-	estato := "No encontrado"
-
-	for rows.Next() {
-
-		err := rows.Scan(&estato)
-
-		if err != nil {
-			println(err.Error())
-			return "Error al buscar impulsadora", err
-		}
-
-	}
-	return estato, nil
-
-}
-
-func (c *reporteServiceImpl) ConexionPayRoll(ctx context.Context) string {
-
-	server := os.Getenv("DB_SERVER")
-	port := os.Getenv("DB_PORT")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	database := os.Getenv("DB_NAME")
-
-	connectionString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;",
-		server, user, password, port, database)
-
-	return connectionString
-
 }
