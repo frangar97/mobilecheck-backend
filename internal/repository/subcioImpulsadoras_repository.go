@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 )
@@ -30,7 +29,7 @@ func (c *subsidioImpulsadorasRepositoryImpl) ObtenerImpulsadorasSubcidioTelefono
 
 	rows, err := c.postgresDB.QueryContext(ctx, `select codigo,nombre, numeroCuenta, estado  from subsidioimpulsadoras where estado = 'AC' `)
 	if err != nil {
-		log.Fatalf("Error al ejecutar la consulta: %v", err)
+		return impulsadoras, err
 	}
 
 	defer rows.Close()
@@ -53,7 +52,7 @@ func (c *subsidioImpulsadorasRepositoryImpl) ObtenerEstadoImpulsadoras(ctx conte
 
 	rows, err := c.postgresDB.QueryContext(ctx, `select estado from subsidioimpulsadoras where codigo = $1 `, codigo)
 	if err != nil {
-		log.Fatalf("Error al ejecutar la consulta: %v", err)
+		return "Error", err
 	}
 
 	defer rows.Close()

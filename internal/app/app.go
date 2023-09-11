@@ -10,11 +10,9 @@ import (
 	"github.com/frangar97/mobilecheck-backend/internal/service"
 	"github.com/frangar97/mobilecheck-backend/pkg/postgres"
 	"github.com/frangar97/mobilecheck-backend/pkg/sqlserver"
-	"github.com/gin-gonic/gin"
 )
 
 func Run() {
-	gin.SetMode(gin.ReleaseMode)
 	cfg, err := config.InitConfig()
 
 	if err != nil {
