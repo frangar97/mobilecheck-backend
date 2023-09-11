@@ -13,6 +13,8 @@ import (
 )
 
 func Run() {
+	// gin.SetMode(gin.ReleaseMode)
+	// log.New(os.Stdout, "ERROR: \t", log.Lshortfile)
 	cfg, err := config.InitConfig()
 
 	if err != nil {
