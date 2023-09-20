@@ -2,8 +2,6 @@ package config
 
 import (
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type config struct {
@@ -13,11 +11,11 @@ type config struct {
 }
 
 func InitConfig() (*config, error) {
-	err := godotenv.Load()
+	// err := godotenv.Load()
 
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	//sqlServerDSN := BuildSqlServerConnection()
 
@@ -36,9 +34,7 @@ func InitConfig() (*config, error) {
 // 	user := os.Getenv("DB_USER")
 // 	password := os.Getenv("DB_PASSWORD")
 // 	database := os.Getenv("DB_NAME")
-
 // 	connectionString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;",
 // 		server, user, password, port, database)
-
 // 	return connectionString
 // }

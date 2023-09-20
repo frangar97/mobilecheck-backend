@@ -14,7 +14,7 @@ type Service struct {
 	ReporteService      ReporteService
 	CargoService        CargoUsuarioService
 	TipoContratoService TipoContratoService
-	// ImportarExportarDataService ImportarExportarDataService
+	//ImportarExportarDataService ImportarExportarDataService
 	ConfiguracionService ConfiguracionService
 }
 
@@ -31,7 +31,7 @@ func NewServices(repositories *repository.Repository) *Service {
 		ReporteService:      newReporteService(repositories.SubsidioImpulsadorasRepository, repositories.UsuarioRepository),
 		CargoService:        newCargoUsuarioService(repositories.CargoUsuarioRepository),
 		TipoContratoService: newTipoContratoService(repositories.TipoContratoRepository),
-		// ImportarExportarDataService: newImportarExportarDataServiceImplService(repositories.ImportarExportarDataRepository, repositories.SubsidioImpulsadorasRepository),
+		//ImportarExportarDataService: newImportarExportarDataServiceImplService(repositories.ImportarExportarDataRepository, repositories.SubsidioImpulsadorasRepository),
 		ConfiguracionService: newConfiguracionService(repositories.ConfiguracionRepository),
 	}
 }
