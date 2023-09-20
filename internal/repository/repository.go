@@ -13,10 +13,11 @@ type Repository struct {
 	CargoUsuarioRepository         CargoUsuarioRepository
 	TipoContratoRepository         TipoContratoRepository
 	SubsidioImpulsadorasRepository SubsidioImpulsadorasRepository
-	ImportarExportarDataRepository ImportarExportarDataRepository
+	ConfiguracionRepository        ConfiguracionRepository
+	//ImportarExportarDataRepository ImportarExportarDataRepository
 }
 
-func NewRepositories(postgresDB *sql.DB, sqlserverDB *sql.DB) *Repository {
+func NewRepositories(postgresDB *sql.DB) *Repository {
 	return &Repository{
 		UsuarioRepository:              newUsuarioRepository(postgresDB),
 		TipoVisitaRepository:           newTipoVisitaRepository(postgresDB),
@@ -28,6 +29,7 @@ func NewRepositories(postgresDB *sql.DB, sqlserverDB *sql.DB) *Repository {
 		CargoUsuarioRepository:         newCargoUsuarioRepository(postgresDB),
 		TipoContratoRepository:         newTipoContratoRepository(postgresDB),
 		SubsidioImpulsadorasRepository: newSubsidioImpulsadorasRepository(postgresDB),
-		ImportarExportarDataRepository: newImportarExportarDataRepository(postgresDB, sqlserverDB),
+		//ImportarExportarDataRepository: newImportarExportarDataRepository(postgresDB, sqlserverDB),
+		ConfiguracionRepository: newConfiguracionRepository(postgresDB),
 	}
 }

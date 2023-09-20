@@ -99,10 +99,16 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tipoContrato.GET("", h.obtenerTipoContrato)
 			}
 
-			importarExportarData := authenticated.Group("/importarExportarData")
+			configuracion := authenticated.Group("/configuracion")
 			{
-				importarExportarData.GET("actualizarSubsidioTelefoniaImpulsadoras", h.actualizarSubsidioTelefoniaImpulsadoras)
+				configuracion.GET("subsidioImpulsadoras", h.obtenerConfiguracionSubsidioTelefonia)
+				configuracion.PUT("actualizarParametro", h.actualizarParametro)
 			}
+
+			// importarExportarData := authenticated.Group("/importarExportarData")
+			// {
+			// 	importarExportarData.GET("actualizarSubsidioTelefoniaImpulsadoras", h.actualizarSubsidioTelefoniaImpulsadoras)
+			// }
 		}
 
 	}
