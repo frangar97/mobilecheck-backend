@@ -51,9 +51,11 @@ func (c *configuracionRepositoryImpl) ObtenerConfiguracionSubsidioTelefonia(ctx 
 func (t *configuracionRepositoryImpl) ActualizarParametro(ctx context.Context, parametro model.ConfiguracionSubcidioUpdateModel) (bool, error) {
 	res, err := t.db.ExecContext(ctx, `
 		UPDATE configuracion
-		SET	   parametro = $1
-		WHERE id = $2
-	`, parametro.Parametro, parametro.Id)
+		SET	   parametro = $1,
+			   usuariomodifica = $2,
+			   fechamodifica = $3
+		WHERE id = $4
+	`, parametro.Parametro, parametro.UsuarioModifica, parametro.FechaModifica, parametro.Id)
 
 	if err != nil {
 		return false, nil

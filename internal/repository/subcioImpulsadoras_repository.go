@@ -27,7 +27,7 @@ func newSubsidioImpulsadorasRepository(postgresDB *sql.DB) *subsidioImpulsadoras
 func (c *subsidioImpulsadorasRepositoryImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Context) ([]model.ImpulsadorasPayRollModel, error) {
 	impulsadoras := []model.ImpulsadorasPayRollModel{}
 
-	rows, err := c.postgresDB.QueryContext(ctx, `select codigo,nombre, numeroCuenta, estado  from subsidioimpulsadoras where estado = 'AC' `)
+	rows, err := c.postgresDB.QueryContext(ctx, `select codigo,nombre, numeroCuenta, estado, tipocuentadestino, correo  from subsidioimpulsadoras where estado = 'AC' `)
 	if err != nil {
 		return impulsadoras, err
 	}
@@ -37,7 +37,7 @@ func (c *subsidioImpulsadorasRepositoryImpl) ObtenerImpulsadorasSubcidioTelefono
 	for rows.Next() {
 		var usuario model.ImpulsadorasPayRollModel
 
-		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado)
+		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado, &usuario.TipoCuentaDestino, &usuario.Correo)
 		if err != nil {
 			return impulsadoras, err
 		}

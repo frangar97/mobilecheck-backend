@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 	"github.com/gin-gonic/gin"
@@ -20,10 +21,10 @@ func (h *Handler) obtenerConfiguracionSubsidioTelefonia(ctx *gin.Context) {
 }
 
 func (h *Handler) actualizarParametro(ctx *gin.Context) {
-	print("cabo")
+
 	var parametroJSON model.ConfiguracionSubcidioUpdateModel
-	print(parametroJSON.Id)
-	print(parametroJSON.Parametro)
+	parametroJSON.UsuarioModifica = ctx.GetInt64("usuarioId")
+	parametroJSON.FechaModifica = time.Now()
 
 	if err := ctx.BindJSON(&parametroJSON); err != nil {
 		print(err.Error())

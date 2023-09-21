@@ -56,12 +56,14 @@ type CodigoUsuarioModel struct {
 }
 
 type ImpulsadorasPayRollModel struct {
-	Codigo       string `json:"codigo"`
-	Nombre       string `json:"nombre"`
-	NumeroCuenta string `json:"numeroCuenta"`
-	TipoContrato string `json:"tipoContrato"`
-	Valor        string `json:"valor"`
-	Estado       string `json:"estado"`
+	Codigo            string `json:"codigo"`
+	Nombre            string `json:"nombre"`
+	NumeroCuenta      string `json:"numeroCuenta"`
+	TipoContrato      string `json:"tipoContrato"`
+	Valor             string `json:"valor"`
+	Estado            string `json:"estado"`
+	TipoCuentaDestino string `json:"tipoCuentaDestino"`
+	Correo            string `json:"correo"`
 }
 
 type ImpulsadorasPayRollDataModel struct {
