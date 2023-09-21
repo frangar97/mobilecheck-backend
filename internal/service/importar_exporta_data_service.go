@@ -29,6 +29,7 @@ func (c *importarExportarDataServiceImpl) ActualizarDataImpulsadoras(ctx context
 	impulsadorasPayRoll, err := c.importarExportarDataRepository.ObtenerImpulsadorasPayRoll(ctx)
 
 	if err != nil {
+		print(err.Error())
 		return "Error al obtener data subsidio impulsadoras PAYROll", nil
 	}
 

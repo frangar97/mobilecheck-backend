@@ -56,18 +56,19 @@ type CodigoUsuarioModel struct {
 }
 
 type ImpulsadorasPayRollModel struct {
-	Codigo            string `json:"codigo"`
-	Nombre            string `json:"nombre"`
-	NumeroCuenta      string `json:"numeroCuenta"`
-	TipoContrato      string `json:"tipoContrato"`
-	Valor             string `json:"valor"`
-	Estado            string `json:"estado"`
-	TipoCuentaDestino string `json:"tipoCuentaDestino"`
-	Correo            string `json:"correo"`
+	Codigo       string `json:"codigo"`
+	Nombre       string `json:"nombre"`
+	NumeroCuenta string `json:"numeroCuenta"`
+	Estado       string `json:"estado"`
+	TipoContrato string `json:"tipoContrato"`
+	Banco        string `json:"banco"`
+	TipoCuenta   string `json:"tipoCuenta"`
+	Correo       string `json:"correo"`
 }
 
 type ImpulsadorasPayRollDataModel struct {
 	SinCodigoPayRoll       []ImpulsadorasPayRollModel `json:"sinCodigoPayRoll"`
-	Reporte                []ImpulsadorasPayRollModel `json:"reporte"`
+	ReporteFicohsa         []ImpulsadorasPayRollModel `json:"reporteFicohsa"`
+	ReporteOtroBanco       []ImpulsadorasPayRollModel `json:"reporteOtroBanco"`
 	NoEncontradosEnPayroll []ImpulsadorasPayRollModel `json:"noEncontrados"`
 }

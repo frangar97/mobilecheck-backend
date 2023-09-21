@@ -105,10 +105,10 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				configuracion.PUT("actualizarParametro", h.actualizarParametro)
 			}
 
-			// importarExportarData := authenticated.Group("/importarExportarData")
-			// {
-			// 	importarExportarData.GET("actualizarSubsidioTelefoniaImpulsadoras", h.actualizarSubsidioTelefoniaImpulsadoras)
-			// }
+			importarExportarData := authenticated.Group("/importarExportarData")
+			{
+				importarExportarData.GET("actualizarSubsidioTelefoniaImpulsadoras", h.actualizarSubsidioTelefoniaImpulsadoras)
+			}
 		}
 
 	}

@@ -27,7 +27,7 @@ func newSubsidioImpulsadorasRepository(postgresDB *sql.DB) *subsidioImpulsadoras
 func (c *subsidioImpulsadorasRepositoryImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Context) ([]model.ImpulsadorasPayRollModel, error) {
 	impulsadoras := []model.ImpulsadorasPayRollModel{}
 
-	rows, err := c.postgresDB.QueryContext(ctx, `select codigo,nombre, numeroCuenta, estado, tipocuentadestino, correo  from subsidioimpulsadoras where estado = 'AC' `)
+	rows, err := c.postgresDB.QueryContext(ctx, `select codigo, nombre, numerocuenta, estado, tipocontrato, tipoCuenta, banco, correo  from subsidioimpulsadoras where estado = 'AC' `)
 	if err != nil {
 		return impulsadoras, err
 	}
@@ -37,9 +37,15 @@ func (c *subsidioImpulsadorasRepositoryImpl) ObtenerImpulsadorasSubcidioTelefono
 	for rows.Next() {
 		var usuario model.ImpulsadorasPayRollModel
 
-		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado, &usuario.TipoCuentaDestino, &usuario.Correo)
+		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado, &usuario.TipoCuenta, &usuario.TipoCuenta, &usuario.Banco, &usuario.Correo)
 		if err != nil {
 			return impulsadoras, err
+		}
+
+		if usuario.TipoCuenta == "AS" {
+			usuario.TipoCuenta = "CA"
+		} else {
+			usuario.TipoCuenta = "NO"
 		}
 
 		impulsadoras = append(impulsadoras, usuario)
@@ -84,7 +90,7 @@ func (t *subsidioImpulsadorasRepositoryImpl) EliminarImpulsadorasSubcidio(ctx co
 
 func (t *subsidioImpulsadorasRepositoryImpl) CrearImpulsadorasSubcidio(ctx context.Context, impulsadora model.ImpulsadorasPayRollModel) (int64, error) {
 
-	res, err := t.postgresDB.ExecContext(ctx, "INSERT INTO subsidioimpulsadoras(codigo, nombre, numerocuenta, estado, tipocontrato) VALUES ($1,$2,$3,$4,$5)", impulsadora.Codigo, impulsadora.Nombre, impulsadora.NumeroCuenta, impulsadora.Estado, impulsadora.TipoContrato)
+	res, err := t.postgresDB.ExecContext(ctx, "INSERT INTO subsidioimpulsadoras(codigo, nombre, numerocuenta, estado, tipocontrato, tipoCuenta, banco, correo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)", impulsadora.Codigo, impulsadora.Nombre, impulsadora.NumeroCuenta, impulsadora.Estado, impulsadora.TipoContrato, impulsadora.TipoCuenta, impulsadora.Banco, impulsadora.Correo)
 
 	if err != nil {
 		return 0, nil

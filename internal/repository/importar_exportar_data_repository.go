@@ -26,7 +26,7 @@ func newImportarExportarDataRepository(postgresDB *sql.DB, sqlserverDB *sql.DB) 
 func (c *importarExportarDataRepositoryImpl) ObtenerImpulsadorasPayRoll(ctx context.Context) ([]model.ImpulsadorasPayRollModel, error) {
 	impulsadoras := []model.ImpulsadorasPayRollModel{}
 
-	rows, err := c.sqlserverDB.QueryContext(ctx, `select codigo,nombre,  COALESCE(numeroCuenta, 'Sin Cuenta'), TIP_ESTADO  from IM_Reporte_Impulsadoras_Subsidio`)
+	rows, err := c.sqlserverDB.QueryContext(ctx, `SELECT Codigo, Nombre, COALESCE(NumeroCuenta, '-'), Estado, COALESCE(TipoContrato, '-') as TipoContrato, Banco, TipoCuenta, Correo FROM IM_Reporte_Impulsadoras_Subsidio`)
 	if err != nil {
 		return impulsadoras, err
 	}
@@ -36,7 +36,7 @@ func (c *importarExportarDataRepositoryImpl) ObtenerImpulsadorasPayRoll(ctx cont
 	for rows.Next() {
 		var usuario model.ImpulsadorasPayRollModel
 
-		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado)
+		err := rows.Scan(&usuario.Codigo, &usuario.Nombre, &usuario.NumeroCuenta, &usuario.Estado, &usuario.TipoContrato, &usuario.Banco, &usuario.TipoCuenta, &usuario.Correo)
 		if err != nil {
 			return impulsadoras, err
 		}

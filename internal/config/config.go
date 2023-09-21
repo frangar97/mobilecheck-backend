@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -19,24 +20,24 @@ func InitConfig() (*config, error) {
 		return nil, err
 	}
 
-	//sqlServerDSN := BuildSqlServerConnection()
+	sqlServerDSN := BuildSqlServerConnection()
 
 	cfg := config{
-		Port:        os.Getenv("PORT"),
-		DatabaseUrl: os.Getenv("DATABASE_URL"),
-		//SqlServerDatabaseUrl: sqlServerDSN,
+		Port:                 os.Getenv("PORT"),
+		DatabaseUrl:          os.Getenv("DATABASE_URL"),
+		SqlServerDatabaseUrl: sqlServerDSN,
 	}
 
 	return &cfg, nil
 }
 
-// func BuildSqlServerConnection() string {
-// 	server := os.Getenv("DB_SERVER")
-// 	port := os.Getenv("DB_PORT")
-// 	user := os.Getenv("DB_USER")
-// 	password := os.Getenv("DB_PASSWORD")
-// 	database := os.Getenv("DB_NAME")
-// 	connectionString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;",
-// 		server, user, password, port, database)
-// 	return connectionString
-// }
+func BuildSqlServerConnection() string {
+	server := os.Getenv("DB_SERVER")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	database := os.Getenv("DB_NAME")
+	connectionString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;",
+		server, user, password, port, database)
+	return connectionString
+}

@@ -48,10 +48,14 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 					return c.(model.ImpulsadorasPayRollModel).Codigo == codigo.CodigoUsuario
 				}).(model.ImpulsadorasPayRollModel)
 
-			registroEncontrado.Valor = "250.00"
 			registroEncontrado.TipoContrato = codigo.TipoContrato
 
-			dataReporte.Reporte = append(dataReporte.Reporte, registroEncontrado)
+			if registroEncontrado.Banco == "900003" {
+				dataReporte.ReporteFicohsa = append(dataReporte.ReporteFicohsa, registroEncontrado)
+			} else {
+				dataReporte.ReporteOtroBanco = append(dataReporte.ReporteFicohsa, registroEncontrado)
+
+			}
 
 		} else {
 			estado, err := c.reporteRepository.ObtenerEstadoImpulsadoras(ctx, codigo.CodigoUsuario)
@@ -59,7 +63,6 @@ func (c *reporteServiceImpl) ObtenerImpulsadorasSubcidioTelefono(ctx context.Con
 				return dataReporte, err
 			}
 
-			registroEncontrado.Valor = "0.00"
 			registroEncontrado.Codigo = codigo.CodigoUsuario
 			registroEncontrado.Nombre = codigo.Nombre
 			registroEncontrado.Estado = estado

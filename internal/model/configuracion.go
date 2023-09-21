@@ -12,7 +12,7 @@ type ConfiguracionSubcidioModel struct {
 
 type ConfiguracionSubcidioUpdateModel struct {
 	Id              int64     `json:"id" binding:"required"`
-	Parametro       string    `json:"parametro" binding:"required"`
+	Parametro       string    `json:"parametro"`
 	UsuarioModifica int64     `json:"usuarioModifica" binding:"required"`
 	FechaModifica   time.Time `json:"fechaModifica" binding:"required"`
 }
