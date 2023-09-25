@@ -15,6 +15,7 @@ type VisitaRepository interface {
 	ObtenerCantidadVisitaPorUsuario(context.Context, string, string) ([]model.CantidadVisitaPorUsuario, error)
 	ObtenerCantidadVisitaPorTipo(context.Context, string, string) ([]model.CantidadVisitaPorTipo, error)
 	ObtenerVisitaTarea(context.Context, int64) ([]model.VisitaTareaModel, error)
+	ActualizarVisitaImagen(context.Context, int64, string) (bool, error)
 }
 
 type visitaRepositoryImpl struct {
@@ -254,4 +255,24 @@ func (v *visitaRepositoryImpl) ObtenerVisitaTarea(ctx context.Context, idTarea i
 	}
 
 	return visitaTarea, nil
+}
+
+func (t *visitaRepositoryImpl) ActualizarVisitaImagen(ctx context.Context, visitaId int64, imagen string) (bool, error) {
+	res, err := t.db.ExecContext(ctx, `
+		UPDATE visita
+		SET	  imagen = $1
+		WHERE id = $2
+	`, imagen, visitaId)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }

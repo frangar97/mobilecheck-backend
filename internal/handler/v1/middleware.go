@@ -38,6 +38,15 @@ func (h *Handler) movilIdentity(c *gin.Context) {
 		return
 	}
 
+	// versionUsuario := c.GetHeader("VersionAppMovil")
+
+	// versionActual := os.Getenv("VERSRION_MOVIL_APP")
+
+	// if versionUsuario != versionActual {
+	// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Version de la App desactualizada, porfavor actualice"})
+	// 	return
+	// }
+
 	c.Set("usuarioId", id)
 }
 

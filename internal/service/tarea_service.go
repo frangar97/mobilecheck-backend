@@ -104,23 +104,6 @@ func (t *tareaServiceImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.Cont
 func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.CompletarTareaModel, usuarioId int64) error {
 	var urlImagen string
 
-	if *tarea.ImagenRequerida {
-		formfile, _, err := ctx.Request.FormFile("imagen")
-
-		if err != nil {
-			return err
-		}
-
-		cld, _ := cloudinary.NewFromParams(os.Getenv("CLOUDNAME"), os.Getenv("APIKEY"), os.Getenv("APISECRET"))
-		resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: os.Getenv("CLOUDFOLDER")})
-
-		if err != nil {
-			return err
-		}
-
-		urlImagen = resp.SecureURL
-	}
-
 	visita := model.CreateVisitaModel{
 		Comentario:   tarea.Comentario,
 		Latitud:      tarea.Latitud,
@@ -143,6 +126,30 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 
 	if err != nil {
 		return err
+	}
+
+	if *tarea.ImagenRequerida {
+		formfile, _, err := ctx.Request.FormFile("imagen")
+
+		if err != nil {
+			return err
+		}
+
+		cld, _ := cloudinary.NewFromParams(os.Getenv("CLOUDNAME"), os.Getenv("APIKEY"), os.Getenv("APISECRET"))
+		resp, err := cld.Upload.Upload(ctx, formfile, uploader.UploadParams{Folder: os.Getenv("CLOUDFOLDER")})
+
+		if err != nil {
+			return err
+		}
+
+		urlImagen = resp.SecureURL
+
+		_, err = t.visitaRepository.ActualizarVisitaImagen(ctx, visitaId, urlImagen)
+
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil

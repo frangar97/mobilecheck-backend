@@ -9,7 +9,6 @@ import (
 	"github.com/frangar97/mobilecheck-backend/internal/repository"
 	"github.com/frangar97/mobilecheck-backend/internal/service"
 	"github.com/frangar97/mobilecheck-backend/pkg/postgres"
-	"github.com/frangar97/mobilecheck-backend/pkg/sqlserver"
 )
 
 func Run() {
@@ -29,15 +28,15 @@ func Run() {
 
 	defer postgresdb.Close()
 
-	sqlserverdb, err := sqlserver.NewClient(cfg.SqlServerDatabaseUrl)
+	// sqlserverdb, err := sqlserver.NewClient(cfg.SqlServerDatabaseUrl)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	defer sqlserverdb.Close()
+	// defer sqlserverdb.Close()
 
-	repositories := repository.NewRepositories(postgresdb, sqlserverdb)
+	repositories := repository.NewRepositories(postgresdb)
 	services := service.NewServices(repositories)
 
 	handlers := handler.NewHandler(services)
