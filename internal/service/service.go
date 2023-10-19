@@ -20,18 +20,18 @@ type Service struct {
 
 func NewServices(repositories *repository.Repository) *Service {
 	return &Service{
-		AuthService:         newAuthService(repositories.UsuarioRepository, repositories.AccesoRepository),
-		ClienteService:      newClienteService(repositories.ClienteRepository, repositories.UsuarioRepository),
-		TipoVisitaService:   newTipoVisitaService(repositories.TipoVisitaRepository),
-		UsuarioService:      newUsuarioService(repositories.UsuarioRepository),
-		VisitaService:       newVisitaService(repositories.VisitaRepository),
-		TareaService:        newTareaService(repositories.TareaRepository, repositories.VisitaRepository, repositories.ClienteRepository, repositories.UsuarioRepository, repositories.TipoVisitaRepository),
-		PaisService:         newPaisService(repositories.PaisRepository),
-		AccesoService:       newAccesoService(repositories.AccesoRepository),
-		ReporteService:      newReporteService(repositories.SubsidioImpulsadorasRepository, repositories.UsuarioRepository),
-		CargoService:        newCargoUsuarioService(repositories.CargoUsuarioRepository),
-		TipoContratoService: newTipoContratoService(repositories.TipoContratoRepository),
-		//ImportarExportarDataService: newImportarExportarDataServiceImplService(repositories.ImportarExportarDataRepository, repositories.SubsidioImpulsadorasRepository),
-		ConfiguracionService: newConfiguracionService(repositories.ConfiguracionRepository),
+		AuthService:                 newAuthService(repositories.UsuarioRepository, repositories.AccesoRepository),
+		ClienteService:              newClienteService(repositories.ClienteRepository, repositories.UsuarioRepository),
+		TipoVisitaService:           newTipoVisitaService(repositories.TipoVisitaRepository),
+		UsuarioService:              newUsuarioService(repositories.UsuarioRepository),
+		VisitaService:               newVisitaService(repositories.VisitaRepository),
+		TareaService:                newTareaService(repositories.TareaRepository, repositories.VisitaRepository, repositories.ClienteRepository, repositories.UsuarioRepository, repositories.TipoVisitaRepository),
+		PaisService:                 newPaisService(repositories.PaisRepository),
+		AccesoService:               newAccesoService(repositories.AccesoRepository),
+		ReporteService:              newReporteService(repositories.SubsidioImpulsadorasRepository, repositories.UsuarioRepository),
+		CargoService:                newCargoUsuarioService(repositories.CargoUsuarioRepository),
+		TipoContratoService:         newTipoContratoService(repositories.TipoContratoRepository),
+		ImportarExportarDataService: newImportarExportarDataServiceImplService(repositories.ImportarExportarDataRepository, repositories.SubsidioImpulsadorasRepository),
+		ConfiguracionService:        newConfiguracionService(repositories.ConfiguracionRepository),
 	}
 }
