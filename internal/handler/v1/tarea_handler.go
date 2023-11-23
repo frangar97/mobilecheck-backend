@@ -237,3 +237,48 @@ func (h *Handler) eliminarTareas(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, rows)
 }
+
+func (h *Handler) obtenerTareasPorAprobar(ctx *gin.Context) {
+	paisId := ctx.GetInt64("paisId")
+	fecha := ctx.Query("fecha")
+	visitas, err := h.services.TareaService.ObtenerTareasPorAprobar(ctx.Request.Context(), fecha, paisId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, visitas)
+}
+
+func (h *Handler) aprobarTarea(ctx *gin.Context) {
+
+	var tareaJSON model.CreateAprobarTarea
+
+	if err := ctx.BindJSON(&tareaJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	tarea, err := h.services.TareaService.AprobarTarea(ctx.Request.Context(), tareaJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, tarea)
+}
+
+func (h *Handler) cantidadTareasPendientesAprobar(ctx *gin.Context) {
+	fecha := ctx.Query("fecha")
+
+	cantidad, err := h.services.TareaService.CantidadTareasPendientesAprobar(fecha)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, cantidad)
+}

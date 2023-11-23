@@ -2,68 +2,68 @@ package model
 
 import "time"
 
-// Accesos en pantalla
-// ----------Modelos permisos Asignados
-type MenuUsuarioModel struct {
-	Opcion    string                 `json:"opcion"`
-	Pantallas []PantallaUsuarioModel `json:"pantallas"`
+type ModuloModel struct {
+	Id     int64  `json:"id"`
+	Modulo string `json:"modulo"`
+	Activo *bool  `json:"activo"`
 }
-
-type PantallaUsuarioModel struct {
-	Pantalla string               `json:"pantalla"`
-	Objetos  []ObjetoUsuarioModel `json:"objetos"`
-}
-
-type ObjetoUsuarioModel struct {
-	Objeto string `json:"objeto"`
-}
-
-// ----------Modelos Obtienen permisos Asignados
-type MenuUsuarioDataModel struct {
-	ID     int64  `json:"id"`
-	Opcion string `json:"opcion"`
-}
-
-type PantallaUsuarioDataModel struct {
-	ID       int64  `json:"id"`
+type PantallaModel struct {
+	Id       int64  `json:"id"`
 	Pantalla string `json:"pantalla"`
+	Web      *bool  `json:"web"`
+	Movil    *bool  `json:"movil"`
+	IdModulo int64  `json:"idModulo"`
 }
 
-//-----Obtener , nuevo y editar permisos usuario
-
-type MenuAsignadoUsuario struct {
-	MenuAsignado   []MenuUsuarioDataModel `json:"menuAsignado"`
-	MenuNoAsignado []MenuUsuarioDataModel `json:"menuNoAsignado"`
+type ObjetoModel struct {
+	Id         int64  `json:"id"`
+	IdPantalla int64  `json:"idPantalla"`
+	Objeto     string `json:"objeto"`
 }
 
-type MenuOpcionUsuarioModel struct {
-	IdMenuOpcion int64 `json:"idMenuOpcion"`
-	Activo       bool  `json:"activo"`
+type AccesoObjetollaModel struct {
+	Id               int64 `json:"id"`
+	IdObjeto         int64 `json:"idObjeto"`
+	IdAccesoPantalla int64 `json:"idAccesoPantalla"`
+	Activo           *bool `json:"activo"`
 }
 
-type PantallaAsignadaUsuario struct {
-	PantallaAsignada   []PantallaUsuarioDataModel `json:"pantallaAsignada"`
-	PantallaNoAsignada []PantallaUsuarioDataModel `json:"pantallaNoAsignada"`
+// type AsignarMenuUsuarioModel struct {
+// 	Id            int64     `json:"id"`
+// 	Idusuario     int64     `json:"idusuario" binding:"required"`
+// 	Idmenuopcion  int64     `json:"idmenuopcion" binding:"required"`
+// 	Activo        *bool     `json:"activo" binding:"required"`
+// 	UsuarioAccion int64     `json:"usuarioAccion"`
+// 	FechaAccion   time.Time `json:"fechaAccion"`
+// }
+
+// ----------- Acceso Pantalla -----
+type CreateUpdateAccesoPantallaModel struct {
+	IdPantalla      int64     `json:"idPantalla" binding:"required"`
+	IdUsuario       int64     `json:"idUsuario" binding:"required"`
+	Activo          bool      `json:"activo"`
+	UsuarioCrea     int64     `json:"UsuarioCrea"`
+	FechaCrea       time.Time `json:"fechacrea"`
+	UsuarioModifica int64     `json:"usuariomodifica"`
+	FechaModifica   time.Time `json:"fechamodifica"`
 }
 
-type PantallanUsuarioModel struct {
-	IdPantalla int64 `json:"idPantalla"`
-	Activo     bool  `json:"activo"`
+type AccesoPantallaModel struct {
+	IdPantalla int64  `json:"idPantalla"`
+	Pantalla   string `json:"pantalla"`
+	Activo     bool   `json:"activo"`
+	Web        bool   `json:"web"`
+	Movil      bool   `json:"movil"`
 }
 
-type AsignarMenuUsuarioModel struct {
-	Id            int64     `json:"id"`
-	Idusuario     int64     `json:"idusuario" binding:"required"`
-	Idmenuopcion  int64     `json:"idmenuopcion" binding:"required"`
-	Activo        *bool     `json:"activo" binding:"required"`
-	UsuarioAccion int64     `json:"usuarioAccion"`
-	FechaAccion   time.Time `json:"fechaAccion"`
+type AccesoPantallaUsuarioModel struct {
+	PantallasAsignadas   []AccesoPantallaModel `json:"pantallasAsignadas"`
+	PantallasNoAsignadas []AccesoPantallaModel `json:"pantallasNoAsignadas"`
 }
 
-type CreatePantallaUsuarioModel struct {
-	Idusuario   int64     `json:"idusuario" binding:"required"`
-	Idpantalla  int64     `json:"idpantalla" binding:"required"`
-	Activo      *bool     `json:"activo" binding:"required"`
-	UsuarioCrea int64     `json:"UsuarioCrea"`
-	FechaCrea   time.Time `json:"fechacrea"`
+//---------------------------------
+
+//-----------Accesos--------------
+type PantallaAccesoModel struct {
+	Pantalla string `json:"pantalla"`
 }

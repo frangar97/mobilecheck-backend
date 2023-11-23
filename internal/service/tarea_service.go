@@ -25,6 +25,9 @@ type TareaService interface {
 	ValidarDataExcel(*gin.Context, int64, int64, int64, string) (model.ValidarTareasExcelWeb, error)
 	ObtenerTareasHorasWeb(context.Context, model.ParamReportTareasHoras) ([]model.TareaHorasModelReporteWeb, error)
 	EliminarTareas(context.Context, []int64) (int, error)
+	ObtenerTareasPorAprobar(context.Context, string, int64) ([]model.AprobarTareas, error)
+	AprobarTarea(context.Context, model.CreateAprobarTarea) (bool, error)
+	CantidadTareasPendientesAprobar(string) (int64, error)
 }
 
 type tareaServiceImpl struct {
@@ -122,7 +125,17 @@ func (t *tareaServiceImpl) CompletarTarea(ctx *gin.Context, tarea model.Completa
 		return err
 	}
 
-	_, err = t.tareaRepository.CompletarTarea(ctx, tarea.TareaId, visitaId)
+	var completada bool
+
+	if *tarea.NecesitaAprobacion {
+		completada = false
+	} else {
+		completada = true
+	}
+
+	println(completada)
+
+	_, err = t.tareaRepository.CompletarTarea(ctx, tarea.TareaId, visitaId, completada, *tarea.NecesitaAprobacion)
 
 	if err != nil {
 		return err
@@ -264,4 +277,16 @@ func (t *tareaServiceImpl) EliminarTareas(ctx context.Context, tareasId []int64)
 	}
 
 	return rowsDeleted, nil
+}
+
+func (t *tareaServiceImpl) ObtenerTareasPorAprobar(ctx context.Context, fecha string, paisId int64) ([]model.AprobarTareas, error) {
+	return t.tareaRepository.ObtenerTareasPorAprobar(ctx, fecha, paisId)
+}
+
+func (t *tareaServiceImpl) AprobarTarea(ctx context.Context, tarea model.CreateAprobarTarea) (bool, error) {
+	return t.tareaRepository.AprobarTarea(ctx, tarea)
+}
+
+func (t *tareaServiceImpl) CantidadTareasPendientesAprobar(fecha string) (int64, error) {
+	return t.tareaRepository.CantidadTareasPendientesAprobar(fecha)
 }

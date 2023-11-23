@@ -19,6 +19,9 @@ type TareaModelMovil struct {
 	MetaSublinea         string    `json:"metaSublinea"`
 	RequieremetaLinea    bool      `json:"requiereMetaLinea"`
 	RequieremetaSubLinea bool      `json:"requiereMetaSubLinea"`
+	LatitudCliente       float64   `json:"latitudCliente"`
+	LongitudCliente      float64   `json:"longitudCliente"`
+	NecesitaAprobacion   bool      `json:"necesitaaprobacion"`
 }
 
 type TareaModelWeb struct {
@@ -48,6 +51,8 @@ type TareaModelWeb struct {
 	LatitudCliente       float64   `json:"latitudCliente"`
 	LongitudCliente      float64   `json:"longitudCliente"`
 	FechaAsignada        time.Time `json:"fechaAsignada"`
+	NecesitaAprobacion   bool      `json:"necesitaAprobacion"`
+	ComentarioAdmin      string    `json:"comentarioAdmin"`
 }
 
 type CreateTareaModelMovil struct {
@@ -77,18 +82,19 @@ type CantidadTareaPorUsuario struct {
 }
 
 type CompletarTareaModel struct {
-	Comentario      string                `form:"comentario"`
-	Latitud         float64               `form:"latitud" binding:"required"`
-	Longitud        float64               `form:"longitud" binding:"required"`
-	Fecha           string                `form:"fecha" binding:"required"`
-	Imagen          *multipart.FileHeader `form:"imagen"`
-	ClienteId       int64                 `form:"clienteId" binding:"required"`
-	Meta            string                `form:"meta" `
-	TareaId         int64                 `form:"tareaId" binding:"required"`
-	ImagenRequerida *bool                 `form:"imagenRequerida" binding:"required"`
-	MetaLinea       string                `form:"metaLinea" `
-	MetaSubLinea    string                `form:"metaSubLinea" `
-	Ip              string                `form:"ip" `
+	Comentario         string                `form:"comentario"`
+	Latitud            float64               `form:"latitud" binding:"required"`
+	Longitud           float64               `form:"longitud" binding:"required"`
+	Fecha              string                `form:"fecha" binding:"required"`
+	Imagen             *multipart.FileHeader `form:"imagen"`
+	ClienteId          int64                 `form:"clienteId" binding:"required"`
+	Meta               string                `form:"meta" `
+	TareaId            int64                 `form:"tareaId" binding:"required"`
+	ImagenRequerida    *bool                 `form:"imagenRequerida" binding:"required"`
+	MetaLinea          string                `form:"metaLinea" `
+	MetaSubLinea       string                `form:"metaSubLinea" `
+	Ip                 string                `form:"ip" `
+	NecesitaAprobacion *bool                 `form:"necesitaAprobacion" binding:"required"`
 }
 
 type CreateTareaMasivaModelWeb struct {
@@ -140,4 +146,24 @@ type TareaHorasModelReporteWeb struct {
 type ParamReportTareasHoras struct {
 	UsuarioId []int    `json:"usuarioId"`
 	Fechas    []string `json:"fechas"`
+}
+
+type AprobarTareas struct {
+	Id              int64   `json:"id"`
+	CodigoCliente   string  `json:"codigoCliente"`
+	Cliente         string  `json:"cliente"`
+	CodigoUsuario   string  `json:"codigoUsuario"`
+	Usuario         string  `json:"usuario"`
+	TipoVisita      string  `json:"tipoVisita"`
+	Comentario      string  `json:"comentario"`
+	Imagen          string  `json:"imagen"`
+	LatitudCliente  float64 `json:"latitudCliente"`
+	LongitudCliente float64 `json:"longitudCliente"`
+	Latitud         float64 `json:"latitud"`
+	Longitud        float64 `json:"longitud"`
+}
+
+type CreateAprobarTarea struct {
+	Id         int64  `json:"id" binding:"required"`
+	Comentario string `json:"comentario"`
 }

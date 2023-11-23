@@ -39,6 +39,11 @@ func (h *Handler) initMovilRoutes(c *gin.RouterGroup) {
 				tarea.POST("", h.crearTareaMovil)
 				tarea.POST("/completar", h.completarTarea)
 			}
+
+			acceso := authenticated.Group("/acceso")
+			{
+				acceso.GET("obtenerAccesosWebPorMovil", h.obtenerAccesosWebPorMovil)
+			}
 		}
 	}
 }

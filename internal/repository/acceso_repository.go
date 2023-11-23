@@ -3,22 +3,24 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/frangar97/mobilecheck-backend/internal/model"
 )
 
 type AccesoRepository interface {
-	ObtenerMenuUsuario(context.Context, int64, bool) ([]model.MenuUsuarioDataModel, error)
-	ObtenerPantallaUsuario(context.Context, int64, int64) ([]model.PantallaUsuarioDataModel, error)
-	ObtenerPermisosMenuUsuario(context.Context, int64, bool) ([]model.MenuOpcionUsuarioModel, error)
-	ObtenerMenu(context.Context, bool) ([]model.MenuUsuarioDataModel, error)
-	ObtenerPermisosPantallaUsuario(context.Context, int64, int64) ([]model.PantallanUsuarioModel, error)
-	ObtenerPantallas(context.Context, int64) ([]model.PantallaUsuarioDataModel, error)
-	AsignarMenu(context.Context, model.AsignarMenuUsuarioModel) (int64, error)
-	AsignarPantalla(context.Context, model.CreatePantallaUsuarioModel) (int64, error)
-	VaidarOpcionMenuAsignado(context.Context, int64, int64) (model.AsignarMenuUsuarioModel, error)
-	ActualizarMenuAsignado(context.Context, int64, bool, int64, time.Time) (int64, error)
+	ObtenerPantallas(context.Context) ([]model.PantallaModel, error)
+	ObtenerObjetos(context.Context) ([]model.ObjetoModel, error)
+	ObtenerModulos(context.Context, bool, bool) ([]model.ModuloModel, error)
+	ObtenerPantallasAsignadasUsuario(context.Context, int64, int64, bool, bool) ([]model.AccesoPantallaModel, error)
+	ObtenerPantallasPorModulo(context.Context, int64, bool, bool) ([]model.PantallaModel, error)
+
+	//----
+	AsignarPantalla(context.Context, model.CreateUpdateAccesoPantallaModel) (int64, error)
+	ValidarPantallaAsignada(context.Context, int64, int64) (model.AccesoPantallaModel, error)
+	ActualizarPantallaAsignada(context.Context, int64, model.CreateUpdateAccesoPantallaModel) (int64, error)
+
+	//----
+	ObtenerPantallasAccesos(context.Context, int64, bool, bool) ([]model.PantallaAccesoModel, error)
 }
 
 type accesoRepositoryImpl struct {
@@ -31,231 +33,255 @@ func newAccesoRepository(db *sql.DB) *accesoRepositoryImpl {
 	}
 }
 
-func (c *accesoRepositoryImpl) ObtenerMenuUsuario(ctx context.Context, usuarioId int64, dispositivo bool) ([]model.MenuUsuarioDataModel, error) {
-	menuUsuario := []model.MenuUsuarioDataModel{}
+func (c *accesoRepositoryImpl) ObtenerModulos(ctx context.Context, movil bool, web bool) ([]model.ModuloModel, error) {
+	modulos := []model.ModuloModel{}
 
-	rows, err := c.db.QueryContext(ctx, `
-			select mo.id, mo.nombre
-			from menuopcion mo
-			inner join menuusuario mu on mo.id = mu.idmenuopcion 
-			where  mu.idusuario = $1 and mo.dispositivo = $2 and mu.activo = true
-	`, usuarioId, dispositivo)
+	var dispositivoQuery = "select m.id, m.modulo from modulos m inner join pantalla p on p.idmodulo = m.id where m.activo = true"
+
+	if movil && !web {
+		dispositivoQuery = dispositivoQuery + " and p.movil = true "
+	} else if web && !movil {
+		dispositivoQuery = dispositivoQuery + " and p.web = true "
+	} else if web && movil {
+		dispositivoQuery = dispositivoQuery + " and p.web = true and  p.movil = true "
+	} else {
+		return nil, nil
+	}
+
+	rows, err := c.db.QueryContext(ctx, dispositivoQuery+" group by m.id, m.modulo")
 
 	if err != nil {
-		return menuUsuario, err
+		return modulos, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		var menu model.MenuUsuarioDataModel
+		var modulo model.ModuloModel
 
-		err := rows.Scan(&menu.ID, &menu.Opcion)
+		err := rows.Scan(&modulo.Id, &modulo.Modulo)
 
 		if err != nil {
-			return menuUsuario, err
+			return modulos, err
 		}
 
-		menuUsuario = append(menuUsuario, menu)
+		modulos = append(modulos, modulo)
 	}
 
-	return menuUsuario, nil
+	return modulos, nil
 }
 
-func (c *accesoRepositoryImpl) ObtenerPantallaUsuario(ctx context.Context, usuarioId int64, menu int64) ([]model.PantallaUsuarioDataModel, error) {
-	pantallaUsuario := []model.PantallaUsuarioDataModel{}
+func (c *accesoRepositoryImpl) ObtenerPantallas(ctx context.Context) ([]model.PantallaModel, error) {
+	pantallas := []model.PantallaModel{}
 
-	rows, err := c.db.QueryContext(ctx, `
-	select P.id, P.nombre from pantallausuario PU
-	inner join pantalla P on p.id = PU.idpantalla
-	where PU.idusuario = $1 and P.idopcionmenu = $2 and PU.activo = true
-	`, usuarioId, menu)
+	rows, err := c.db.QueryContext(ctx, `select id, pantalla, movil, web  from pantalla`)
 
 	if err != nil {
-		return pantallaUsuario, err
+		return pantallas, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		var pantalla model.PantallaUsuarioDataModel
+		var pantalla model.PantallaModel
 
-		err := rows.Scan(&pantalla.ID, &pantalla.Pantalla)
+		err := rows.Scan(&pantalla.Id, &pantalla.Pantalla, &pantalla.Movil, &pantalla.Web)
 
 		if err != nil {
-			return pantallaUsuario, err
+			return pantallas, err
 		}
 
-		pantallaUsuario = append(pantallaUsuario, pantalla)
+		pantallas = append(pantallas, pantalla)
 	}
 
-	return pantallaUsuario, nil
+	return pantallas, nil
 }
 
-// //-----Asignacion y modificacion de permisos
-// -----Menu
-func (c *accesoRepositoryImpl) ObtenerPermisosMenuUsuario(ctx context.Context, usuarioId int64, dispositivo bool) ([]model.MenuOpcionUsuarioModel, error) {
-	menuUsuario := []model.MenuOpcionUsuarioModel{}
+func (c *accesoRepositoryImpl) ObtenerObjetos(ctx context.Context) ([]model.ObjetoModel, error) {
+	objetos := []model.ObjetoModel{}
 
-	rows, err := c.db.QueryContext(ctx, `
-	select mu.idmenuopcion , mu.activo  from menuopcion mo
-			inner join menuusuario mu on mo.id = mu.idmenuopcion 
-			where  mu.idusuario = $1 and mo.dispositivo = $2
-	`, usuarioId, dispositivo)
+	rows, err := c.db.QueryContext(ctx, `select id, idpantalla, objeto  from objeto`)
 
 	if err != nil {
-		return menuUsuario, err
+		return objetos, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		var menu model.MenuOpcionUsuarioModel
+		var objeto model.ObjetoModel
 
-		err := rows.Scan(&menu.IdMenuOpcion, &menu.Activo)
+		err := rows.Scan(&objeto.Id, &objeto.IdPantalla, &objeto.Objeto)
 
 		if err != nil {
-			return menuUsuario, err
+			return objetos, err
 		}
 
-		menuUsuario = append(menuUsuario, menu)
+		objetos = append(objetos, objeto)
 	}
 
-	return menuUsuario, nil
+	return objetos, nil
 }
 
-func (c *accesoRepositoryImpl) ObtenerMenu(ctx context.Context, dispositivo bool) ([]model.MenuUsuarioDataModel, error) {
-	menuOpcion := []model.MenuUsuarioDataModel{}
+func (c *accesoRepositoryImpl) ObtenerPantallasAsignadasUsuario(ctx context.Context, usuarioId int64, moduloId int64, movil bool, web bool) ([]model.AccesoPantallaModel, error) {
+	accesoPantallas := []model.AccesoPantallaModel{}
 
-	rows, err := c.db.QueryContext(ctx, `
-	select id, nombre from menuopcion where dispositivo = $1
-	`, dispositivo)
+	var dispositivo = ""
 
+	if movil && !web {
+		dispositivo = " and p.movil = true"
+	} else if web && !movil {
+		dispositivo = " and p.web = true"
+	} else if web && movil {
+		dispositivo = " and p.web = true and p.movil = true"
+	} else {
+		return nil, nil
+	}
+
+	rows, err := c.db.QueryContext(ctx, `select
+										ap.idpantalla,
+										p.pantalla,
+										ap.activo,
+										p.web,
+										p.movil
+									from
+									accesopantalla ap
+									inner join pantalla p on
+	                                p.id = ap.idpantalla
+									where ap.idusuario = $1 and p.idmodulo = $2 `+dispositivo, usuarioId, moduloId)
 	if err != nil {
-		return menuOpcion, err
+		return accesoPantallas, err
 	}
-
 	defer rows.Close()
-
 	for rows.Next() {
-		var menu model.MenuUsuarioDataModel
-
-		err := rows.Scan(&menu.ID, &menu.Opcion)
-
+		var accesoPantalla model.AccesoPantallaModel
+		err := rows.Scan(&accesoPantalla.IdPantalla, &accesoPantalla.Pantalla, &accesoPantalla.Activo, &accesoPantalla.Web, &accesoPantalla.Movil)
 		if err != nil {
-			return menuOpcion, err
+			return accesoPantallas, err
 		}
-
-		menuOpcion = append(menuOpcion, menu)
+		accesoPantallas = append(accesoPantallas, accesoPantalla)
 	}
-
-	return menuOpcion, nil
+	return accesoPantallas, nil
 }
 
-///----Menu Fin
+//----------------- ACCESO PANTALLA -----------------------------------------
 
-// /------Pantalla
-func (c *accesoRepositoryImpl) ObtenerPermisosPantallaUsuario(ctx context.Context, usuarioId int64, idOpcionMenu int64) ([]model.PantallanUsuarioModel, error) {
-	pantallaUsuario := []model.PantallanUsuarioModel{}
-
-	rows, err := c.db.QueryContext(ctx, `
-	select PU.idpantalla, PU.activo from pantalla P
-	inner join pantallausuario PU on P.id = PU.idpantalla 
-	where PU.idusuario = $1 and P.idopcionmenu = $2 
-	`, usuarioId, idOpcionMenu)
-
-	if err != nil {
-		return pantallaUsuario, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var pantalla model.PantallanUsuarioModel
-
-		err := rows.Scan(&pantalla.IdPantalla, &pantalla.Activo)
-
-		if err != nil {
-			return pantallaUsuario, err
-		}
-
-		pantallaUsuario = append(pantallaUsuario, pantalla)
-	}
-
-	return pantallaUsuario, nil
-}
-
-func (c *accesoRepositoryImpl) ObtenerPantallas(ctx context.Context, idOpcionMenu int64) ([]model.PantallaUsuarioDataModel, error) {
-	pantallaOpcion := []model.PantallaUsuarioDataModel{}
-
-	rows, err := c.db.QueryContext(ctx, `
-	select id, nombre from pantalla where idopcionmenu = $1
-	`, idOpcionMenu)
-
-	if err != nil {
-		return pantallaOpcion, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var pantalla model.PantallaUsuarioDataModel
-
-		err := rows.Scan(&pantalla.ID, &pantalla.Pantalla)
-
-		if err != nil {
-			return pantallaOpcion, err
-		}
-
-		pantallaOpcion = append(pantallaOpcion, pantalla)
-	}
-
-	return pantallaOpcion, nil
-}
-
-func (t *accesoRepositoryImpl) AsignarMenu(ctx context.Context, menu model.AsignarMenuUsuarioModel) (int64, error) {
+func (t *accesoRepositoryImpl) AsignarPantalla(ctx context.Context, pantalla model.CreateUpdateAccesoPantallaModel) (int64, error) {
 	var idGenerado int64
-
-	err := t.db.QueryRowContext(ctx, "INSERT INTO menuusuario(idusuario, idmenuopcion, activo, usuariocrea, fechacrea) VALUES($1,$2,$3,$4,$5) RETURNING id", menu.Idusuario, menu.Idmenuopcion, menu.Activo, menu.UsuarioAccion, menu.FechaAccion).Scan(&idGenerado)
-
+	err := t.db.QueryRowContext(ctx, "INSERT INTO accesopantalla(idpantalla, idusuario, activo, usuariocrea, fechacrea) VALUES($1,$2,$3,$4,$5) RETURNING id", pantalla.IdPantalla, pantalla.IdUsuario, pantalla.Activo, pantalla.UsuarioCrea, pantalla.FechaCrea).Scan(&idGenerado)
 	return idGenerado, err
 }
 
-func (t *accesoRepositoryImpl) ActualizarMenuAsignado(ctx context.Context, id int64, activo bool, usuarioModifica int64, fechaModifica time.Time) (int64, error) {
-	res, err := t.db.ExecContext(ctx, `
-		UPDATE menuusuario
-		SET	  activo = $1,
-		usuariomodifica = $2,
-		fechamodifica = $3
-		WHERE id = $4
-	`, activo, usuarioModifica, fechaModifica, id)
+func (t *accesoRepositoryImpl) ValidarPantallaAsignada(ctx context.Context, usuarioId int64, idPantalla int64) (model.AccesoPantallaModel, error) {
+
+	var pantalla model.AccesoPantallaModel
+	err := t.db.QueryRowContext(ctx, "select id, activo from accesopantalla where idpantalla = $1 and idusuario = $2 LIMIT 1", idPantalla, usuarioId).Scan(&pantalla.IdPantalla, &pantalla.Activo)
 
 	if err != nil {
-		return 0, nil
+		if err == sql.ErrNoRows {
+			pantalla.Activo = true
+			return pantalla, nil
+		}
+		return pantalla, err
 	}
 
-	count, err := res.RowsAffected()
+	return pantalla, err
+}
 
+func (t *accesoRepositoryImpl) ActualizarPantallaAsignada(ctx context.Context, id int64, pantalla model.CreateUpdateAccesoPantallaModel) (int64, error) {
+	res, err := t.db.ExecContext(ctx, `
+		UPDATE accesopantalla
+		SET idpantalla=$1, 
+			idusuario=$2, 
+			activo=$3, 
+			usuariomodifica=$4, 
+			fechamodifica=$5
+		WHERE id=$6
+	`, pantalla.IdPantalla, pantalla.IdUsuario, pantalla.Activo, pantalla.UsuarioModifica, pantalla.FechaModifica, id)
+	if err != nil {
+		println("error actualizar " + err.Error())
+		return 0, nil
+	}
+	count, err := res.RowsAffected()
 	if count > 0 {
 		return id, nil
 	}
-
 	return 0, err
 }
 
-func (t *accesoRepositoryImpl) VaidarOpcionMenuAsignado(ctx context.Context, usuarioId int64, idMenuOpcino int64) (model.AsignarMenuUsuarioModel, error) {
+func (c *accesoRepositoryImpl) ObtenerPantallasPorModulo(ctx context.Context, idModulo int64, movil bool, web bool) ([]model.PantallaModel, error) {
+	pantallas := []model.PantallaModel{}
 
-	var menuOpcionModel model.AsignarMenuUsuarioModel
+	var dispositivo = ""
 
-	err := t.db.QueryRowContext(ctx, "select * from menuusuario where idusuario = $1 and idmenuopcion = $2 limit 1", usuarioId, idMenuOpcino).Scan(&menuOpcionModel.Id, &menuOpcionModel.Activo)
+	if movil && !web {
+		dispositivo = " and movil = true"
+	} else if web && !movil {
+		dispositivo = " and web = true"
+	} else if web && movil {
+		dispositivo = " and web = true and movil = true"
+	} else {
+		return nil, nil
+	}
 
-	return menuOpcionModel, err
+	rows, err := c.db.QueryContext(ctx, `select id,pantalla, movil, web from pantalla where idmodulo = $1 `+dispositivo, idModulo)
+
+	if err != nil {
+		return pantallas, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var pantalla model.PantallaModel
+
+		err := rows.Scan(&pantalla.Id, &pantalla.Pantalla, &pantalla.Movil, &pantalla.Web)
+
+		if err != nil {
+			return pantallas, err
+		}
+
+		pantallas = append(pantallas, pantalla)
+	}
+
+	return pantallas, nil
 }
 
-func (t *accesoRepositoryImpl) AsignarPantalla(ctx context.Context, pantalla model.CreatePantallaUsuarioModel) (int64, error) {
-	var idGenerado int64
+// -----------------Accesos--------------------------
+func (c *accesoRepositoryImpl) ObtenerPantallasAccesos(ctx context.Context, idUsuario int64, movil bool, web bool) ([]model.PantallaAccesoModel, error) {
+	pantallas := []model.PantallaAccesoModel{}
 
-	err := t.db.QueryRowContext(ctx, "INSERT INTO pantallausuario(idpantalla, idusuario, activo, usuariomodifica, fechamodifica) VALUES($1,$2,$3,$4,$5) RETURNING id", pantalla.Idusuario, pantalla.Idpantalla, pantalla.Activo, pantalla.UsuarioCrea, pantalla.FechaCrea).Scan(&idGenerado)
+	var dispositivo = ""
 
-	return idGenerado, err
+	if movil && !web {
+		dispositivo = " and p.movil = true"
+	} else if web && !movil {
+		dispositivo = " and p.web = true"
+	} else {
+		return nil, nil
+	}
+
+	rows, err := c.db.QueryContext(ctx, `select p.pantalla  from  accesopantalla ap
+	inner join pantalla p on p.id = ap.idpantalla 
+	where ap.idusuario = $1 and ap.activo = true `+dispositivo, idUsuario)
+
+	if err != nil {
+		return pantallas, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var pantalla model.PantallaAccesoModel
+
+		err := rows.Scan(&pantalla.Pantalla)
+
+		if err != nil {
+			return pantallas, err
+		}
+
+		pantallas = append(pantallas, pantalla)
+	}
+
+	return pantallas, nil
 }

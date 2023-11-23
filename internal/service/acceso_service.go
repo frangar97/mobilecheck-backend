@@ -9,10 +9,13 @@ import (
 )
 
 type AccesoService interface {
-	ObtenerMenuUsuario(context.Context, int64, bool) ([]model.MenuUsuarioDataModel, error)
-	ObtenerAccesosMenuUsuario(context.Context, int64, bool) (model.MenuAsignadoUsuario, error)
-	ObtenerAccesosPantallaUsuario(context.Context, int64, int64) (model.PantallaAsignadaUsuario, error)
-	AsignarMenu(context.Context, model.AsignarMenuUsuarioModel) (int64, error)
+	ObtenerPantallas(context.Context) ([]model.PantallaModel, error)
+	ObtenerObjetos(context.Context) ([]model.ObjetoModel, error)
+	ObtenerModulos(context.Context, bool, bool) ([]model.ModuloModel, error)
+	ObtenerAccesosPantallasUsuario(context.Context, int64, int64, bool, bool) (model.AccesoPantallaUsuarioModel, error)
+	AsignarPantalla(context.Context, model.CreateUpdateAccesoPantallaModel, int64) (int64, error)
+	ObtenerAccesosWebPorMovil(context.Context, int64, bool, bool) ([]model.PantallaAccesoModel, error)
+	//ObtenerPantallasAccesos(context.Context, int64) ([]model.PantallaAccesoModel, error)
 }
 
 type accesoServiceImpl struct {
@@ -23,115 +26,88 @@ func newAccesoService(accesoRepository repository.AccesoRepository) *accesoServi
 	return &accesoServiceImpl{accesoRepository: accesoRepository}
 }
 
-func (c *accesoServiceImpl) ObtenerMenuUsuario(ctx context.Context, usuarioId int64, dispositivo bool) ([]model.MenuUsuarioDataModel, error) {
-	return c.accesoRepository.ObtenerMenuUsuario(ctx, usuarioId, dispositivo)
+func (c *accesoServiceImpl) ObtenerModulos(ctx context.Context, movil bool, web bool) ([]model.ModuloModel, error) {
+	return c.accesoRepository.ObtenerModulos(ctx, movil, web)
 }
 
-func (c *accesoServiceImpl) ObtenerAccesosMenuUsuario(ctx context.Context, usuarioId int64, dispositivo bool) (model.MenuAsignadoUsuario, error) {
-	Accesos := model.MenuAsignadoUsuario{}
-	opcionMenu, err := c.accesoRepository.ObtenerMenu(ctx, dispositivo)
-	if err != nil {
-		return Accesos, err
-	}
-
-	permisosDelUsuario, err := c.accesoRepository.ObtenerPermisosMenuUsuario(ctx, usuarioId, dispositivo)
-	if err != nil {
-		return Accesos, err
-	}
-
-	for _, menu := range opcionMenu {
-		registroEncontrado := model.MenuOpcionUsuarioModel{}
-		asignado := linq.From(permisosDelUsuario).
-			Where(func(c interface{}) bool {
-				return c.(model.MenuOpcionUsuarioModel).IdMenuOpcion == menu.ID
-			}).
-			Any()
-
-		if asignado {
-			registroEncontrado = linq.From(permisosDelUsuario).
-				FirstWith(func(c interface{}) bool {
-					return c.(model.MenuOpcionUsuarioModel).IdMenuOpcion == menu.ID
-				}).(model.MenuOpcionUsuarioModel)
-
-			if registroEncontrado.Activo {
-				Accesos.MenuAsignado = append(Accesos.MenuAsignado, menu)
-			} else {
-				Accesos.MenuNoAsignado = append(Accesos.MenuNoAsignado, menu)
-			}
-
-		} else {
-			Accesos.MenuNoAsignado = append(Accesos.MenuNoAsignado, menu)
-		}
-	}
-
-	return Accesos, nil
+func (c *accesoServiceImpl) ObtenerPantallas(ctx context.Context) ([]model.PantallaModel, error) {
+	return c.accesoRepository.ObtenerPantallas(ctx)
 }
 
-func (c *accesoServiceImpl) ObtenerAccesosPantallaUsuario(ctx context.Context, usuarioId int64, idOpcionMenu int64) (model.PantallaAsignadaUsuario, error) {
-	Accesos := model.PantallaAsignadaUsuario{}
-	pantallas, err := c.accesoRepository.ObtenerPantallas(ctx, idOpcionMenu)
+func (c *accesoServiceImpl) ObtenerObjetos(ctx context.Context) ([]model.ObjetoModel, error) {
+	return c.accesoRepository.ObtenerObjetos(ctx)
+}
+
+func (c *accesoServiceImpl) ObtenerAccesosPantallasUsuario(ctx context.Context, usuarioId int64, moduloId int64, movil bool, web bool) (model.AccesoPantallaUsuarioModel, error) {
+	Accesos := model.AccesoPantallaUsuarioModel{}
+	pantallas, err := c.accesoRepository.ObtenerPantallasPorModulo(ctx, moduloId, movil, web)
 	if err != nil {
 		return Accesos, err
 	}
-
-	pantallasDelUsuario, err := c.accesoRepository.ObtenerPermisosPantallaUsuario(ctx, usuarioId, idOpcionMenu)
+	pantallasAsignadas, err := c.accesoRepository.ObtenerPantallasAsignadasUsuario(ctx, usuarioId, moduloId, movil, web)
 	if err != nil {
 		return Accesos, err
 	}
-
 	for _, pantalla := range pantallas {
-		registroEncontrado := model.PantallanUsuarioModel{}
-		asignado := linq.From(pantallasDelUsuario).
+
+		var pant model.AccesoPantallaModel
+		pant.IdPantalla = pantalla.Id
+		pant.Pantalla = pantalla.Pantalla
+		pant.Movil = *pantalla.Movil
+		pant.Web = *pantalla.Web
+		pant.Activo = false
+
+		registroEncontrado := model.AccesoPantallaModel{}
+		asignado := linq.From(pantallasAsignadas).
 			Where(func(c interface{}) bool {
-				return c.(model.PantallanUsuarioModel).IdPantalla == pantalla.ID
+				return c.(model.AccesoPantallaModel).IdPantalla == pant.IdPantalla
 			}).
 			Any()
-
 		if asignado {
-			registroEncontrado = linq.From(pantallasDelUsuario).
+			registroEncontrado = linq.From(pantallasAsignadas).
 				FirstWith(func(c interface{}) bool {
-					return c.(model.PantallanUsuarioModel).IdPantalla == pantalla.ID
-				}).(model.PantallanUsuarioModel)
-
+					return c.(model.AccesoPantallaModel).IdPantalla == pant.IdPantalla
+				}).(model.AccesoPantallaModel)
+			pant.Activo = registroEncontrado.Activo
 			if registroEncontrado.Activo {
-				Accesos.PantallaAsignada = append(Accesos.PantallaAsignada, pantalla)
+				Accesos.PantallasAsignadas = append(Accesos.PantallasAsignadas, pant)
 			} else {
-				Accesos.PantallaNoAsignada = append(Accesos.PantallaNoAsignada, pantalla)
+				Accesos.PantallasNoAsignadas = append(Accesos.PantallasNoAsignadas, pant)
 			}
-
 		} else {
-			Accesos.PantallaNoAsignada = append(Accesos.PantallaNoAsignada, pantalla)
+			Accesos.PantallasNoAsignadas = append(Accesos.PantallasNoAsignadas, pant)
 		}
 	}
-
 	return Accesos, nil
 }
 
-func (t *accesoServiceImpl) AsignarMenu(ctx context.Context, opcionMenu model.AsignarMenuUsuarioModel) (int64, error) {
-
-	existe, err := t.accesoRepository.VaidarOpcionMenuAsignado(ctx, opcionMenu.Idusuario, opcionMenu.Idmenuopcion)
-
+func (t *accesoServiceImpl) AsignarPantalla(ctx context.Context, pantalla model.CreateUpdateAccesoPantallaModel, idUsuario int64) (int64, error) {
+	accesoExiste, err := t.accesoRepository.ValidarPantallaAsignada(ctx, pantalla.IdUsuario, pantalla.IdPantalla)
 	if err != nil {
 		return 0, err
 	}
-
-	if existe.Id > 0 {
-
-		idActualizado, err := t.accesoRepository.ActualizarMenuAsignado(ctx, existe.Id, !*existe.Activo, opcionMenu.UsuarioAccion, opcionMenu.FechaAccion)
-
+	println("----- ")
+	println(accesoExiste.IdPantalla)
+	println(idUsuario)
+	if accesoExiste.IdPantalla > 0 {
+		idActualizado, err := t.accesoRepository.ActualizarPantallaAsignada(ctx, accesoExiste.IdPantalla, pantalla)
 		if err != nil {
 			return 0, err
 		}
-
 		return idActualizado, err
-
 	}
 
-	idGenerado, err := t.accesoRepository.AsignarMenu(ctx, opcionMenu)
-
+	idGenerado, err := t.accesoRepository.AsignarPantalla(ctx, pantalla)
 	if err != nil {
 		return 0, err
 	}
-
 	return idGenerado, err
+}
+
+// func (c *accesoServiceImpl) ObtenerPantallasAccesos(ctx context.Context, idUsuario int64) ([]model.PantallaAccesoModel, error) {
+// 	return c.accesoRepository.ObtenerPantallasAccesos(ctx, idUsuario)
+// }
+
+func (c *accesoServiceImpl) ObtenerAccesosWebPorMovil(ctx context.Context, idUsuario int64, movil bool, web bool) ([]model.PantallaAccesoModel, error) {
+	return c.accesoRepository.ObtenerPantallasAccesos(ctx, idUsuario, movil, web)
 }

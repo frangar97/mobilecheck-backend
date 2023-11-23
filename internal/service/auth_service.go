@@ -12,7 +12,7 @@ import (
 )
 
 type AuthService interface {
-	LoginWeb(context.Context, model.AuthCredencialModel) (string, []model.MenuUsuarioModel, error)
+	LoginWeb(context.Context, model.AuthCredencialModel) (string, []model.PantallaAccesoModel, error)
 	LoginMovil(context.Context, model.AuthCredencialModel) (string, string, error)
 }
 
@@ -25,7 +25,7 @@ func newAuthService(usuarioRepository repository.UsuarioRepository, accesoReposc
 	return &authServiceImpl{usuarioRepository: usuarioRepository, accesoReposcitory: accesoReposcitory}
 }
 
-func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthCredencialModel) (string, []model.MenuUsuarioModel, error) {
+func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthCredencialModel) (string, []model.PantallaAccesoModel, error) {
 	usuario, err := a.usuarioRepository.ObtenerPorUsuario(ctx, credenciales.Usuario)
 
 	if err != nil {
@@ -50,6 +50,16 @@ func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthC
 		return "", nil, fmt.Errorf("usuario o contraseña incorrecto")
 	}
 
+	pantallasAcceso, err := a.accesoReposcitory.ObtenerPantallasAccesos(ctx, usuario.ID, false, true)
+
+	if err != nil {
+		return "", nil, fmt.Errorf("Error al obtener los permisos del usuario")
+	}
+
+	// if len(pantallasAcceso) <= 0 {
+	// 	return "", nil, fmt.Errorf("Accesos bloqueados")
+	// }
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"usuarioId": usuario.ID,
 		"web":       usuario.Web,
@@ -63,13 +73,7 @@ func (a *authServiceImpl) LoginWeb(ctx context.Context, credenciales model.AuthC
 		return "", nil, err
 	}
 
-	// accesos_permisos, err := a.PermisosWeb(ctx, usuario.ID)
-
-	// if err != nil {
-	// 	return "", nil, fmt.Errorf("Error al obtener los permisos del usuario")
-	// }
-
-	return tokenString, nil, nil
+	return tokenString, pantallasAcceso, nil
 }
 
 func (a *authServiceImpl) LoginMovil(ctx context.Context, credenciales model.AuthCredencialModel) (string, string, error) {
@@ -110,40 +114,4 @@ func (a *authServiceImpl) LoginMovil(ctx context.Context, credenciales model.Aut
 	}
 
 	return tokenString, fmt.Sprintf("%s %s", usuario.Nombre, usuario.Apellido), nil
-}
-
-func (a *authServiceImpl) PermisosWeb(ctx context.Context, usuarioId int64) ([]model.MenuUsuarioModel, error) {
-	accesos_permisos, err := a.accesoReposcitory.ObtenerMenuUsuario(ctx, usuarioId, true)
-
-	if err != nil {
-		return nil, fmt.Errorf("Error al obtener los permisos del usuario")
-	}
-
-	accesosUsuario := []model.MenuUsuarioModel{}
-
-	for _, menu := range accesos_permisos {
-
-		pantallas, err := a.accesoReposcitory.ObtenerPantallaUsuario(ctx, usuarioId, menu.ID)
-
-		if err != nil {
-			return nil, fmt.Errorf("Error al obtener las pantallas del usuario")
-		}
-
-		var menuOpcion model.MenuUsuarioModel
-		menuOpcion.Opcion = menu.Opcion
-
-		for _, pantalla := range pantallas {
-			var pantallaUsuario model.PantallaUsuarioModel
-			pantallaUsuario.Pantalla = pantalla.Pantalla
-
-			menuOpcion.Pantallas = append(menuOpcion.Pantallas, pantallaUsuario)
-
-		}
-
-		accesosUsuario = append(accesosUsuario, menuOpcion)
-
-	}
-
-	return accesosUsuario, nil
-
 }

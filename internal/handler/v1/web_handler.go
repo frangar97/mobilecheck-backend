@@ -69,6 +69,9 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tarea.DELETE("eliminarTareas", h.eliminarTareas)
 				tarea.GET("TareasImpulsadorDia", h.obtenerTareasDelDiaMovil)
 				tarea.POST("completarTareaWeb", h.completarTarea)
+				tarea.GET("obtenerTareasPorAprobar", h.obtenerTareasPorAprobar)
+				tarea.PUT("aprobarTarea", h.aprobarTarea)
+				tarea.GET("cantidadTareasPendientesAprobar", h.cantidadTareasPendientesAprobar)
 			}
 
 			pais := authenticated.Group("/pais")
@@ -78,10 +81,10 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 
 			acceso := authenticated.Group("/acceso")
 			{
-				acceso.GET("menuAsignado", h.obtenerMenuUsuario)
-				acceso.GET("obtenerAccesosMenuUsuario", h.obtenerAccesosMenuUsuario)
-				acceso.GET("obtenerAccesosPantallaUsuario", h.obtenerAccesosPantallaUsuario)
-				acceso.POST("asignarMenuUsuario", h.asignarMenuUsuario)
+				acceso.GET("obtenerModulos", h.obtenerModulos)
+				// acceso.GET("obtenerAccesosMenuUsuario", h.obtenerAccesosMenuUsuario)
+				acceso.GET("obtenerAccesosPantallaUsuario", h.obtenerAccesosPantallasUsuario)
+				acceso.POST("asignarPantallaUsuario", h.asignarPantallaUsuario)
 			}
 
 			reporte := authenticated.Group("/reporte")

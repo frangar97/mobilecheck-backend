@@ -63,3 +63,21 @@ type VisitaTareaModel struct {
 	RequiereMetaLinea    bool      `json:"requiereMetaLinea"`
 	RequiereMetaSubLinea bool      `json:"requiereMetaSubLinea"`
 }
+
+type AprobarVisitaModel struct {
+	Id           int64     `json:"id"`
+	IdTarea      int64     `json:"idTarea"`
+	Comentario   string    `json:"comentario"`
+	Latitud      float64   `json:"latitud"`
+	Longitud     float64   `json:"longitud"`
+	Fecha        time.Time `json:"fecha"`
+	Imagen       string    `json:"imagen"`
+	UsuarioId    int64     `json:"usuarioId"`
+	Usuario      string    `json:"usuario"`
+	IdCliente    int64     `json:"idCliente"`
+	Cliente      string    `json:"cliente"`
+	Meta         string    `json:"meta"`
+	MetaLinea    string    `json:"metaLinea"`
+	MetaSubLinea string    `json:"metaSubLinea"`
+	Ip           string    `json:"ip"`
+}

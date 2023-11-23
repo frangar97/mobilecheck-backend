@@ -16,10 +16,13 @@ type TareaRepository interface {
 	ObtenerTareasDelDia(context.Context, string, int64) ([]model.TareaModelMovil, error)
 	ObtenerTareasWeb(context.Context, string, string, int64) ([]model.TareaModelWeb, error)
 	ObtenerCantidadTareasUsuarioPorFecha(context.Context, string, string) ([]model.CantidadTareaPorUsuario, error)
-	CompletarTarea(context.Context, int64, int64) (bool, error)
+	CompletarTarea(context.Context, int64, int64, bool, bool) (bool, error)
 	VerificarTarea(context.Context, string, int64) (int, error)
 	ObtenerTareasHorasWeb(context.Context, int, string) ([]model.TareaHorasModelReporteWeb, error)
 	EliminarTarea(context.Context, int64) (int64, error)
+	ObtenerTareasPorAprobar(context.Context, string, int64) ([]model.AprobarTareas, error)
+	AprobarTarea(context.Context, model.CreateAprobarTarea) (bool, error)
+	CantidadTareasPendientesAprobar(string) (int64, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -77,7 +80,10 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 				T.metaLinea,
 				T.metaSublinea,
 				TV.requieremetaLinea,
-				TV.requieremetaSubLinea  
+				TV.requieremetaSubLinea,
+				C.latitud,
+				C.longitud,
+				T.necesitaaprobacion
 			FROM Tarea T 
 			INNER JOIN Cliente C ON T.clienteId = C.id
 			inner join tipovisita TV on TV.id = T.tipovisitaid 
@@ -93,7 +99,7 @@ func (t *tareaRepositoryImpl) ObtenerTareasDelDia(ctx context.Context, fecha str
 	for rows.Next() {
 		var tarea model.TareaModelMovil
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.TipoVisita, &tarea.Meta, &tarea.Requieremeta, &tarea.MetaLinea, &tarea.MetaSublinea, &tarea.RequieremetaLinea, &tarea.RequieremetaSubLinea)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.ClienteId, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.TipoVisita, &tarea.Meta, &tarea.Requieremeta, &tarea.MetaLinea, &tarea.MetaSublinea, &tarea.RequieremetaLinea, &tarea.RequieremetaSubLinea, &tarea.LatitudCliente, &tarea.LongitudCliente, &tarea.NecesitaAprobacion)
 		if err != nil {
 			return nil, err
 		}
@@ -128,7 +134,9 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 				C.codigoCliente,
 				COALESCE(C.latitud,0) latitudCliente,
 				COALESCE(C.longitud,0) longitudCliente,
-				T.fecha fechaAsignada
+				T.fecha fechaAsignada,
+				T.necesitaAprobacion,
+				COALESCE(T.comentarioAdmin,'') comentarioAdmin
 			FROM Tarea T 
 			INNER JOIN CLIENTE C ON T.clienteId = C.id 
 			INNER JOIN USUARIO U ON T.usuarioid  = U.id
@@ -146,8 +154,9 @@ func (t *tareaRepositoryImpl) ObtenerTareasWeb(ctx context.Context, fechaInicio 
 	for rows.Next() {
 		var tarea model.TareaModelWeb
 
-		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId, &tarea.MetaLineaAsignada, &tarea.MetaSubLineaAsignada, &tarea.MetaLineaCumplida, &tarea.MetaSubLineaCumplida, &tarea.CodigoCliente, &tarea.LatitudCliente, &tarea.LongitudCliente, &tarea.FechaAsignada)
+		err := rows.Scan(&tarea.ID, &tarea.Fecha, &tarea.Completada, &tarea.Cliente, &tarea.ImagenRequerida, &tarea.Asesor, &tarea.Latitud, &tarea.Longitud, &tarea.Imagen, &tarea.TipoVisita, &tarea.Comentario, &tarea.Requieremeta, &tarea.MetaAsignada, &tarea.MetaCumplida, &tarea.CodigoUsuario, &tarea.UsuarioId, &tarea.MetaLineaAsignada, &tarea.MetaSubLineaAsignada, &tarea.MetaLineaCumplida, &tarea.MetaSubLineaCumplida, &tarea.CodigoCliente, &tarea.LatitudCliente, &tarea.LongitudCliente, &tarea.FechaAsignada, &tarea.NecesitaAprobacion, &tarea.ComentarioAdmin)
 		if err != nil {
+			println(err.Error())
 			return nil, err
 		}
 
@@ -191,13 +200,14 @@ func (t *tareaRepositoryImpl) ObtenerCantidadTareasUsuarioPorFecha(ctx context.C
 	return tareas, nil
 }
 
-func (t *tareaRepositoryImpl) CompletarTarea(ctx context.Context, tareaId int64, visitaId int64) (bool, error) {
+func (t *tareaRepositoryImpl) CompletarTarea(ctx context.Context, tareaId int64, visitaId int64, completada bool, necesitaAprobacion bool) (bool, error) {
 	res, err := t.db.ExecContext(ctx, `
 		UPDATE Tarea
 		SET	  visitaId = $1,
-			  completada = $2
-		WHERE id = $3
-	`, visitaId, true, tareaId)
+			  completada = $2,
+			  necesitaAprobacion = $3
+		WHERE id = $4
+	`, visitaId, completada, necesitaAprobacion, tareaId)
 
 	if err != nil {
 		return false, nil
@@ -305,4 +315,75 @@ func horas(inicio time.Time, fin time.Time) time.Duration {
 	dur := t2.Sub(t)
 	return dur
 
+}
+
+func (t *tareaRepositoryImpl) ObtenerTareasPorAprobar(ctx context.Context, fecha string, paisId int64) ([]model.AprobarTareas, error) {
+	rows, err := t.db.QueryContext(ctx, `SELECT T.id,
+										C.codigoCliente,
+										C.nombre  cliente,
+										U.usuario codigoUsuario,
+										CONCAT(U.nombre,' ', U.apellido) usuario,
+										TV.nombre  tipoVisita,								
+										COALESCE(V.comentario,'') comentario,
+										COALESCE(v.imagen,'') imagen,
+										COALESCE(C.latitud,0) latitudCliente,
+										COALESCE(C.longitud,0) longitudCliente,
+										COALESCE(v.latitud,0) latitud,
+										COALESCE(v.longitud,0) longitud
+									FROM Tarea T 
+									INNER JOIN CLIENTE C ON T.clienteId = C.id 
+									INNER JOIN USUARIO U ON T.usuarioid  = U.id
+									LEFT  JOIN visita v on V.id = T.visitaid
+									INNER JOIN tipovisita TV ON TV.id = T.tipovisitaid  
+									WHERE date(T.fecha) = $1 AND U.paisid = $2 and necesitaaprobacion = true `, fecha, paisId)
+	if err != nil {
+		return []model.AprobarTareas{}, err
+	}
+
+	defer rows.Close()
+
+	tareas := []model.AprobarTareas{}
+
+	for rows.Next() {
+		var tarea model.AprobarTareas
+
+		err := rows.Scan(&tarea.Id, &tarea.CodigoCliente, &tarea.Cliente, &tarea.CodigoUsuario, &tarea.Usuario, &tarea.TipoVisita, &tarea.Comentario, &tarea.Imagen, &tarea.LatitudCliente, &tarea.LongitudCliente, &tarea.Latitud, &tarea.Longitud)
+		if err != nil {
+			println(err.Error())
+			return nil, err
+		}
+
+		tareas = append(tareas, tarea)
+	}
+
+	return tareas, nil
+}
+
+func (t *tareaRepositoryImpl) AprobarTarea(ctx context.Context, tarea model.CreateAprobarTarea) (bool, error) {
+	println(tarea.Id)
+	print(tarea.Comentario)
+	res, err := t.db.ExecContext(ctx, `
+		update tarea set completada = true, necesitaaprobacion = false, comentarioadmin = $1 where id = $2
+	`, tarea.Comentario, tarea.Id)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
+}
+
+func (t *tareaRepositoryImpl) CantidadTareasPendientesAprobar(fecha string) (int64, error) {
+	var count int64
+	err := t.db.QueryRow(`select count(id)  from tarea where necesitaaprobacion = true and date(fecha) = $1`, fecha).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

@@ -9,19 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) obtenerMenuUsuario(ctx *gin.Context) {
-	usuarioId, err := strconv.ParseInt(ctx.Query("usuario"), 0, 0)
+func (h *Handler) obtenerModulos(ctx *gin.Context) {
+
+	movil, err := strconv.ParseBool(ctx.Query("movil"))
 	if err != nil {
 		return
 	}
 
-	dispositivo, err := strconv.ParseBool(ctx.Query("webMovil"))
+	web, err := strconv.ParseBool(ctx.Query("web"))
 	if err != nil {
 		return
 	}
-	accesos, err := h.services.AccesoService.ObtenerMenuUsuario(ctx.Request.Context(), usuarioId, dispositivo)
+
+	accesos, err := h.services.AccesoService.ObtenerModulos(ctx.Request.Context(), movil, web)
 
 	if err != nil {
+		println(err.Error())
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -29,21 +32,32 @@ func (h *Handler) obtenerMenuUsuario(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, accesos)
 }
 
-func (h *Handler) obtenerAccesosMenuUsuario(ctx *gin.Context) {
+func (h *Handler) obtenerAccesosPantallasUsuario(ctx *gin.Context) {
 
-	usuarioId, err := strconv.ParseInt(ctx.Query("usuario"), 0, 0)
+	movil, err := strconv.ParseBool(ctx.Query("movil"))
 	if err != nil {
 		return
 	}
 
-	dispositivo, err := strconv.ParseBool(ctx.Query("webMovil"))
+	web, err := strconv.ParseBool(ctx.Query("web"))
 	if err != nil {
 		return
 	}
 
-	accesos, err := h.services.AccesoService.ObtenerAccesosMenuUsuario(ctx.Request.Context(), usuarioId, dispositivo)
+	idUsuario, err := strconv.ParseInt(ctx.Query("idUsuario"), 0, 0)
+	if err != nil {
+		return
+	}
+
+	idModulo, err := strconv.ParseInt(ctx.Query("idModulo"), 0, 0)
+	if err != nil {
+		return
+	}
+
+	accesos, err := h.services.AccesoService.ObtenerAccesosPantallasUsuario(ctx.Request.Context(), idUsuario, idModulo, movil, web)
 
 	if err != nil {
+		println(err.Error())
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -51,49 +65,45 @@ func (h *Handler) obtenerAccesosMenuUsuario(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, accesos)
 }
 
-func (h *Handler) obtenerAccesosPantallaUsuario(ctx *gin.Context) {
+func (h *Handler) asignarPantallaUsuario(ctx *gin.Context) {
+	var pantallaJSON model.CreateUpdateAccesoPantallaModel
 
-	usuarioId, err := strconv.ParseInt(ctx.Query("usuario"), 0, 0)
-	if err != nil {
+	usuarioAccion := ctx.GetInt64("usuarioId")
+
+	pantallaJSON.FechaCrea = time.Now()
+	pantallaJSON.FechaModifica = time.Now()
+	pantallaJSON.UsuarioCrea = usuarioAccion
+	pantallaJSON.UsuarioModifica = usuarioAccion
+
+	if err := ctx.BindJSON(&pantallaJSON); err != nil {
+		print(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
 		return
 	}
 
-	opcionMenu, err := strconv.ParseInt(ctx.Query("opcionMenu"), 0, 0)
+	accesos, err := h.services.AccesoService.AsignarPantalla(ctx.Request.Context(), pantallaJSON, usuarioAccion)
 	if err != nil {
-		return
-	}
 
-	accesos, err := h.services.AccesoService.ObtenerAccesosPantallaUsuario(ctx.Request.Context(), usuarioId, opcionMenu)
-
-	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-
 	ctx.JSON(http.StatusOK, accesos)
 }
 
-func (h *Handler) asignarMenuUsuario(ctx *gin.Context) {
-	var OpcionMenuJSON model.AsignarMenuUsuarioModel
+///--------Movil
 
-	Idusuario, err := strconv.ParseInt(ctx.Query("idusuario"), 0, 0)
-	if err != nil {
-		return
+func (h *Handler) obtenerAccesosWebPorMovil(ctx *gin.Context) {
+
+	usuario := ctx.GetInt64("usuarioId")
+
+	accesos, err := h.services.AccesoService.ObtenerAccesosWebPorMovil(ctx.Request.Context(), usuario, false, true)
+	println("----Accesos-----")
+	for _, cc := range accesos {
+		println(cc.Pantalla)
 	}
-
-	Idmenuopcion, err := strconv.ParseInt(ctx.Query("idmenuopcion"), 0, 0)
+	println("-------------------")
 	if err != nil {
-		return
-	}
-
-	OpcionMenuJSON.Idmenuopcion = Idmenuopcion
-	OpcionMenuJSON.Idusuario = Idusuario
-	OpcionMenuJSON.UsuarioAccion = ctx.GetInt64("usuarioId")
-	OpcionMenuJSON.FechaAccion = time.Now()
-
-	accesos, err := h.services.AccesoService.AsignarMenu(ctx.Request.Context(), OpcionMenuJSON)
-
-	if err != nil {
+		println(err.Error())
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
