@@ -167,3 +167,30 @@ type CreateAprobarTarea struct {
 	Id         int64  `json:"id" binding:"required"`
 	Comentario string `json:"comentario"`
 }
+
+type TareaObtenerModel struct {
+	Id              int64     `json:"id"`
+	Fecha           time.Time `json:"fecha"`
+	ClienteId       int64     `json:"clienteid"`
+	UsuarioId       int64     `json:"usuarioid"`
+	Usuario         string    `json:"usuario"`
+	ImagenRequerida bool      `json:"imagenRequerida" `
+	TipoVisitaId    int64     `json:"tipoVisitaId" `
+	Meta            string    `json:"meta"`
+	MetaLinea       string    `json:"metaLinea"`
+	MetaSubLinea    string    `json:"metaSubLinea"`
+}
+
+type TareaUpdateModel struct {
+	Id              int64     `json:"id" binding:"required"`
+	Fecha           string    `json:"fecha" binding:"required"`
+	ClienteId       int64     `json:"clienteId" binding:"required"`
+	UsuarioId       int64     `json:"usuarioId" binding:"required"`
+	ImagenRequerida *bool     `json:"imagenRequerida" binding:"required"`
+	TipoVisitaId    int64     `json:"tipoVisitaId" binding:"required"`
+	Meta            string    `json:"meta"`
+	MetaLinea       string    `json:"metaLinea"`
+	MetaSubLinea    string    `json:"metaSubLinea"`
+	UsuarioModifica int64     `json:"usuarioModifica"`
+	FechaModifica   time.Time `json:"fechaModifica"`
+}

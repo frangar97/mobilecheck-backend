@@ -282,3 +282,42 @@ func (h *Handler) cantidadTareasPendientesAprobar(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, cantidad)
 }
+
+func (h *Handler) obtenerTareaPorId(ctx *gin.Context) {
+	tarea := ctx.Param("idTarea")
+	idTarea, err := strconv.ParseInt(tarea, 0, 0)
+
+	visitas, err := h.services.TareaService.ObtenerTareaPorId(ctx.Request.Context(), idTarea)
+
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, visitas)
+}
+
+func (h *Handler) updateTarea(ctx *gin.Context) {
+	var tareaJSON model.TareaUpdateModel
+
+	usuarioModifica := ctx.GetInt64("usuarioId")
+	fechaModifica := time.Now()
+
+	tareaJSON.UsuarioModifica = usuarioModifica
+	tareaJSON.FechaModifica = fechaModifica
+
+	if err := ctx.BindJSON(&tareaJSON); err != nil {
+		println(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "los datos enviados no son validos"})
+		return
+	}
+
+	_, err := h.services.TareaService.UpdateTarea(ctx.Request.Context(), tareaJSON)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Tareas actualizada con exito"})
+}

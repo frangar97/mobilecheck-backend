@@ -72,6 +72,8 @@ func (h *Handler) initWebRoutes(c *gin.RouterGroup) {
 				tarea.GET("obtenerTareasPorAprobar", h.obtenerTareasPorAprobar)
 				tarea.PUT("aprobarTarea", h.aprobarTarea)
 				tarea.GET("cantidadTareasPendientesAprobar", h.cantidadTareasPendientesAprobar)
+				tarea.GET("obtenerTareaPorId/:idTarea", h.obtenerTareaPorId)
+				tarea.PUT("updateTarea", h.updateTarea)
 			}
 
 			pais := authenticated.Group("/pais")

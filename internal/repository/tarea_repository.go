@@ -23,6 +23,8 @@ type TareaRepository interface {
 	ObtenerTareasPorAprobar(context.Context, string, int64) ([]model.AprobarTareas, error)
 	AprobarTarea(context.Context, model.CreateAprobarTarea) (bool, error)
 	CantidadTareasPendientesAprobar(string) (int64, error)
+	ObtenerTareaPorId(context.Context, int64) (model.TareaObtenerModel, error)
+	UpdateTarea(context.Context, model.TareaUpdateModel) (bool, error)
 }
 
 type tareaRepositoryImpl struct {
@@ -386,4 +388,67 @@ func (t *tareaRepositoryImpl) CantidadTareasPendientesAprobar(fecha string) (int
 		return 0, err
 	}
 	return count, nil
+}
+
+func (t *tareaRepositoryImpl) ObtenerTareaPorId(ctx context.Context, tareaId int64) (model.TareaObtenerModel, error) {
+	var tareaModel model.TareaObtenerModel
+
+	err := t.db.QueryRowContext(ctx, `select
+										t.id,
+										t.fecha,
+										t.clienteid,
+										t.usuarioid,
+										CONCAT(u.nombre,' ', u.apellido) asesor,	
+										t.imagenrequerida,
+										t.tipovisitaid,
+										coalesce(t.meta, '') meta,
+										coalesce(t.metalinea, '') metalinea,
+										coalesce(t.metasublinea, '') metasublinea
+									from
+										tarea t
+									inner join usuario u on u.id = t.usuarioid 	
+									where
+										t.id = $1
+	`, tareaId).Scan(&tareaModel.Id, &tareaModel.Fecha, &tareaModel.ClienteId, &tareaModel.UsuarioId, &tareaModel.Usuario, &tareaModel.ImagenRequerida, &tareaModel.TipoVisitaId, &tareaModel.Meta, &tareaModel.MetaLinea, &tareaModel.MetaSubLinea)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return tareaModel, nil
+		}
+		return tareaModel, err
+	}
+
+	return tareaModel, err
+}
+
+func (t *tareaRepositoryImpl) UpdateTarea(ctx context.Context, tarea model.TareaUpdateModel) (bool, error) {
+
+	res, err := t.db.ExecContext(ctx, `
+										update
+										tarea
+									set
+										fecha = $2,
+										clienteid = $3,
+										imagenrequerida = $4,
+										tipovisitaid = $5,
+										meta = $6,
+										metalinea = $7,
+										metasublinea = $8,
+										usuariomodifica = $9,
+										fechamodifica = $10
+									where
+										id = $1
+	`, tarea.Id, tarea.Fecha, tarea.ClienteId, tarea.ImagenRequerida, tarea.TipoVisitaId, tarea.Meta, tarea.MetaLinea, tarea.MetaSubLinea, tarea.UsuarioModifica, tarea.FechaModifica)
+
+	if err != nil {
+		return false, nil
+	}
+
+	count, err := res.RowsAffected()
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, err
 }

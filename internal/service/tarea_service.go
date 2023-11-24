@@ -28,6 +28,8 @@ type TareaService interface {
 	ObtenerTareasPorAprobar(context.Context, string, int64) ([]model.AprobarTareas, error)
 	AprobarTarea(context.Context, model.CreateAprobarTarea) (bool, error)
 	CantidadTareasPendientesAprobar(string) (int64, error)
+	ObtenerTareaPorId(context.Context, int64) (model.TareaObtenerModel, error)
+	UpdateTarea(context.Context, model.TareaUpdateModel) (bool, error)
 }
 
 type tareaServiceImpl struct {
@@ -289,4 +291,12 @@ func (t *tareaServiceImpl) AprobarTarea(ctx context.Context, tarea model.CreateA
 
 func (t *tareaServiceImpl) CantidadTareasPendientesAprobar(fecha string) (int64, error) {
 	return t.tareaRepository.CantidadTareasPendientesAprobar(fecha)
+}
+
+func (t *tareaServiceImpl) ObtenerTareaPorId(ctx context.Context, tareaId int64) (model.TareaObtenerModel, error) {
+	return t.tareaRepository.ObtenerTareaPorId(ctx, tareaId)
+}
+
+func (t *tareaServiceImpl) UpdateTarea(ctx context.Context, tarea model.TareaUpdateModel) (bool, error) {
+	return t.tareaRepository.UpdateTarea(ctx, tarea)
 }
