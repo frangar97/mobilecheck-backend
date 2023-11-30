@@ -16,6 +16,7 @@ type AccesoService interface {
 	AsignarPantalla(context.Context, model.CreateUpdateAccesoPantallaModel, int64) (int64, error)
 	ObtenerAccesosWebPorMovil(context.Context, int64, bool, bool) ([]model.PantallaAccesoModel, error)
 	//ObtenerPantallasAccesos(context.Context, int64) ([]model.PantallaAccesoModel, error)
+	ValidarAccesoPorId(context.Context, int64, int64) (bool, string, error)
 }
 
 type accesoServiceImpl struct {
@@ -110,4 +111,8 @@ func (t *accesoServiceImpl) AsignarPantalla(ctx context.Context, pantalla model.
 
 func (c *accesoServiceImpl) ObtenerAccesosWebPorMovil(ctx context.Context, idUsuario int64, movil bool, web bool) ([]model.PantallaAccesoModel, error) {
 	return c.accesoRepository.ObtenerPantallasAccesos(ctx, idUsuario, movil, web)
+}
+
+func (c *accesoServiceImpl) ValidarAccesoPorId(ctx context.Context, idPantalla int64, idUsuario int64) (bool, string, error) {
+	return c.accesoRepository.ValidarAccesoPorId(ctx, idPantalla, idUsuario)
 }

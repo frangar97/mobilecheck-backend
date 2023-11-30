@@ -321,3 +321,64 @@ func (h *Handler) updateTarea(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Tareas actualizada con exito"})
 }
+
+func (h *Handler) completarTareaWeb(ctx *gin.Context) {
+	var tareaJSON model.CompletarTareaModel
+
+	if err := ctx.Bind(&tareaJSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	usuarioId := ctx.GetInt64("usuarioId")
+	acceso, msg, errorAcceso := h.services.AccesoService.ValidarAccesoPorId(ctx, 24, usuarioId)
+
+	if errorAcceso != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": msg})
+		return
+	}
+
+	if acceso == false {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": msg})
+		return
+	}
+
+	err := h.services.TareaService.CompletarTarea(ctx, tareaJSON, usuarioId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"message": "creado con exito"})
+}
+
+func (h *Handler) obtenerTareasDelDiaMovilWeb(ctx *gin.Context) {
+	fecha := ctx.Query("fecha")
+	usuarioId := ctx.GetInt64("usuarioId")
+
+	// acceso, msg, errorAcceso := h.services.AccesoService.ValidarAccesoPorId(ctx, 24, usuarioId)
+
+	// println(acceso)
+	// println(msg)
+	// println(errorAcceso)
+
+	// if errorAcceso != nil {
+	// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": msg})
+	// 	return
+	// }
+
+	// if acceso == false {
+	// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": msg})
+	// 	return
+	// }
+
+	tareas, err := h.services.TareaService.ObtenerTareasDelDia(ctx.Request.Context(), fecha, usuarioId)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tareas)
+}

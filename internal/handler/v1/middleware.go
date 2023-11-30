@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -38,14 +39,13 @@ func (h *Handler) movilIdentity(c *gin.Context) {
 		return
 	}
 
-	// versionUsuario := c.GetHeader("VersionAppMovil")
+	VersionApp := c.GetHeader("VersionApp")
+	versionActual := os.Getenv("VERSRION_MOVIL_APP")
 
-	// versionActual := os.Getenv("VERSRION_MOVIL_APP")
-
-	// if versionUsuario != versionActual {
-	// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Version de la App desactualizada, porfavor actualice"})
-	// 	return
-	// }
+	if VersionApp != versionActual {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "App desactualizada. Porfavor actualizar"})
+		return
+	}
 
 	c.Set("usuarioId", id)
 }

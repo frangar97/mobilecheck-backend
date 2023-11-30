@@ -21,6 +21,7 @@ type AccesoRepository interface {
 
 	//----
 	ObtenerPantallasAccesos(context.Context, int64, bool, bool) ([]model.PantallaAccesoModel, error)
+	ValidarAccesoPorId(context.Context, int64, int64) (bool, string, error)
 }
 
 type accesoRepositoryImpl struct {
@@ -284,4 +285,26 @@ func (c *accesoRepositoryImpl) ObtenerPantallasAccesos(ctx context.Context, idUs
 	}
 
 	return pantallas, nil
+}
+
+func (c *accesoRepositoryImpl) ValidarAccesoPorId(ctx context.Context, idPantalla int64, idUsuario int64) (bool, string, error) {
+	var count int64
+	println(idPantalla)
+	println(idUsuario)
+	err := c.db.QueryRowContext(ctx, "select id from accesopantalla where idpantalla = $1 and activo = true and idusuario = $2 LIMIT 1", idPantalla, idUsuario).Scan(&count)
+	println(err.Error())
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, "No tienes acceso para marcar desde la web", nil
+		}
+		return false, "Ocurrio un error", err
+	}
+
+	println(count)
+
+	if count > 0 {
+		return true, "Acceso Encontrado", nil
+	}
+
+	return false, "Ocurrio un error", err
 }
